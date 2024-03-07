@@ -1,6 +1,6 @@
 import Customer from '../models/customerModel.mjs';
 import { hashPassword } from '../utils/helpers.mjs';
-import bcrypt from 'bcrypt';
+
 export const GETLoginPage = (req, res) => {
   res.render('login');
 }
@@ -10,7 +10,6 @@ export const GETRegisterPage = async (req, res) => {
 }
 
 export const POSTRegisterPage = async (req, res) => {
-  console.log('POST register');
   try {
     // Extract user input from the request body
     const { username, password, reEnterPassword } = req.body;

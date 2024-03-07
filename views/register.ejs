@@ -1,37 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-</head>
-<body>
+<%- include('./layout/header.ejs') %>
     <div class="form-container">
         <h2>Register</h2>
         <form action="/register" method="post">
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" name="username" id="username" placeholder="jhon321" required autocomplete="off">
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" placeholder="jhon321" name="username">
             </div>
-            <div class="form-group">
-                <label for="fullname">Fullname</label>
-                <input type="text" name="fullname" id="fullname" placeholder="Jhon Doe" required autocomplete="off">
+            <div class="mb-3">
+                <label for="fullname" class="form-label">Fullname</label>
+                <input type="text" class="form-control" id="fullname" placeholder="Jhon Doe" name="fullname">
             </div>
-            <div class="form-group">
-                <label for="age">Age</label>
-                <input type="number" name="age" id="age" placeholder="18" required autocomplete="off">
+            <div class="mb-3">
+                <label for="age" class="form-label">Age</label>
+                <input type="number" class="form-control" id="age" placeholder="18" name="age">
             </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="text" name="password" id="fullname" placeholder="******" required autocomplete="off">
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" placeholder="******" name="password">
             </div>
-            <div class="form-group">
-                <label for="reEnterPassword">Re-enter password</label>
-                <input type="text" name="reEnterPassword" id="fullname" placeholder="******" required autocomplete="off">
-            </div>
-            <button type="submit">Register</button>
+            <div class="mb-3">
+                <label for="reEnterPassword" class="form-label">Re-enter password</label>
+                <input type="password" class="form-control" id="reEnterPassword" placeholder="******" name="reEnterPassword">
+            </div>            
+            <button type="submit" class="btn btn-primary">register</button>
         </form>
+        
         <p>Have already an account? <a href="/">Login</a></p>
     </div>
-</body>
-</html>
+<%- include('./layout/footer.ejs') %>

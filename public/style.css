@@ -8,3 +8,7 @@ body {
     background-color: rgb(20, 20, 20);
     color: white;
 }
+
+form {
+    width: 200px;
+}

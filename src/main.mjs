@@ -14,9 +14,12 @@ app.use(express.urlencoded({ extended: false }));
 app.set('view engine', 'ejs');
 // set static file
 app.use(express.static('public'));
-// Connect to mongoDN
+// set bootstrap CSS and JS
+app.use('/bootstrapcss', express.static('node_modules/bootstrap/dist/css'));
+app.use('/bootstrapjs', express.static('node_modules/bootstrap/dist/js'));
+// Connect to mongoDB
 connectDB();
-
+// set customer routes
 app.use('/', customerRoutes);
 
 
