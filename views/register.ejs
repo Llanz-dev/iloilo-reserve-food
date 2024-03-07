@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Register</h2>
+        <form action="/register" method="post">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" name="username" id="username" placeholder="jhon321" required autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label for="fullname">Fullname</label>
+                <input type="text" name="fullname" id="fullname" placeholder="Jhon Doe" required autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label for="age">Age</label>
+                <input type="number" name="age" id="age" placeholder="18" required autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="text" name="password" id="fullname" placeholder="******" required autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label for="reEnterPassword">Re-enter password</label>
+                <input type="text" name="reEnterPassword" id="fullname" placeholder="******" required autocomplete="off">
+            </div>
+            <button type="submit">Register</button>
+        </form>
+        <p>Have already an account? <a href="/">Login</a></p>
+    </div>
+</body>
+</html>
