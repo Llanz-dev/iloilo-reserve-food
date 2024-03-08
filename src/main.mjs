@@ -1,6 +1,7 @@
 import express from 'express';
 import { connectDB } from '../config/database.mjs';
 import customerRoutes from '../routes/customerRoutes.mjs';
+import homeRoutes from '../routes/homeRoutes.mjs'
 import 'dotenv/config';
 
 const app = express();
@@ -21,6 +22,7 @@ app.use('/bootstrapjs', express.static('node_modules/bootstrap/dist/js'));
 connectDB();
 // set customer routes
 app.use('/', customerRoutes);
+app.use('/home', homeRoutes);
 
 
 app.listen(PORT, () => {
