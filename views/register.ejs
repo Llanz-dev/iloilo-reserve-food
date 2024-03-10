@@ -1,20 +1,25 @@
-<%- include('./layout/header.ejs') %>
+<%- include('./layout/customer/header.ejs') %>
+<!-- testing -->
     <div class="form-container">
         <h2>Register</h2>
-        <form action="/register" method="post">
+        <form id="register-form" method="POST">
             <div class="mb-3">
+                <p class="error-field" id="error-username"></p>
                 <label for="username" class="form-label">Username</label>
                 <input type="text" class="form-control" id="username" placeholder="jhon321" name="username">
             </div>
             <div class="mb-3">
+                <p class="error-field" id="error-fullname"></p>
                 <label for="fullname" class="form-label">Fullname</label>
                 <input type="text" class="form-control" id="fullname" placeholder="Jhon Doe" name="fullname">
             </div>
             <div class="mb-3">
+                <p class="error-field" id="error-age"></p>
                 <label for="age" class="form-label">Age</label>
                 <input type="number" class="form-control" id="age" placeholder="18" name="age">
             </div>
             <div class="mb-3">
+                <p class="error-field" id="error-password"></p>
                 <label for="password" class="form-label">Password</label>
                 <input type="password" class="form-control" id="password" placeholder="******" name="password" minlength="6" maxlength="12">
             </div>
@@ -24,7 +29,6 @@
             </div>            
             <button type="submit" class="btn btn-primary">register</button>
         </form>
-        
-        <p>Have already an account? <a href="/">Login</a></p>
     </div>
-<%- include('./layout/footer.ejs') %>
+    <p>Have already an account? <a href="/login">Login</a></p>
+<%- include('./layout/customer/footer.ejs') %>

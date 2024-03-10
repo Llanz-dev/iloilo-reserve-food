@@ -1,3 +1,4 @@
 export const GETHomePage = (req, res) => {
-    res.render('home');
+    const pageTitle = 'home';
+    res.render('home', { pageTitle });
 }
