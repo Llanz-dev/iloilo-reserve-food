@@ -1,12 +1,14 @@
-<%- include('./layout/customer/header.ejs') %>
+<%- include('../layout/customer/header.ejs') %>
     <div class="form-container">
         <h2>Login</h2>
-        <form action="/login" method="post">          
+        <form action="/login" method="post" id="login-form">          
             <div class="mb-3">
+                <p class="error-field" id="error-username"></p>
                 <label for="username" class="form-label">Username</label>
                 <input type="text" class="form-control" id="username" placeholder="jhon321" name="username">
             </div>
             <div class="mb-3">
+                <p class="error-field" id="error-password"></p>
                 <label for="password" class="form-label">Password</label>
                 <input type="password" class="form-control" id="password" placeholder="******" name="password">
             </div>
@@ -14,4 +16,4 @@
         </form>
         <p>Don't have an account? <a href="/register">Register</a></p>
     </div>
-<%- include('./layout/customer/footer.ejs') %>
+<%- include('../layout/customer/footer.ejs') %>

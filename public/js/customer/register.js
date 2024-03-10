@@ -1,3 +1,4 @@
+console.log('Register page');
 const registerForm = document.getElementById('register-form');
 const errorUsername = document.getElementById('error-username');
 const errorFullname = document.getElementById('error-fullname');
@@ -19,14 +20,17 @@ registerForm.addEventListener('submit', async (e) => {
       body: JSON.stringify({ username, fullname, age, password, reEnterPassword }),
       headers: { 'Content-Type': 'application/json' }
     });
+
     const data = await res.json();
+
     if (data.errors) {
       errorUsername.textContent = data.errors.username;
       errorFullname.textContent = data.errors.fullname;
       errorAge.textContent = data.errors.age;
       errorPassword.textContent = data.errors.password;
     }
-    if (data.user) {
+
+    if (data.customer) {
       location.assign('/');
     }
   } catch (err) {

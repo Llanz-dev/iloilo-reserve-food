@@ -4,6 +4,7 @@ import customerRoutes from '../routes/customerRoutes.mjs';
 import homeRoutes from '../routes/homeRoutes.mjs'
 import cookieParser from 'cookie-parser';
 import 'dotenv/config';
+import { checkUser } from '../middleware/authenticationMiddleware.mjs';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -23,9 +24,11 @@ app.use('/bootstrapcss', express.static('node_modules/bootstrap/dist/css'));
 app.use('/bootstrapjs', express.static('node_modules/bootstrap/dist/js'));
 // Connect to mongoDB
 connectDB();
-// set customer routes
-app.use('/', homeRoutes);
 
+// check user
+app.get('*', checkUser);
+// set routes
+app.use('/', homeRoutes);
 app.use(customerRoutes);
 
 app.listen(PORT, () => {

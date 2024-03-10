@@ -20,7 +20,16 @@ const comparePassword = async (plain, hash) => {
 };
 
 const handleErrors = (err) => {
-  let errors = { username: "", fullname: "", age: "", password: "" };
+  console.log('err.message:', err.message);
+  let errors = { username: '', fullname: '', age: '', password: '' };
+
+  if (err.message === 'Incorrect username') {
+    errors.username = 'Username is incorrect. Please try again.';
+  }
+
+  if (err.message === 'Incorrect password') {
+    errors.password = 'Password is incorrect. Please try again.';
+  }
   
   // If the username duplicate
   if (err.code === 11000) {
@@ -29,7 +38,7 @@ const handleErrors = (err) => {
 
   // If the passwords do not match
   if (err.message.includes("Passwords do not match")) {
-    errors['password'] = 'Passwords do not match';
+    errors['password'] = 'Your passwords do not match. Please re-type the password.';
   }
 
   if (err.message.includes("Customer validation failed")) {
@@ -37,7 +46,6 @@ const handleErrors = (err) => {
       errors[properties.path] = properties.message;
     });
   }
-  console.log(errors);
   return errors;
 };
 
@@ -46,22 +54,14 @@ const handleErrors = (err) => {
 // Example a customer input fullname: 'jHON DoE' format into -> 'Jhon Doe'
 const toTitleCase = (getUsername, getFullname) => {
   const usernameAndFullname = { username: "", fullname: "" };
-  usernameAndFullname.username = getUsername
-    .toLowerCase()
-    .split("")
-    .map((char) => (char.toUpperCase() === char ? char : char.toLowerCase()))
-    .join("");
-  usernameAndFullname.fullname = getFullname
-    .toLowerCase()
-    .split(" ")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
+  usernameAndFullname.username = getUsername.toLowerCase().split("").map((char) => (char.toUpperCase() === char ? char : char.toLowerCase())).join("");
+  usernameAndFullname.fullname = getFullname.toLowerCase().split(" ").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
   return usernameAndFullname;
 };
 
 const fourtyEightHours = 1 * 24 * 60 * 60;
 const createToken = (id) => {
-  return jwt.sign({ id }, "token secret code", {
+  return jwt.sign({ id }, 'token secret code', {
     expiresIn: fourtyEightHours,
   });
 }

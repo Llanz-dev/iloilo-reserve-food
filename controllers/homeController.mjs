@@ -1,4 +1,4 @@
 export const GETHomePage = (req, res) => {
     const pageTitle = 'home';
-    res.render('home', { pageTitle });
+    res.render('customer/home', { pageTitle });
 }
