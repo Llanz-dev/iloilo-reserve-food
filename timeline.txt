@@ -1,4 +1,11 @@
 March 6 to March 8 2024:
-	- Register and Login working in the backend with hash using bcrypt.
-	- JWT authenticated and restrict the users to specific page when it is not log in.
+	- Register and Login working in the backend with hash using bcrypt
 	- Setting the static with bootstrap
+
+March 10 2024:
+	- Setting JWT authentication
+	- Restrict the users to specific page when it is not log in
+	- Conditional rendering
+
+March 11 2024:
+	- Profile editing working except password

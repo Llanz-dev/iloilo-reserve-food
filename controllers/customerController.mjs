@@ -71,9 +71,25 @@ const POSTRegisterPage = async (req, res) => {
   }
 }
 
-const GETProfilePage = (req, res) => {
+const GETProfilePage = async (req, res) => {
   const pageTitle = 'profile';
+  console.log(res.locals.customer);
   res.render('customer/profile', { pageTitle });
+}
+
+const POSTUpdateProfile = async (req, res) => {
+  try {
+    const customerID = req.params.id;
+    await Customer.findByIdAndUpdate(customerID, {
+      username: req.body.username,
+      fullname: req.body.fullname,
+      age: req.body.age,
+    });
+
+    res.redirect('/');
+  } catch (err) {
+    res.json({ 'PATCH profile page': err.message });
+  }
 }
 
 const GETLogout = (req, res) => {
@@ -81,4 +97,4 @@ const GETLogout = (req, res) => {
   res.redirect('/');
 }
 
-export { GETLoginPage, POSTLoginPage, GETRegisterPage, POSTRegisterPage, GETProfilePage, GETLogout };
+export { GETLoginPage, POSTLoginPage, GETRegisterPage, POSTRegisterPage, GETProfilePage, POSTUpdateProfile, GETLogout };
