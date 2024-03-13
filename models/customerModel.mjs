@@ -1,4 +1,3 @@
-// 1. Define a Mongoose schema for the customer collection
 import mongoose from "mongoose";
 const { Schema } = mongoose;
 
@@ -9,7 +8,6 @@ const minimumLengthMessage = (field, minValue) => {
 const maximumLengthMessage = (field, maxValue) => {
   return `Maximum ${field} length is ${maxValue} characters`;
 };
-
 
 const customerSchema = new Schema({
   username: {
@@ -46,5 +44,4 @@ const customerSchema = new Schema({
 //   next();
 // });
 
-// 2. Define a Mongoose model using the schema
 export default mongoose.model("Customer", customerSchema);

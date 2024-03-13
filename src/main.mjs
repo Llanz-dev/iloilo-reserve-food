@@ -32,7 +32,7 @@ app.get('*', checkUser);
 app.use('/', homeRoutes);
 app.use(customerRoutes);
 
-app.use('/admin', adminRoutes);
+app.use('/adminux', adminRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is listening on ${PORT}`);

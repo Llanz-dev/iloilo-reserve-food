@@ -13,4 +13,6 @@ March 11 2024:
 March 13 2024:
 	- Password can be update in profile page
 	- Admin where it can add restaurants
+
+March 14 2024
 	- Restaurant-side where it can add its own product
