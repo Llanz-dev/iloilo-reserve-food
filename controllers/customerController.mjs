@@ -73,18 +73,31 @@ const POSTRegisterPage = async (req, res) => {
 
 const GETProfilePage = async (req, res) => {
   const pageTitle = 'profile';
-  console.log(res.locals.customer);
   res.render('customer/profile', { pageTitle });
 }
 
 const POSTUpdateProfile = async (req, res) => {
   try {
     const customerID = req.params.id;
-    await Customer.findByIdAndUpdate(customerID, {
-      username: req.body.username,
-      fullname: req.body.fullname,
-      age: req.body.age,
-    });
+    let { username, fullname, age, password, reEnterPassword } = req.body;
+
+    if (password !== reEnterPassword) {
+      return res.status(400).json({ error: 'Passwords do not match' });
+    }
+
+    // Format the strings 
+    username = toTitleCase(username, fullname).username;
+    fullname = toTitleCase(username, fullname).fullname;
+  
+    const updates = { username, fullname, age };
+    
+    if (password) {       
+      // Hash password
+      const hashedPassword = await hashPassword(password);
+      updates.password = hashedPassword;
+    }
+
+    await Customer.findByIdAndUpdate(customerID, updates);
 
     res.redirect('/');
   } catch (err) {

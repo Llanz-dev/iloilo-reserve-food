@@ -2,6 +2,7 @@ import express from 'express';
 import { connectDB } from '../config/database.mjs';
 import customerRoutes from '../routes/customerRoutes.mjs';
 import homeRoutes from '../routes/homeRoutes.mjs'
+import adminRoutes from '../routes/adminRoutes.mjs'
 import cookieParser from 'cookie-parser';
 import 'dotenv/config';
 import { checkUser } from '../middleware/authenticationMiddleware.mjs';
@@ -30,6 +31,8 @@ app.get('*', checkUser);
 // set routes
 app.use('/', homeRoutes);
 app.use(customerRoutes);
+
+app.use('/admin', adminRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is listening on ${PORT}`);

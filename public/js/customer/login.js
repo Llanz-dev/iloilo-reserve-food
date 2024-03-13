@@ -3,6 +3,10 @@ const loginForm = document.getElementById('login-form');
 const errorUsername = document.getElementById('error-username');
 const errorPassword = document.getElementById('error-password');
 
+// Clear fields
+loginForm.username.value = '';
+loginForm.password.value = '';
+
 
 loginForm.addEventListener('submit', async (e) => {
   e.preventDefault();

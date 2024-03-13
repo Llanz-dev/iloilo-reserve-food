@@ -1,4 +1,4 @@
-<%- include('../layout/customer/header.ejs') %>
+<%- include('./layout/header.ejs') %>
     <div class="form-container">
         <h2>Profile</h2>
         <form action="/profile/<%= customer._id %>" method="post" id="profile-form">
@@ -29,4 +29,4 @@
             <button type="submit" class="btn btn-primary">update</button>
         </form>
     </div>
-<%- include('../layout/customer/footer.ejs') %>
+<%- include('./layout/footer.ejs') %>

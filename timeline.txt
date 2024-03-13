@@ -9,3 +9,8 @@ March 10 2024:
 
 March 11 2024:
 	- Profile editing working except password
+
+March 13 2024:
+	- Password can be update in profile page
+	- Admin where it can add restaurants
+	- Restaurant-side where it can add its own product
