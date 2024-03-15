@@ -21,7 +21,7 @@ March 14 2024
 March 15 2024:
 	- Finally fixed it
 	- The admin can now update and delete the restaurant
-	- Show the list of restaurants
+	- Show the list of restaurants on admin-side
 
 March 16 2024:
 	- The restaurants from admin that was been create has account on its restaurant-side
