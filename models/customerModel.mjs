@@ -34,14 +34,4 @@ const customerSchema = new Schema({
   }
 });
 
-// customerSchema.pre('save', (next) => {
-//   console.log('Before saving to database:', this);
-//   next();
-// });
-
-// customerSchema.post('save', (doc, next) => {
-//   console.log('After saving to database:', doc);
-//   next();
-// });
-
 export default mongoose.model("Customer", customerSchema);

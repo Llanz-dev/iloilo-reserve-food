@@ -15,4 +15,15 @@ March 13 2024:
 	- Admin where it can add restaurants
 
 March 14 2024
-	- Restaurant-side where it can add its own product
+	- Stuck on "Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client"
+	- The problem is on "app.get('*', checkUser);"
+
+March 15 2024:
+	- Finally fixed it
+	- The admin can now update and delete the restaurant
+	- Show the list of restaurants
+
+March 16 2024:
+	- The restaurants from admin that was been create has account on its restaurant-side
+	- Show the list of restaurants on client-side
+	- The restaurant can log in and add its own product

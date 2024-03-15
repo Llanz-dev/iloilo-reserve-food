@@ -1,57 +1,120 @@
-import { hashPassword, handleErrors } from '../utils/helpers.mjs';
+import { hashPassword } from '../utils/helpers.mjs';
 import Restaurant from '../models/restaurantModel.mjs';
-import Sample from '../models/sampleModel.mjs';
+import Customer from '../models/customerModel.mjs';
 
-const GETAdminPage = (req, res) => {
+// Admin Page
+const GETAdminPage = async (req, res) => {
+  try {
     const pageTitle = 'Administrator';
-    res.render('admin/home', { pageTitle });
-}
-
-const GETRestaurantRegistration = (req, res) => {
-    const pageTitle = 'Restaurant registration';
-    res.render('admin/restaurant-registration', { pageTitle });
-}
-
-const POSTRestaurantRegistration = async (req, res) => {
-    try {
-        const { name, email, password, reEnterPassword, phone, address } = req.body;
-
-        // Check if the restaurant name is already registered
-        const existingName = await Restaurant.findOne({ name });
-        if (existingName) {
-            return res.status(400).json({ error: `${name} already registered` });
-        }
-
-        // Check if the restaurant email is already registered
-        const existingEmail = await Restaurant.findOne({ email });
-        if (existingEmail) {
-            return res.status(400).json({ error: `${email} already registered` });
-        }
-
-        // Check if passwords match
-        if (password !== reEnterPassword) {
-            throw new Error('Passwords do not match');
-        }
-
-        // Hash password
-        const hashedPassword = await hashPassword(password);
-
-        // Create a new restaurant document  
-        const restaurant = await Restaurant.create({ name, email, password: hashedPassword, phone, address });
-
-        res.status(201).json({ message: 'Restaurant registered successfully', restaurant });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+    const restaurants = await Restaurant.find({});
+    console.log(restaurants);
+    res.render('admin/home', { pageTitle, restaurants });
+  } catch (err) {
+    res.status(500).json({ msg: err });
+  }
 };
 
-const POSTSample = async (req, res) => {
-    try {
-        const sample = await Sample.create(req.body);
-        res.status(200).json(sample);
-    } catch (err) {
-        res.status(500).json( err );
-    }
+// Add Restaurant Page
+const GETAddRestaurant = (req, res) => {
+  const pageTitle = 'Restaurant registration';
+  res.render('admin/restaurant-registration', { pageTitle });
 }
 
-export { GETAdminPage, GETRestaurantRegistration, POSTRestaurantRegistration, POSTSample };
+// Add Restaurant Function
+const POSTAddRestaurant = async (req, res) => {
+  try {
+    const { name, email, password, reEnterPassword, phone, address } = req.body;
+
+    // Check if the restaurant name is already registered
+    const existingName = await Restaurant.findOne({ name });
+    if (existingName) {
+      return res.status(400).json({ error: `${name} already registered` });
+    }
+
+    // Check if the restaurant email is already registered
+    const existingEmail = await Restaurant.findOne({ email });
+    if (existingEmail) {
+      return res.status(400).json({ error: `${email} already registered` });
+    }
+
+    // Check if passwords match
+    if (password !== reEnterPassword) {
+      throw new Error('Passwords do not match');
+    }
+
+    // Hash password
+    const hashedPassword = await hashPassword(password);
+
+    // Create a new restaurant document  
+    const restaurant = await Restaurant.create({ name, email, password: hashedPassword, phone, address });
+    console.log('Restaurant registered successfully', restaurant);
+    res.redirect('/adminux');
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Update Restaurant Page
+const GETUpdateRestaurant = async (req, res) => {
+  try {
+    const pageTitle = 'Update restaurant';
+    const restaurantId = req.params.id;
+    const restaurant = await Restaurant.findById(restaurantId);
+
+    if (!restaurant) {
+      return res.status(404).json({ msg: 'Restaurant not found' });
+    }
+
+    res.render('admin/update-restaurant', { pageTitle, restaurant });
+  } catch (err) {
+    res.status(500).json({ msg: err });
+  }
+};
+
+// Update Restaurant Function
+const POSTUpdateRestaurant = async (req, res) => {
+  console.log('POSTUpdateRestaurant');
+  try {
+    const restaurantId = req.params.id;
+    const updatedData = req.body;
+
+    // Check if the password field is empty
+    if (updatedData.password === '') {
+      // Remove the password field from the updatedData object
+      delete updatedData.password;
+    }
+
+    const updatedRestaurant = await Restaurant.findByIdAndUpdate(
+      restaurantId,
+      updatedData,
+      { new: true }
+    );
+
+    if (!updatedRestaurant) {
+      return res.status(404).json({ msg: 'Restaurant not found' });
+    }
+
+    res.redirect('/adminux');
+  } catch (err) {
+    res.status(500).json({ msg: err });
+  }
+};
+
+// Delete Restaurant function
+const DELETERestaurant = async (req, res) => {
+  console.log('DELETERestaurant');
+  try {
+    const restaurantId = req.params.id;
+    const deletedRestaurant = await Restaurant.findByIdAndDelete(restaurantId);
+
+    if (!deletedRestaurant) {
+      return res.status(404).json({ msg: 'Restaurant not found' });
+    }
+
+    res.json('successfully deleted');
+  } catch (err) {
+    res.status(500).json({ msg: err });
+  }
+};
+
+export { GETAdminPage, GETAddRestaurant, POSTAddRestaurant, GETUpdateRestaurant, POSTUpdateRestaurant, DELETERestaurant };

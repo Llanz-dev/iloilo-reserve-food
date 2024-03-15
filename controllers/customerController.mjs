@@ -1,9 +1,10 @@
 import Customer from '../models/customerModel.mjs';
+import Restaurant from '../models/restaurantModel.mjs';
 import { hashPassword, comparePassword, handleErrors, toTitleCase, createToken, fourtyEightHours } from '../utils/helpers.mjs';
 
 const GETLoginPage = (req, res) => {
-  const pageTitle = 'login';
-  res.render('customer/login', { pageTitle });
+    const pageTitle = 'login';
+    res.render('customer/login', { pageTitle });
 }
 
 const POSTLoginPage = async (req, res) => {

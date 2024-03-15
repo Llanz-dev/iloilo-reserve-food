@@ -1,3 +1,38 @@
 <%- include('.././header.ejs') %>
 <h1>Administrator</h1>
+<a href="/adminux/restaurant-registration" type="button" class="btn btn-primary text-decoration-none">Restaurant registration</a>
+
+<% if (restaurants.length) { %>
+  <h2>Restaurant List: <%= restaurants.length %></h2> 
+<% } else { %>
+  <h2>No restaurant</h2> 
+<% } %>
+
+<table class="table table-striped table-bordered table-hover">
+  <thead class="table-dark">
+    <tr>
+      <th>Name</th>
+      <th>Address</th>
+      <th>Phone</th>
+      <th>Actions</th>
+      <!-- Add other properties of the Restaurant model as needed -->
+    </tr>
+  </thead>
+  <tbody>
+    <% restaurants.forEach(restaurant => { %>
+      <tr>
+        <td><%= restaurant.name %></td>
+        <td><%= restaurant.address %></td>
+        <td><%= restaurant.phone %></td>
+        <td>
+          <a href="/adminux/update-restaurant/<%= restaurant._id %>" class="btn btn-sm btn-primary">Update</a>
+          <button class="btn btn-sm btn-danger" onclick="deleteRestaurant('<%= restaurant._id %>')">Delete</button>
+        </td>
+        <!-- Display other properties of the Restaurant model as needed -->
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<script src="/js/admin/home.js"></script>            
 <%- include('.././footer.ejs') %>
