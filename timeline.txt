@@ -25,5 +25,8 @@ March 15 2024:
 
 March 16 2024:
 	- The restaurants from admin that was been create has account on its restaurant-side
+	- The restaurant can log in
+
+March 17 2024:
 	- Show the list of restaurants on client-side
-	- The restaurant can log in and add its own product
+	- The restaurant can add its own product

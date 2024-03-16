@@ -1,5 +1,4 @@
 import Customer from '../models/customerModel.mjs';
-import Restaurant from '../models/restaurantModel.mjs';
 import { hashPassword, comparePassword, handleErrors, toTitleCase, createToken, fourtyEightHours } from '../utils/helpers.mjs';
 
 const GETLoginPage = (req, res) => {
@@ -72,7 +71,7 @@ const POSTRegisterPage = async (req, res) => {
   }
 }
 
-const GETProfilePage = async (req, res) => {
+const GETProfilePage = (req, res) => {
   const pageTitle = 'profile';
   res.render('customer/profile', { pageTitle });
 }

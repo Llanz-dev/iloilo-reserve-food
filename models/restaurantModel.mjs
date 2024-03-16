@@ -2,6 +2,13 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const restaurantSchema = new Schema({
+    username: {
+        type: String,
+        required: true,
+        unique: true,
+        minLength: 5,
+        maxLength: 20
+    },
     name: {
         type: String,
         required: true,

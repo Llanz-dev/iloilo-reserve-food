@@ -3,9 +3,10 @@ import { connectDB } from '../config/database.mjs';
 import customerRoutes from '../routes/customerRoutes.mjs';
 import homeRoutes from '../routes/homeRoutes.mjs'
 import adminRoutes from '../routes/adminRoutes.mjs'
+import restaurantRoutes from '../routes/restaurantRoutes.mjs'
 import cookieParser from 'cookie-parser';
 import 'dotenv/config';
-import { checkUser } from '../middleware/authenticationMiddleware.mjs';
+import { checkCustomer, checkRestaurant } from '../middleware/authenticationMiddleware.mjs';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -27,10 +28,12 @@ app.use('/bootstrapjs', express.static('node_modules/bootstrap/dist/js'));
 connectDB();
 
 // check user
-app.get('*', checkUser);
+app.get('*', checkCustomer);
 // set routes
 app.use('/', homeRoutes);
 app.use(customerRoutes);
+app.get('*', checkRestaurant);
+app.use('/restaurant', restaurantRoutes);
 app.use('/adminux', adminRoutes);
 
 

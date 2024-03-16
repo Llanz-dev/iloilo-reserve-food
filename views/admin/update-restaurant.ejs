@@ -3,6 +3,11 @@
 
   <form action="/adminux/update-restaurant/<%= restaurant._id %>" method="post">
     <div class="form-group">
+      <label for="username">Username</label>
+      <input type="text" class="form-control" id="username" name="username" value="<%= restaurant.username %>" required
+        minlength="5" maxlength="40">
+    </div>
+    <div class="form-group">
       <label for="name">Name</label>
       <input type="text" class="form-control" id="name" name="name" value="<%= restaurant.name %>" required
         minlength="5" maxlength="40">

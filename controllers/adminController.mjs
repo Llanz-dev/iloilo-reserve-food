@@ -23,12 +23,12 @@ const GETAddRestaurant = (req, res) => {
 // Add Restaurant Function
 const POSTAddRestaurant = async (req, res) => {
   try {
-    const { name, email, password, reEnterPassword, phone, address } = req.body;
+    const { username, name, email, password, reEnterPassword, phone, address } = req.body;
 
     // Check if the restaurant name is already registered
-    const existingName = await Restaurant.findOne({ name });
-    if (existingName) {
-      return res.status(400).json({ error: `${name} already registered` });
+    const existingUsername = await Restaurant.findOne({ username });
+    if (existingUsername) {
+      return res.status(400).json({ error: `${username} already registered` });
     }
 
     // Check if the restaurant email is already registered
@@ -46,7 +46,7 @@ const POSTAddRestaurant = async (req, res) => {
     const hashedPassword = await hashPassword(password);
 
     // Create a new restaurant document  
-    const restaurant = await Restaurant.create({ name, email, password: hashedPassword, phone, address });
+    const restaurant = await Restaurant.create({ username, name, email, password: hashedPassword, phone, address });
     console.log('Restaurant registered successfully', restaurant);
     res.redirect('/adminux');
   } catch (err) {
@@ -73,7 +73,6 @@ const GETUpdateRestaurant = async (req, res) => {
 
 // Update Restaurant Function
 const POSTUpdateRestaurant = async (req, res) => {
-  console.log('POSTUpdateRestaurant');
   try {
     const restaurantId = req.params.id;
     const updatedData = req.body;
