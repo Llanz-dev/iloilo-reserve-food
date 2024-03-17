@@ -2,12 +2,14 @@ import Restaurant from '../models/restaurantModel.mjs';
 import { hashPassword, comparePassword, handleErrors, toTitleCase, createToken, fourtyEightHours } from '../utils/helpers.mjs';
 
 const GETrestaurantLogin = async (req, res) => {
-    res.send('GETrestaurantLogin');
+    const pageTitle = 'Restaurant';
+    res.render('restaurant/login', { pageTitle });
 };
 
-const POSTrestaurantLogin = async (req, res) => {
+const POSTRestaurantLogin = async (req, res) => {
     try {
         // Get restaurant
+        console.log('req.body.username:', req.body.username);
         const restaurant = await Restaurant.findOne({ username: req.body.username });
         // Check if restaurant exists
         if (!restaurant) {
@@ -35,8 +37,21 @@ const POSTrestaurantLogin = async (req, res) => {
     }
 };
 
-const GETRestaurantDashboard = async (req, res) => {
-    res.send('GETRestaurantDashboard zzzzzzzzzz');
+const GETRestaurantDashboard = (req, res) => {
+    const pageTitle = 'Dashboard';
+    res.render('restaurant/dashboard', { pageTitle });
 };
 
-export { GETrestaurantLogin, POSTrestaurantLogin, GETRestaurantDashboard };
+const GETProfileDashboard = async (req, res) => {
+    const pageTitle = 'Profile';
+    res.render('restaurant/profile', { pageTitle });
+}
+
+const GETRestaurantLogout = (req, res) => {
+    // Clear the restaurantToken cookie
+    res.clearCookie('restaurantToken');
+    // Redirect the restaurant admin to the login page or any other appropriate page
+    res.redirect('/restaurant');
+};
+
+export { GETrestaurantLogin, POSTRestaurantLogin, GETRestaurantDashboard, GETProfileDashboard, GETRestaurantLogout };

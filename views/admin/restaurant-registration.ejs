@@ -1,45 +1,51 @@
 <%- include('.././header.ejs') %>
-    <div class="form-container">
-        <h1>Restaurant registration</h1>
-        <h3>Enter restaurant info</h3>
-        <form action="/adminux/restaurant-registration" method="post" id="registration-restaurant-form">          
+
+<div class="container">
+  <div class="row justify-content-center mt-5">
+    <div class="col-md-8">
+      <div class="card bg-black text-white">
+        <div class="card-body">
+          <h1 class="card-title text-center mb-4">Restaurant Registration</h1>
+          <form action="/adminux/restaurant-registration" method="post" id="registration-restaurant-form" enctype="multipart/form-data">
             <div class="mb-3">
-                <p class="error-field" id="error-name"></p>
-                <label for="username" class="form-label">Username</label>
-                <input type="text" class="form-control" id="username" placeholder="Enter username" name="username">
+              <label for="username" class="form-label">Username</label>
+              <input type="text" class="form-control" id="username" placeholder="Enter username" name="username" required>
             </div>
             <div class="mb-3">
-                <p class="error-field" id="error-name"></p>
-                <label for="name" class="form-label">Name</label>
-                <input type="text" class="form-control" id="name" placeholder="Enter name" name="name">
+              <label for="name" class="form-label">Name</label>
+              <input type="text" class="form-control" id="name" placeholder="Enter name" name="name" required>
             </div>
             <div class="mb-3">
-                <p class="error-field" id="error-email"></p>
-                <label for="email" class="form-label">Email</label>
-                <input type="text" class="form-control" id="email" placeholder="Enter email" name="email">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" placeholder="Enter email" name="email" required>
             </div>
             <div class="mb-3">
-                <p class="error-field" id="error-password"></p>
-                <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" placeholder="Enter password" name="password">
+              <label for="password" class="form-label">Password</label>
+              <input type="password" class="form-control" id="password" placeholder="Enter password" name="password" required>
             </div>
             <div class="mb-3">
-                <p class="error-field" id="error-password"></p>
-                <label for="reEnterPassword" class="form-label">Re enter password</label>
-                <input type="password" class="form-control" id="reEnterPassword" placeholder="Re enter password" name="reEnterPassword">
+              <label for="reEnterPassword" class="form-label">Re-enter Password</label>
+              <input type="password" class="form-control" id="reEnterPassword" placeholder="Re-enter password" name="reEnterPassword" required>
             </div>
             <div class="mb-3">
-                <p class="error-field" id="error-phone"></p>
-                <label for="phone" class="form-label">Phone</label>
-                <input type="number" class="form-control" id="phone" placeholder="Enter phone" name="phone">
+              <label for="phone" class="form-label">Phone</label>
+              <input type="tel" class="form-control" id="phone" placeholder="Enter phone" name="phone" required>
             </div>
             <div class="mb-3">
-                <p class="error-field" id="error-address"></p>
-                <label for="address" class="form-label">Address</label>
-                <input type="text" class="form-control" id="address" placeholder="Enter address" name="address">
+              <label for="address" class="form-label">Address</label>
+              <input type="text" class="form-control" id="address" placeholder="Enter address" name="address" required>
             </div>
-            <button type="submit" class="btn btn-primary">register</button>
-        </form>
+            <div class="mb-3">
+              <label for="image" class="form-label">Picture</label>
+              <input type="file" class="form-control" id="picture" name="image" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Register</button>
+          </form>
+          <a href="/adminux" class="btn btn-warning w-100 mt-3">Back</a>
+        </div>
+      </div>
     </div>
-    <a href="/adminux" type="button" class="btn btn-warning text-decoration-none">Back</a>  
+  </div>
+</div>
+
 <%- include('.././footer.ejs') %>

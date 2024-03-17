@@ -1,6 +1,7 @@
 import { hashPassword } from '../utils/helpers.mjs';
 import Restaurant from '../models/restaurantModel.mjs';
 import Customer from '../models/customerModel.mjs';
+import fs from 'fs';
 
 // Admin Page
 const GETAdminPage = async (req, res) => {
@@ -24,7 +25,7 @@ const GETAddRestaurant = (req, res) => {
 const POSTAddRestaurant = async (req, res) => {
   try {
     const { username, name, email, password, reEnterPassword, phone, address } = req.body;
-
+    const image = req.file.filename; // Get the filename of the uploaded image
     // Check if the restaurant name is already registered
     const existingUsername = await Restaurant.findOne({ username });
     if (existingUsername) {
@@ -46,7 +47,7 @@ const POSTAddRestaurant = async (req, res) => {
     const hashedPassword = await hashPassword(password);
 
     // Create a new restaurant document  
-    const restaurant = await Restaurant.create({ username, name, email, password: hashedPassword, phone, address });
+    const restaurant = await Restaurant.create({ username, name, email, password: hashedPassword, phone, address, image });
     console.log('Restaurant registered successfully', restaurant);
     res.redirect('/adminux');
   } catch (err) {
@@ -72,6 +73,34 @@ const GETUpdateRestaurant = async (req, res) => {
 };
 
 // Update Restaurant Function
+// const POSTUpdateRestaurant = async (req, res) => {
+//   try {
+//     const restaurantId = req.params.id;
+//     const updatedData = req.body;
+
+//     // Check if the password field is empty
+//     if (updatedData.password === '') {
+//       // Remove the password field from the updatedData object
+//       delete updatedData.password;
+//     }
+
+//     const updatedRestaurant = await Restaurant.findByIdAndUpdate(
+//       restaurantId,
+//       updatedData,
+//       { new: true }
+//     );
+
+//     if (!updatedRestaurant) {
+//       return res.status(404).json({ msg: 'Restaurant not found' });
+//     }
+
+//     res.redirect('/adminux');
+//   } catch (err) {
+//     res.status(500).json({ msg: err });
+//   }
+// };
+
+
 const POSTUpdateRestaurant = async (req, res) => {
   try {
     const restaurantId = req.params.id;
@@ -81,6 +110,17 @@ const POSTUpdateRestaurant = async (req, res) => {
     if (updatedData.password === '') {
       // Remove the password field from the updatedData object
       delete updatedData.password;
+    }
+
+    // Check if image deletion is requested
+    if (updatedData.deleteImage === 'true') {
+      const restaurant = await Restaurant.findById(restaurantId);
+      if (restaurant && restaurant.image) {
+        // Delete the image file from the file system
+        fs.unlinkSync(`./public/images/restaurant/banner/${restaurant.image}`);
+        // Update the restaurant document to remove the image field
+        updatedData.image = '';
+      }
     }
 
     const updatedRestaurant = await Restaurant.findByIdAndUpdate(

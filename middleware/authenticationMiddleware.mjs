@@ -15,6 +15,7 @@ const requireAuthentication = (req, res, next) => {
 
 const requireAuthenticationRestaurant = (req, res, next) => {
     const token = req.cookies.restaurantToken;
+    console.log('token resto:', token);
     if (!token) return res.redirect('/restaurant');
 
     jwt.verify(token, 'token secret code', (err, decodedToken) => {

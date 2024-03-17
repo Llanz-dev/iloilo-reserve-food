@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="/styles/main.css">
     <% if (pageTitle === 'register' || pageTitle === 'login') { %>
       <link rel="stylesheet" href="/styles/customer/customer.css">
+    <% } else if (pageTitle === 'Restaurant Profile') { %>
+      <link rel="stylesheet" href="/styles/restaurant/profile.css">
     <% } %>
     <title><%= pageTitle %></title>
 </head>
