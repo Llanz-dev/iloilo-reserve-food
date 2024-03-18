@@ -38,20 +38,18 @@
       <input type="text" class="form-control" id="address" name="address" value="<%= restaurant.address %>" required>
     </div>
 
-    <!-- Add more form fields for other properties -->
-      <!-- Option to delete the existing image -->
-  <div class="form-group">
-    <label for="deleteImage">Delete Image</label>
-    <input type="checkbox" id="deleteImage" name="deleteImage" value="true">
-    <label for="deleteImage">Check this box to delete the existing image</label>
-  </div>
+    <!-- Display existing image -->
+    <div class="form-group" id="existingImageContainer">
+      <label>Existing Image</label>
+      <img src="/images/restaurant/banner/<%= restaurant.image %>" alt="Existing Image" id="existingImage" class="w-25">
+    </div>
 
-  <!-- Option to upload a new image -->
-  <div class="form-group">
-    <label for="image">Upload New Image</label>
-    <input type="file" class="form-control" id="image" name="image">
-  </div>
-  <img src="/images/restaurant/banner/<%= restaurant.image %>" alt="">
+    <!-- Option to upload a new image -->
+    <div class="form-group">
+      <label for="image">Upload New Image</label>
+      <input type="file" class="form-control" id="image" name="image">
+    </div>
+    <input type="hidden" name="old_restaurant_banner_image" value="<%= restaurant.image %>">
 
     <button type="submit" class="btn btn-primary" onclick="updateRestaurant('<%= restaurant._id %>')">Update Restaurant</button>
   </form>

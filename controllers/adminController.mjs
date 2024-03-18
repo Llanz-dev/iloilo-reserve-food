@@ -8,7 +8,6 @@ const GETAdminPage = async (req, res) => {
   try {
     const pageTitle = 'Administrator';
     const restaurants = await Restaurant.find({});
-    console.log(restaurants);
     res.render('admin/home', { pageTitle, restaurants });
   } catch (err) {
     res.status(500).json({ msg: err });
@@ -18,7 +17,7 @@ const GETAdminPage = async (req, res) => {
 // Add Restaurant Page
 const GETAddRestaurant = (req, res) => {
   const pageTitle = 'Restaurant registration';
-  res.render('admin/restaurant-registration', { pageTitle });
+  res.render('admin/add-restaurant', { pageTitle });
 }
 
 // Add Restaurant Function
@@ -58,7 +57,7 @@ const POSTAddRestaurant = async (req, res) => {
 // Update Restaurant Page
 const GETUpdateRestaurant = async (req, res) => {
   try {
-    const pageTitle = 'Update restaurant';
+    const pageTitle = 'Admin Update Restaurant';
     const restaurantId = req.params.id;
     const restaurant = await Restaurant.findById(restaurantId);
 
@@ -72,55 +71,20 @@ const GETUpdateRestaurant = async (req, res) => {
   }
 };
 
-// Update Restaurant Function
-// const POSTUpdateRestaurant = async (req, res) => {
-//   try {
-//     const restaurantId = req.params.id;
-//     const updatedData = req.body;
-
-//     // Check if the password field is empty
-//     if (updatedData.password === '') {
-//       // Remove the password field from the updatedData object
-//       delete updatedData.password;
-//     }
-
-//     const updatedRestaurant = await Restaurant.findByIdAndUpdate(
-//       restaurantId,
-//       updatedData,
-//       { new: true }
-//     );
-
-//     if (!updatedRestaurant) {
-//       return res.status(404).json({ msg: 'Restaurant not found' });
-//     }
-
-//     res.redirect('/adminux');
-//   } catch (err) {
-//     res.status(500).json({ msg: err });
-//   }
-// };
-
-
+// Update restaurant
 const POSTUpdateRestaurant = async (req, res) => {
   try {
     const restaurantId = req.params.id;
     const updatedData = req.body;
 
-    // Check if the password field is empty
-    if (updatedData.password === '') {
-      // Remove the password field from the updatedData object
-      delete updatedData.password;
-    }
-
-    // Check if image deletion is requested
-    if (updatedData.deleteImage === 'true') {
-      const restaurant = await Restaurant.findById(restaurantId);
-      if (restaurant && restaurant.image) {
-        // Delete the image file from the file system
-        fs.unlinkSync(`./public/images/restaurant/banner/${restaurant.image}`);
-        // Update the restaurant document to remove the image field
-        updatedData.image = '';
-      }
+    if (req.file) {
+        updatedData.image = req.file.filename;
+        fs.unlink('./public/images/restaurant/banner/' + req.body.old_restaurant_banner_image, (err) => {
+            if (err) throw err;
+            console.log('./public/images/restaurant/banner/' + req.body.old_restaurant_banner_image);
+        });
+    } else {
+        updatedData.image = req.body.old_restaurant_banner_image;
     }
 
     const updatedRestaurant = await Restaurant.findByIdAndUpdate(

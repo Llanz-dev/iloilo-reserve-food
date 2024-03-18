@@ -15,7 +15,6 @@ const requireAuthentication = (req, res, next) => {
 
 const requireAuthenticationRestaurant = (req, res, next) => {
     const token = req.cookies.restaurantToken;
-    console.log('token resto:', token);
     if (!token) return res.redirect('/restaurant');
 
     jwt.verify(token, 'token secret code', (err, decodedToken) => {
@@ -39,10 +38,9 @@ const checkCustomer = (req, res, next) => {
                 try {
                     let customer = await Customer.findById(decodedToken.id);
                     res.locals.customer = customer;
-                    console.log('res.locals.customer:', res.locals.customer);
                     next();
                 } catch (error) {
-                    console.error('Error finding customer:', error);
+                    console.error('Error checkCustomer:', error);
                     res.locals.customer = null;
                     next();
                 }
@@ -65,10 +63,9 @@ const checkRestaurant = (req, res, next) => {
                 try {
                     let restaurant = await Restaurant.findById(decodedToken.id);
                     res.locals.restaurant = restaurant;
-                    console.log('res.locals.restaurant:', res.locals.restaurant);
                     next();
                 } catch (error) {
-                    console.error('Error finding restaurant:', error);
+                    console.error('Error checkRestaurant():', error);
                     res.locals.restaurant = null;
                     next();
                 }

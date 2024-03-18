@@ -4,44 +4,23 @@
     <h2>Restaurants</h2>
     <div class="container">
         <div class="row">
-            <div class="col">
-                <a href="#1" class="card text-decoration-none" style="width: 18rem;">
-                    <img src="/images/restaurant/sample-image.jpg" class="card-img-top" alt="...">
-                    <div class="card-body">
-                        <h5 class="card-title">Cafe Riama</h5>
-                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+            <% restaurant.forEach(restaurant => { %>
+                <div class="col-md-4">
+                    <div class="card mb-4 shadow-sm">
+                        <img src="/images/restaurant/banner/<%= restaurant.image %>" class="card-img-top" alt="<%= restaurant.name %>">
+                        <div class="card-body">
+                            <h5 class="card-title"><%= restaurant.name %></h5>
+                            <p class="card-text"><%= restaurant.description %></p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <a href="/restaurants/<%= restaurant._id %>" class="btn btn-sm btn-outline-secondary">View</a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </a>
-            </div>
-            <div class="col">
-                      <a href="#2" class="card text-decoration-none" style="width: 18rem;">
-                    <img src="/images/restaurant/sample-image.jpg" class="card-img-top" alt="...">
-                    <div class="card-body">
-                        <h5 class="card-title">Tatoys Manokan</h5>
-                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                    </div>
-                </a>
-            </div>
-            <div class="col">
-                      <a href="#3" class="card text-decoration-none" style="width: 18rem;">
-                    <img src="/images/restaurant/sample-image.jpg" class="card-img-top" alt="...">
-                    <div class="card-body">
-                        <h5 class="card-title">Roberto's</h5>
-                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                    </div>
-                </a>
-            </div>
-            <div class="col">
-                      <a href="#4" class="card text-decoration-none" style="width: 18rem;">
-                    <img src="/images/restaurant/sample-image.jpg" class="card-img-top" alt="...">
-                    <div class="card-body">
-                        <h5 class="card-title">Netong's Original Special La Paz Batchoy</h5>
-                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                    </div>
-                </a>
-            </div>
+                </div>
+            <% }) %>
         </div>
     </div>
-    
     <script src="/js/customer/home.js"></script>            
 <%- include('.././footer.ejs') %>

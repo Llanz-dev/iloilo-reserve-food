@@ -9,7 +9,7 @@ router.get('/restaurant-registration', GETAddRestaurant);
 router.post('/restaurant-registration', uploadRestaurantBanner, POSTAddRestaurant);
 // Update Restaurant
 router.get('/update-restaurant/:id', GETUpdateRestaurant);
-router.post('/update-restaurant/:id', POSTUpdateRestaurant);
+router.post('/update-restaurant/:id', uploadRestaurantBanner, POSTUpdateRestaurant);
 
 // Delete Restaurant
 router.delete('/delete-restaurant/:id', DELETERestaurant);

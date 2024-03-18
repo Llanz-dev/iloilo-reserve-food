@@ -13,3 +13,4 @@ const updateRestaurant = async (restaurantId) => {
       console.error('An error occurred:', error);
     }
   };
+

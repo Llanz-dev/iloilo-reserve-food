@@ -28,9 +28,46 @@ March 16 2024:
 	- The restaurant can log in
 
 March 17 2024:
-	- The restaurant has banner image
+	- The restaurant has banner image using multer
 	- The restaurant can log out
 
 March 18 2024:
+	- The restaurant banner image is automatically update when delete or update
 	- Show the list of restaurants on client-side
+
+March 19 2024:	
 	- The restaurant can add its own product
+
+
+
+Here are some sample names for each category:
+
+Restaurant:
+
+The Hungry Hound
+Gourmet Grove
+Flavor Junction
+Savory Spot
+Culinary Corner
+
+Coffee:
+Brew Haven
+Java Junction
+Espresso Emporium
+Bean Bliss
+Caffeine Cove
+Burger:
+
+Burger Barn
+Patty Palace
+Grill House
+Burger Bistro
+Juicy Joint
+
+Japanese:
+
+Sushi Samurai
+Tokyo Terrace
+Ramen Republic
+Zen Zenith
+Sakura Savor
