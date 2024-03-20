@@ -35,7 +35,7 @@ March 18 2024:
 	- The restaurant banner image is automatically update when delete or update
 	- Show the list of restaurants on client-side
 
-March 19 2024:	
+March 20 2024:	
 	- The restaurant can add its own product
 
 
