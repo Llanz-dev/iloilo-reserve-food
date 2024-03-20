@@ -19,10 +19,16 @@ const requireAuthenticationRestaurant = (req, res, next) => {
 
     jwt.verify(token, 'token secret code', (err, decodedToken) => {
         if (err) return res.redirect('/restaurant');
-        
+
+        // Extract the restaurant ID from the decoded token 
+        const restaurantID = decodedToken.id;
+
+        // Attach the restaurant ID to the request object for further processing
+        req.restaurantID = restaurantID;
+
         next();
     });
-}
+};
 
 const checkCustomer = (req, res, next) => {
     const token = req.cookies.jwt;

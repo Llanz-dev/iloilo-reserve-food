@@ -1,0 +1,32 @@
+<%- include('.././header.ejs') %>
+<!-- Include the navbar from the layout -->
+<%- include('./layout/navbar.ejs') %>
+
+<h2>Products</h2>
+
+<div class="container">
+  <div class="row">
+    <% if (products.length > 0) { %>
+      <% products.forEach(product => { %>
+        <div class="col-md-4">
+          <div class="card mb-4">
+            <img src="<%= product.image %>" class="card-img-top" alt="Product Image">
+            <div class="card-body">
+              <h5 class="card-title"><%= product.name %></h5>
+              <p class="card-text"><%= product.description %></p>
+              <p class="card-text">Price: $<%= product.price %></p>
+              <!-- Add more product details as needed -->
+              <a href="/restaurant/products/delete/<%= product._id %>" class="btn btn-danger">Delete</a>
+              <h3><%= product._id %></h3>
+              <a href="/restaurant/products/<%= product._id %>" class="btn btn-warning">View</a>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    <% } else { %>
+      <p>No products available.</p>
+    <% } %>
+  </div>
+</div>
+
+<%- include('.././footer.ejs') %>

@@ -36,7 +36,7 @@ March 18 2024:
 	- Show the list of restaurants on client-side
 
 March 20 2024:	
-	- The restaurant can add its own product
+	- The restaurant can add its own product without image
 
 
 

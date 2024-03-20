@@ -1,0 +1,35 @@
+<%- include('.././header.ejs') %>
+<%- include('./layout/navbar.ejs') %>
+
+<h1>Update Product</h1>
+
+<form action="/restaurant/update-product" method="post">
+  <div class="form-group">
+    <label for="name">Name</label>
+    <input type="text" class="form-control" id="name" name="name" value="<%= product.name %>" required>
+  </div>
+  <div class="form-group">
+    <label for="description">Description</label>
+    <input type="text" class="form-control" id="description" name="description" value="<%= product.description %>" required>
+  </div>
+  <div class="form-group">
+    <label for="price">Price</label>
+    <input type="number" class="form-control" id="price" name="price" value="<%= product.price %>" required>
+  </div>
+  <div class="form-group">
+    <label for="category">Category</label>
+    <input type="text" class="form-control" id="category" name="category" value="<%= product.category %>" required>
+  </div>
+  <div class="form-group">
+    <label for="image" class="form-label">Banner</label>
+    <input type="file" class="form-control" id="image" name="image" required>
+  </div>
+  <!-- Display existing image -->
+  <div class="form-group" id="existingImageContainer">
+    <label>Existing Image</label>
+    <img src="/images/restaurant/product/<%= restaurant.image %>" alt="Existing Image" id="existingImage" class="w-25">
+  </div>
+  <button type="submit" class="btn btn-primary">Add Product</button>
+</form>
+
+<%- include('.././footer.ejs') %>
