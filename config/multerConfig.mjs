@@ -1,9 +1,19 @@
 import multer from 'multer';
+import fs from 'fs';
 
 // Set up multer storage
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, './public/images/restaurant/banner');
+        // Get the restaurant name from the request body
+        const restaurantName = req.body.name.toLowerCase().replace(/\s/g, ''); 
+        const destinationPath = `./public/images/restaurant/${restaurantName}/banner`;
+
+        // Check if the directory exists, if not, create it
+        if (!fs.existsSync(destinationPath)) {
+            fs.mkdirSync(destinationPath, { recursive: true });
+        }
+
+        cb(null, destinationPath);
     },
     filename: function (req, file, cb) {
       cb(null, file.originalname);

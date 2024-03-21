@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import fs from 'fs-extra';
 
 const hashPassword = async (password) => {
   const saltRounds = 10;
@@ -30,7 +31,7 @@ const handleErrors = (err) => {
   if (err.message === 'Incorrect password') {
     errors.password = 'Password is incorrect. Please try again.';
   }
-  
+
   // If the username duplicate
   if (err.code === 11000) {
     errors.username = `${err.keyValue["username"]} username is already exists`;
@@ -59,6 +60,12 @@ const toTitleCase = (getUsername, getFullname) => {
   return usernameAndFullname;
 };
 
+// To format a text to all lowercase
+// Example a customer input username: 'The Hungry Hound' format into -> 'thehungryhound'
+const lowerCase = (field) => {
+  return field.toLowerCase().replace(/\s/g, '');
+}
+
 const fourtyEightHours = 1 * 24 * 60 * 60;
 const createToken = (id) => {
   return jwt.sign({ id }, 'token secret code', {
@@ -66,4 +73,20 @@ const createToken = (id) => {
   });
 }
 
-export { hashPassword,comparePassword,handleErrors,toTitleCase, fourtyEightHours, createToken };
+const renameDirectory = async (currPath, newPath) => {
+  try {
+    // Check if the source directory exists
+    const exists = await fs.pathExists(currPath);
+    if (exists) {
+      // Rename the directory
+      await fs.rename(currPath, newPath);
+      console.log('Successfully renamed the directory.');
+    } else {
+      console.log('Source directory does not exist:', currPath);
+    }
+  } catch (err) {
+    console.error('Error renaming directory:', err);
+  }
+};
+
+export { hashPassword, comparePassword, handleErrors, toTitleCase, fourtyEightHours, createToken, lowerCase, renameDirectory };

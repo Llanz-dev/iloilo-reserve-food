@@ -76,6 +76,7 @@ const GETRestaurantDashboard = (req, res) => {
     const pageTitle = 'Dashboard';
     res.render('restaurant/dashboard', { pageTitle });
 };
+
 const GETProfileDashboard = async (req, res) => {
     const pageTitle = 'Profile';
     res.render('restaurant/profile', { pageTitle });
@@ -110,6 +111,22 @@ const POSTAddProduct = async (req, res) => {
     }
 };
 
+// Delete Restaurant
+const DELETEProduct = async (req, res) => {
+    console.log('DELETEProduct');
+    try {
+      const productId = req.params.id;
+      const deleteProduct = await Product.findByIdAndDelete(productId);
+  
+      if (!deleteProduct) {
+        return res.status(404).json({ msg: 'Product not found' });
+      }
+  
+      res.json('successfully deleted');
+    } catch (err) {
+      res.status(500).json({ msg: err });
+    }
+  };
 
 const GETRestaurantLogout = (req, res) => {
     // Clear the restaurantToken cookie
@@ -119,4 +136,4 @@ const GETRestaurantLogout = (req, res) => {
 };
 
 
-export { GETrestaurantLogin, POSTRestaurantLogin, GETRestaurantDashboard, GETProfileDashboard, GETAddProduct, POSTAddProduct, GETProducts, GETProduct, GETRestaurantLogout };
+export { GETrestaurantLogin, POSTRestaurantLogin, GETRestaurantDashboard, GETProfileDashboard, GETAddProduct, POSTAddProduct, GETProducts, GETProduct, DELETEProduct, GETRestaurantLogout };

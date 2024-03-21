@@ -16,6 +16,9 @@ const restaurantSchema = new Schema({
         minLength: 5,
         maxLength: 40
     },
+    lowername: {
+        type: String,
+    },
     email: {
         type: String,
         required: true,

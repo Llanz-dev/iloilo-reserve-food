@@ -1,7 +1,8 @@
-import { hashPassword } from '../utils/helpers.mjs';
+import { hashPassword, lowerCase } from '../utils/helpers.mjs';
 import Restaurant from '../models/restaurantModel.mjs';
 import Customer from '../models/customerModel.mjs';
-import fs from 'fs';
+import { renameDirectory } from '../utils/helpers.mjs';
+import fs from 'fs-extra';
 
 // Admin Page
 const GETAdminPage = async (req, res) => {
@@ -25,6 +26,7 @@ const POSTAddRestaurant = async (req, res) => {
   try {
     const { username, name, email, password, reEnterPassword, phone, address } = req.body;
     const image = req.file.filename; // Get the filename of the uploaded image
+
     // Check if the restaurant name is already registered
     const existingUsername = await Restaurant.findOne({ username });
     if (existingUsername) {
@@ -46,7 +48,7 @@ const POSTAddRestaurant = async (req, res) => {
     const hashedPassword = await hashPassword(password);
 
     // Create a new restaurant document  
-    const restaurant = await Restaurant.create({ username, name, email, password: hashedPassword, phone, address, image });
+    const restaurant = await Restaurant.create({ username, name, lowername: lowerCase(req.body.name), email, password: hashedPassword, phone, address, image });
     console.log('Restaurant registered successfully', restaurant);
     res.redirect('/adminux');
   } catch (err) {
@@ -58,8 +60,8 @@ const POSTAddRestaurant = async (req, res) => {
 const GETUpdateRestaurant = async (req, res) => {
   try {
     const pageTitle = 'Admin Update Restaurant';
-    const restaurantId = req.params.id;
-    const restaurant = await Restaurant.findById(restaurantId);
+    const restaurantID = req.params.id;
+    const restaurant = await Restaurant.findById(restaurantID);
 
     if (!restaurant) {
       return res.status(404).json({ msg: 'Restaurant not found' });
@@ -71,24 +73,49 @@ const GETUpdateRestaurant = async (req, res) => {
   }
 };
 
-// Update restaurant
+// Update Restaurant
 const POSTUpdateRestaurant = async (req, res) => {
   try {
-    const restaurantId = req.params.id;
+    const restaurantID = req.params.id;
     const updatedData = req.body;
+    const restaurant = await Restaurant.findById(restaurantID);
+    console.log('----------------------');
+    console.log('updatedData.name:', req.body.name !== restaurant.name);
+    console.log('Compare:', req.body.name, restaurant.name);
+
+    // If the name of the restaurant has been updated, update the lowername field and rename the directory
+    if (updatedData.name && restaurant.name && updatedData.name !== restaurant.name) {
+      console.log('bodyname change');
+      updatedData.lowername = req.body.name.toLowerCase();
+      const currPath = `./public/images/restaurant/${restaurant.lowername}/banner/`;
+      const newPath = `./public/images/restaurant/${updatedData.lowername}/banner/`;
+
+      // Call the function to rename the directory
+      await renameDirectory(currPath, newPath);
+    }
 
     if (req.file) {
         updatedData.image = req.file.filename;
-        fs.unlink('./public/images/restaurant/banner/' + req.body.old_restaurant_banner_image, (err) => {
+        fs.unlink(`./public/images/restaurant/${restaurant.lowername}/banner/` + req.body.old_restaurant_banner_image, (err) => {
             if (err) throw err;
-            console.log('./public/images/restaurant/banner/' + req.body.old_restaurant_banner_image);
+            console.log(`./public/images/restaurant/${restaurant.lowername}/banner/` + req.body.old_restaurant_banner_image);
         });
     } else {
         updatedData.image = req.body.old_restaurant_banner_image;
     }
 
+    if (updatedData.password !== updatedData.reEnterPassword) {
+        return res.status(400).json({ error: 'Passwords do not match' });
+    }
+
+    if (updatedData.password) {       
+        // Hash password
+        const hashedPassword = await hashPassword(updatedData.password);
+        updatedData.password = hashedPassword;
+    }
+
     const updatedRestaurant = await Restaurant.findByIdAndUpdate(
-      restaurantId,
+      restaurantID,
       updatedData,
       { new: true }
     );
@@ -103,16 +130,21 @@ const POSTUpdateRestaurant = async (req, res) => {
   }
 };
 
-// Delete Restaurant function
+// Delete Restaurant
 const DELETERestaurant = async (req, res) => {
   console.log('DELETERestaurant');
   try {
-    const restaurantId = req.params.id;
-    const deletedRestaurant = await Restaurant.findByIdAndDelete(restaurantId);
+    const restaurantID = req.params.id;
+    const restaurant = await Restaurant.findById(restaurantID);
 
-    if (!deletedRestaurant) {
+    if (!restaurant) {
       return res.status(404).json({ msg: 'Restaurant not found' });
     }
+    
+    // Delete the associated directory
+    await fs.remove(`./public/images/restaurant/${restaurant.lowername}`);
+
+    await Restaurant.findByIdAndDelete(restaurantID)
 
     res.json('successfully deleted');
   } catch (err) {
