@@ -1,7 +1,7 @@
 import { hashPassword, lowerCase } from '../utils/helpers.mjs';
 import Restaurant from '../models/restaurantModel.mjs';
 import Customer from '../models/customerModel.mjs';
-import { renameDirectory } from '../utils/helpers.mjs';
+import { renameAndDeleteOldFolder } from '../utils/helpers.mjs';
 import fs from 'fs-extra';
 
 // Admin Page
@@ -52,6 +52,7 @@ const POSTAddRestaurant = async (req, res) => {
     console.log('Restaurant registered successfully', restaurant);
     res.redirect('/adminux');
   } catch (err) {
+    console.log('POSTAddRestaurant:', err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -80,29 +81,28 @@ const POSTUpdateRestaurant = async (req, res) => {
     const updatedData = req.body;
     const restaurant = await Restaurant.findById(restaurantID);
     console.log('----------------------');
-    console.log('updatedData.name:', req.body.name !== restaurant.name);
-    console.log('Compare:', req.body.name, restaurant.name);
 
     // If the name of the restaurant has been updated, update the lowername field and rename the directory
     if (updatedData.name && restaurant.name && updatedData.name !== restaurant.name) {
       console.log('bodyname change');
-      updatedData.lowername = req.body.name.toLowerCase();
-      const currPath = `./public/images/restaurant/${restaurant.lowername}/banner/`;
-      const newPath = `./public/images/restaurant/${updatedData.lowername}/banner/`;
-
+      updatedData.lowername = lowerCase(req.body.name);
+      const currPath = `./public/images/restaurant/${restaurant.lowername}/banner`;
+      const newPath = `./public/images/restaurant/${updatedData.lowername}/banner`;
       // Call the function to rename the directory
-      await renameDirectory(currPath, newPath);
+      await renameAndDeleteOldFolder(currPath, newPath);
     }
-
+    console.log(req.file);
     if (req.file) {
         updatedData.image = req.file.filename;
+        console.log('Req file', req.body.old_restaurant_banner_image);
         fs.unlink(`./public/images/restaurant/${restaurant.lowername}/banner/` + req.body.old_restaurant_banner_image, (err) => {
             if (err) throw err;
-            console.log(`./public/images/restaurant/${restaurant.lowername}/banner/` + req.body.old_restaurant_banner_image);
+            console.log(`./public/images/restaurant/${restaurant.lowername}/banner/` + req.body.old_restaurant_banner_image, 'delete image success');
         });
     } else {
         updatedData.image = req.body.old_restaurant_banner_image;
     }
+    console.log('updatedData.image:', updatedData.image);
 
     if (updatedData.password !== updatedData.reEnterPassword) {
         return res.status(400).json({ error: 'Passwords do not match' });
@@ -124,8 +124,9 @@ const POSTUpdateRestaurant = async (req, res) => {
       return res.status(404).json({ msg: 'Restaurant not found' });
     }
 
-    res.redirect('/adminux');
+    res.json({ 'POSTUpdateRestaurant': `${restaurant.name} successfully update` });
   } catch (err) {
+    console.log(err);
     res.status(500).json({ msg: err });
   }
 };

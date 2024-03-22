@@ -42,13 +42,8 @@ March 21 2024:
 	- The restaurant model has a "lowername" field added to it to facilitate the dynamic creation of directories and accessing files within those directories
 	- Displaying images dynamically involves accessing them based on dynamic parameters or conditions rather than fixed paths or names
 
-Error renaming directory: [Error: ENOENT: no such file or directory, rename 'E:\oneExpress\iloilo-reserve-food\public\images\restaurant\caferiamaaaaa\banner' -> 'E:\oneExpress\iloilo-reserve-food\public\images\restaurant\cafe riama\banner'] {
-  errno: -4058,
-  code: 'ENOENT',
-  syscall: 'rename',
-  path: 'E:\\oneExpress\\iloilo-reserve-food\\public\\images\\restaurant\\caferiamaaaaa\\banner',
-  dest: 'E:\\oneExpress\\iloilo-reserve-food\\public\\images\\restaurant\\cafe riama\\banner'
-}
+March 22 2024:	
+	- When the admin updates the restaurant name to a new one, the function I've created will automatically delete the parent directory of the old restaurant name and replace it with the new restaurant name in the directory path, ensuring consistency throughout the project. For instance, "public/images/restaurant/<oldRestaurantName>/banner/" will become "public/images/restaurant/<newRestaurantName>/banner/".
 
 Here are some sample names for each category:
 Restaurant:
