@@ -43,9 +43,18 @@ March 21 2024:
 	- Displaying images dynamically involves accessing them based on dynamic parameters or conditions rather than fixed paths or names
 
 March 22 2024:	
-	- When the admin updates the restaurant name to a new one, the function I've created will automatically delete the parent directory of the old restaurant name and replace it with the new restaurant name in the directory path, ensuring consistency throughout the project. For instance, "public/images/restaurant/<oldRestaurantName>/banner/" will become "public/images/restaurant/<newRestaurantName>/banner/".
+	- When the administrator updates the restaurant name to a new one, the function I've created automatically deletes the parent directory of the old restaurant name and replaces it with the new restaurant name in the directory path. This ensures consistency throughout the project. For example, "public/images/restaurant/<oldRestaurantName>/banner/" will be replaced with "public/images/restaurant/<newRestaurantName>/banner/"
 
-Here are some sample names for each category:
+March 23 2024:	
+	- Fixing the bugs caused by the creation of a new directory each time an admin updates the name and banner image of a restaurant
+
+March 24 2024:	
+	- When a restaurant updates its name, the corresponding banner image directory is replaced with the new one, leading to space savings. For example, if the current path is '/burgerbarn/banner/burgersmash.jpg' and the administrator changes the restaurant's name and image to '/tokyoterrace/banner/tokyofood.png', this enhancement ensures a more upscale and space-efficient system.
+
+
+
+
+
 Restaurant:
 
 The Hungry Hound
