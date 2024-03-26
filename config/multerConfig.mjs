@@ -1,5 +1,7 @@
 import multer from 'multer';
 import fs from 'fs';
+import { lowerCase } from '../utils/helpers.mjs';
+import Restaurant from '../models/restaurantModel.mjs';
 
 // Set up multer storage
 const storage = multer.diskStorage({
@@ -32,4 +34,41 @@ const fileFilter = (req, file, cb) => {
 // Initialize multer
 const uploadRestaurantBanner = multer({ storage: storage, fileFilter: fileFilter }).single('image');;
 
-export default uploadRestaurantBanner;
+const storageProduct = multer.diskStorage({
+    destination: async function (req, file, cb) {
+        try {
+            // Get the restaurant ID from the request
+            const restaurantID = req.restaurantID;
+            console.log(req.restaurantID);
+
+            // Retrieve the restaurant details from the database
+            const restaurant = await Restaurant.findById(restaurantID);
+
+            if (!restaurant) {
+                throw new Error('Restaurant not found');
+            }
+
+            // Use the restaurant name for creating the directory path
+            const restaurantName = lowerCase(restaurant.name);
+            const destinationPath = `./public/images/restaurant/${restaurantName}/products`;
+
+            if (!fs.existsSync(destinationPath)) {
+                fs.mkdirSync(destinationPath, { recursive: true });
+            }
+
+            cb(null, destinationPath);
+        } catch (err) {
+            console.error('Error creating destination directory:', err);
+            cb(err);
+        }
+    }, 
+    filename: function (req, file, cb) {
+        // Generate a unique filename using timestamp and original filename
+        const uniqueFilename = Date.now() + '-' + file.originalname;
+        cb(null, uniqueFilename);
+    }
+});
+
+const uploadProductImage = multer({ storage: storageProduct, fileFilter: fileFilter }).single('image');;
+
+export { uploadRestaurantBanner, uploadProductImage } ;

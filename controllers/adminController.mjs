@@ -1,8 +1,8 @@
 import { hashPassword, lowerCase } from '../utils/helpers.mjs';
 import Restaurant from '../models/restaurantModel.mjs';
 import Customer from '../models/customerModel.mjs';
-import { renameAndDeleteOldFolder } from '../utils/helpers.mjs';
-import fs from 'fs-extra';
+import { renameAndDeleteOldFolder } from '../utils/fileUtils.mjs';
+import fs from 'fs';
 import path from 'path';
 
 // Admin Page
@@ -106,12 +106,26 @@ const POSTUpdateRestaurant = async (req, res) => {
         console.log('Old directory deleted successfully:', oldDirectory);
       });
     } else if (updatedData.name && restaurant.name && updatedData.name !== restaurant.name) {
-      console.log('Only name update');
+      console.log('Only name updatesssssssssssss');
       updatedData.lowername = lowerCase(req.body.name);
-      const currPath = `./public/images/restaurant/${restaurant.lowername}/banner`;
-      const newPath = `./public/images/restaurant/${updatedData.lowername}/banner`;
-      // Call the function to rename the directory
-      await renameAndDeleteOldFolder(currPath, newPath);
+      console.log('restaurant.lowername:', restaurant.lowername);
+      console.log('updatedData.lowername:', updatedData.lowername);
+      const currentPath = `./public/images/restaurant/${restaurant.lowername}`;
+      const newPath = `./public/images/restaurant/${updatedData.lowername}`;
+
+      console.log('currentPath:', currentPath);
+      console.log('newPath:', newPath);
+      console.log('fs.existsSync(currentPath):', fs.existsSync(currentPath));
+      
+      if (fs.existsSync(currentPath)) {
+        fs.rename(currentPath, newPath, (err) => {
+          if (err) {
+              console.error(err);
+              return; // Return early if there's an error
+          }
+          console.log('Directory renamed successfully:', currentPath, 'to', newPath);
+        });
+      }
     } else if (req.file) {
         console.log('Only image update');
         updatedData.image = req.file.filename;

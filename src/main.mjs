@@ -34,7 +34,6 @@ app.use(customerRoutes);
 app.get('*', checkRestaurant);
 app.use('/restaurant', restaurantRoutes);
 app.use('/adminux', adminRoutes);
-
 console.log('PORT:', PORT);
 app.listen(PORT, () => {
     console.log(`Server is listening on ${PORT}`);

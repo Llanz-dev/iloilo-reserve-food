@@ -1,6 +1,6 @@
 import express from 'express';
 import { GETAdminPage, GETAddRestaurant, POSTAddRestaurant, GETUpdateRestaurant, POSTUpdateRestaurant, DELETERestaurant } from '../controllers/adminController.mjs'
-import uploadRestaurantBanner from '../config/multerConfig.mjs';
+import { uploadRestaurantBanner } from '../config/multerConfig.mjs';
 const router = express.Router();
 
 

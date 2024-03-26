@@ -8,8 +8,6 @@ imageInput.addEventListener('change', (event) => {
   const file = event.target.files[0];
   
   if (file) {
-    console.log(existingImageContainer);
-    console.log(existingImage);
     const reader = new FileReader();
     reader.onload = (e) => {
       existingImage.src = e.target.result;

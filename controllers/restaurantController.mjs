@@ -56,22 +56,6 @@ const GETProducts = async (req, res) => {
     }
 }
 
-const GETProduct = async (req, res) => {
-    try {
-        const product = await Product.findById(req.params.id);
-        
-        if (!product) {
-            return res.status(404).json({ message: 'Product not found' });
-        }
-
-        const pageTitle = 'Product';
-        res.render('restaurant/product', { pageTitle, product });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Server Error');
-    }
-}
-
 const GETRestaurantDashboard = (req, res) => {
     const pageTitle = 'Dashboard';
     res.render('restaurant/dashboard', { pageTitle });
@@ -79,6 +63,7 @@ const GETRestaurantDashboard = (req, res) => {
 
 const GETProfileDashboard = async (req, res) => {
     const pageTitle = 'Profile';
+    console.log(res.locals.restaurant);
     res.render('restaurant/profile', { pageTitle });
 }
 
@@ -90,19 +75,21 @@ const GETAddProduct = (req, res) => {
 const POSTAddProduct = async (req, res) => {
     try {
         const { name, description, price, category } = req.body;
-        const restaurantId = req.restaurantID; // Assuming you have restaurant ID in req.restaurantID
-        
+        const image = req.file.filename; // Get the filename of the uploaded image
+        const restaurantID = req.restaurantID; // Assuming you have restaurant ID in req.restaurantID
+
         // Create a new product and set the restaurant field to the restaurant ID
         const product = await Product.create({
             name,
             description,
             price,
             category,
-            restaurant: restaurantId
-        });
-
-        // Add the product to the products array of the corresponding restaurant
-        await Restaurant.findByIdAndUpdate(restaurantId, { $push: { products: product._id } });
+            restaurant: restaurantID,
+            image
+        });        
+        
+        // Add the product to the products array of the corresponding restaurant    
+        await Restaurant.findByIdAndUpdate(restaurantID, { $push: { products: product._id } });
 
         res.redirect('/restaurant/dashboard'); // Redirect to dashboard after adding product
     } catch (err) {
@@ -110,6 +97,58 @@ const POSTAddProduct = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+
+const GETUpdateProduct = async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id);
+        
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        const pageTitle = 'Update Product';
+        res.render('restaurant/update-product', { pageTitle, product });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+}
+
+const POSTUpdateProduct = async (req, res) => {
+    console.log('POSTUpdateProduct');
+    try {
+        const productID = req.params.id;
+        const { name, description, price, category } = req.body;
+        const image = req.file ? req.file.filename : undefined; // Get the filename of the uploaded image if provided
+        console.log(req.body);
+        if (image) {
+            // Define the current path for the existing restaurant name and its banner image
+            const currPath = `./public/images/restaurant/${restaurant.lowername}/banner/${req.body.old_restaurant_banner_image}`;
+            
+            // Replace the old path with the new path in the directory structure
+            const updatedPath = replaceImagePath(currPath, req.body.old_restaurant_banner_image, req.file.filename);
+            console.log('updatedPath:', updatedPath);
+        }
+        // Update the product details
+        const updatedProduct = await Product.findByIdAndUpdate(productID, {
+            name,
+            description,
+            price,
+            category,
+            ...(image && { image }) // Include image field only if a new image is provided
+        }, { new: true });
+
+        if (!updatedProduct) {
+            return res.status(404).send('Product not found');
+        }
+
+        res.redirect('/restaurant/dashboard'); // Redirect to dashboard after updating product
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+};
+
 
 // Delete Restaurant
 const DELETEProduct = async (req, res) => {
@@ -126,7 +165,7 @@ const DELETEProduct = async (req, res) => {
     } catch (err) {
       res.status(500).json({ msg: err });
     }
-  };
+};
 
 const GETRestaurantLogout = (req, res) => {
     // Clear the restaurantToken cookie
@@ -136,4 +175,4 @@ const GETRestaurantLogout = (req, res) => {
 };
 
 
-export { GETrestaurantLogin, POSTRestaurantLogin, GETRestaurantDashboard, GETProfileDashboard, GETAddProduct, POSTAddProduct, GETProducts, GETProduct, DELETEProduct, GETRestaurantLogout };
+export { GETrestaurantLogin, POSTRestaurantLogin, GETRestaurantDashboard, GETProfileDashboard, GETAddProduct, POSTAddProduct, POSTUpdateProduct, GETProducts, GETUpdateProduct, DELETEProduct, GETRestaurantLogout };

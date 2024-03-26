@@ -50,9 +50,7 @@ March 23 2024:
 
 March 24 2024:	
 	- When a restaurant updates its name, the corresponding banner image directory is replaced with the new one, leading to space savings. For example, if the current path is '/burgerbarn/banner/burgersmash.jpg' and the administrator changes the restaurant's name and image to '/tokyoterrace/banner/tokyofood.png', this enhancement ensures a more upscale and space-efficient system.
-
-
-
+	- Admin can see the existing banner image and new updated image in update restaurant page
 
 
 Restaurant:

@@ -25,7 +25,11 @@
       <span>Address:</span>
       <p><%= restaurant.address %></p>
     </div>
-    <img src="/images/restaurant/banner/<%= restaurant.image %>" alt="" class="w-25">
+    <div class="info-item">
+      <span>Banner image:</span>
+      <br>
+      <img src="/images/restaurant/<%= restaurant.lowername %>/banner/<%= restaurant.image %>" alt="" class="w-25">
+    </div>
   </div>
 </div>
 

@@ -1,7 +1,5 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import fs from 'fs-extra';
-import path from 'path';
 
 const hashPassword = async (password) => {
   const saltRounds = 10;
@@ -74,23 +72,4 @@ const createToken = (id) => {
   });
 }
 
-const renameAndDeleteOldFolder = async (oldPath, newPath) => {
-  // Get the parent directory of the old path
-  // Example "public/images/restaurant/<restaurantname>"
-  const parentDir = path.dirname(oldPath);
-
-  try {
-    // Rename the existing directory to the new path
-    await fs.move(oldPath, newPath, { overwrite: true });
-
-    // Remove the old parent directory
-    await fs.remove(parentDir);
-
-    console.log('Folder renamed, and old folder deleted successfully.');
-  } catch (err) {
-    console.error('Error renaming folder or deleting old folder:', err);
-  }
-};
-
-
-export { hashPassword, comparePassword, handleErrors, toTitleCase, fourtyEightHours, createToken, lowerCase, renameAndDeleteOldFolder };
+export { hashPassword, comparePassword, handleErrors, toTitleCase, fourtyEightHours, createToken, lowerCase };

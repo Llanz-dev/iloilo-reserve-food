@@ -46,14 +46,13 @@
 
     <!-- Option to upload a new image -->
     <div class="form-group">
-      <label for="image">Upload New Image</label>
+      <label for="image" class="form-label">Upload new banner image</label>
       <input type="file" class="form-control" id="image" name="image">
     </div>
     <input type="hidden" name="old_restaurant_banner_image" value="<%= restaurant.image %>">
-
     <button type="submit" class="btn btn-primary">Update Restaurant</button>
   </form>
 
   <a href="/adminux" type="button" class="btn btn-warning text-decoration-none">Back</a>  
-
+  <script src="/js/showExistingImage.js"></script>
   <%- include('.././footer.ejs') %>
