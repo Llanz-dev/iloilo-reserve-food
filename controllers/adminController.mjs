@@ -1,7 +1,7 @@
 import { hashPassword, lowerCase } from '../utils/helpers.mjs';
 import Restaurant from '../models/restaurantModel.mjs';
 import Customer from '../models/customerModel.mjs';
-import { renameAndDeleteOldFolder } from '../utils/fileUtils.mjs';
+import { renameFolder, deleteDirectory, renameAndDeleteOldFolder } from '../utils/fileUtils.mjs';
 import fs from 'fs';
 import path from 'path';
 
@@ -82,64 +82,35 @@ const POSTUpdateRestaurant = async (req, res) => {
     const updatedData = req.body;
     const restaurant = await Restaurant.findById(restaurantID);
     console.log('----------------------');
+    console.log('updatedData.name:', updatedData.name);
+    console.log('restaurant.name:', restaurant.name);
 
-    if (req.file && updatedData.name && restaurant.name && updatedData.name !== restaurant.name) {
-      console.log('Name and image update');
+    // Check if a new image file exists, and if both the name and image have been updated
+    if (req.file && updatedData.name && updatedData.name !== restaurant.name) {
+      // Convert the updated restaurant name to lowercase
       updatedData.lowername = lowerCase(req.body.name);
-      const currPath = `./public/images/restaurant/${restaurant.lowername}/banner/${req.body.old_restaurant_banner_image}`;
-      const newPath = `./public/images/restaurant/${updatedData.lowername}/banner/${req.file.filename}`;
-      console.log('currPath:', currPath);
-      console.log('newPath:', newPath);
-      // Replace the old path with the new path
-      const updatedPath = currPath.replace(req.body.old_restaurant_banner_image, req.file.filename);
-      console.log('updatedPath:', updatedPath);
-      // Update the image field in the updatedData
       updatedData.image = req.file.filename;
-      console.log('updatedData.image:', updatedData.image);     
-      // Delete the old directory
-      const oldDirectory = `./public/images/restaurant/${restaurant.lowername}`;
-      fs.rm(oldDirectory, { recursive: true }, (err) => {
-        if (err) {
-          console.error('Error deleting old directory:', err);
-          return;
-        }
-        console.log('Old directory deleted successfully:', oldDirectory);
-      });
-    } else if (updatedData.name && restaurant.name && updatedData.name !== restaurant.name) {
-      console.log('Only name updatesssssssssssss');
-      updatedData.lowername = lowerCase(req.body.name);
-      console.log('restaurant.lowername:', restaurant.lowername);
-      console.log('updatedData.lowername:', updatedData.lowername);
-      const currentPath = `./public/images/restaurant/${restaurant.lowername}`;
-      const newPath = `./public/images/restaurant/${updatedData.lowername}`;
 
-      console.log('currentPath:', currentPath);
-      console.log('newPath:', newPath);
-      console.log('fs.existsSync(currentPath):', fs.existsSync(currentPath));
+      // Define the old and new paths for the restaurant directory
       
-      if (fs.existsSync(currentPath)) {
-        fs.rename(currentPath, newPath, (err) => {
-          if (err) {
-              console.error(err);
-              return; // Return early if there's an error
-          }
-          console.log('Directory renamed successfully:', currentPath, 'to', newPath);
-        });
-      }
+      // Rename the restaurant directory
+      console.log('Renaaaame');
+    } else if (updatedData.name && restaurant.name && updatedData.name !== restaurant.name) {
+      console.log('Rename the folder with the new name of restaurant');
+
+      // Convert the updated restaurant name to lowercase
+      updatedData.lowername = lowerCase(req.body.name);
+
+      // Define the old and new paths for the restaurant directory
+      const oldPath = `./public/images/restaurant/${restaurant.lowername}`;
+      const newPath = `./public/images/restaurant/${updatedData.lowername}`;
+      
+      // Rename the restaurant directory
+      renameFolder(oldPath, newPath);
     } else if (req.file) {
         console.log('Only image update');
         updatedData.image = req.file.filename;
         console.log('updatedData.image:', updatedData.image);
-
-        const filePathToDelete = `./public/images/restaurant/${restaurant.lowername}/banner/${req.body.old_restaurant_banner_image}`;
-        // File exists, proceed with deletion
-        fs.unlink(filePathToDelete, (unlinkErr) => {
-          if (unlinkErr) {
-            console.error('Error deleting file:', unlinkErr);
-            return;
-          }
-          console.log('File deleted successfully:', filePathToDelete);
-        });
     } else {
       console.log('No updated');
       updatedData.image = req.body.old_restaurant_banner_image;
@@ -172,20 +143,20 @@ const POSTUpdateRestaurant = async (req, res) => {
   }
 };
 
-
 // Delete Restaurant
 const DELETERestaurant = async (req, res) => {
   console.log('DELETERestaurant');
   try {
     const restaurantID = req.params.id;
+    console.log('restaurantID:', restaurantID);
     const restaurant = await Restaurant.findById(restaurantID);
-
+    console.log('restaurant.lowername:', restaurant.lowername);
     if (!restaurant) {
       return res.status(404).json({ msg: 'Restaurant not found' });
     }
     
     // Delete the associated directory
-    await fs.remove(`./public/images/restaurant/${restaurant.lowername}`);
+    deleteDirectory(`./public/images/restaurant/${restaurant.lowername}`);
 
     await Restaurant.findByIdAndDelete(restaurantID)
 

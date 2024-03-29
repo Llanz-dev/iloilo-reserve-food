@@ -1,60 +1,68 @@
 March 6 to March 8 2024:
-	- Register and Login working in the backend with hash using bcrypt
-	- Setting the static with bootstrap
+	- Register and Login working in the backend with hash using bcrypt.
+	- Setting the static with bootstrap.
 
 March 10 2024:
-	- Setting JWT authentication
-	- Restrict the users to specific page when it is not log in
-	- Conditional rendering
+	- Setting JWT authentication.
+	- Restrict the users to specific page when it is not log in.
+	- Conditional rendering.
 
 March 11 2024:
-	- Profile editing working except password
+	- Profile editing working except password.
 
 March 13 2024:
-	- Password can be update in profile page
-	- Admin where it can add restaurants
+	- Password can be update in profile page.
+	- Admin where it can add restaurants.
 
 March 14 2024
-	- Stuck on "Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client"
-	- The problem is on "app.get('*', checkUser);"
+	- Stuck on "Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client".
+	- The problem is on "app.get('*', checkUser);".
 
 March 15 2024:
-	- Finally fixed it
-	- The admin can now update and delete the restaurant
-	- Show the list of restaurants on admin-side
+	- Finally fixed it.
+	- The admin can now update and delete the restaurant.
+	- Show the list of restaurants on admin-side.
 
 March 16 2024:
-	- The restaurants from admin that was been create has account on its restaurant-side
-	- The restaurant can log in
+	- The restaurants from admin that was been create has account on its restaurant-side.
+	- The restaurant can log in.
 
 March 17 2024:
-	- The restaurant has banner image using multer
-	- The restaurant can log out
+	- The restaurant has banner image using multer.
+	- The restaurant can log out.
 
 March 18 2024:
-	- The restaurant banner image is automatically update when delete or update
-	- Show the list of restaurants on client-side
+	- The restaurant banner image is automatically update when delete or update.
+	- Show the list of restaurants on client-side.
 
 March 20 2024:	
-	- The restaurant can add its own product without image
+	- The restaurant can add its own product without image.
 
 March 21 2024:	
-	- The restaurant model has a "lowername" field added to it to facilitate the dynamic creation of directories and accessing files within those directories
-	- Displaying images dynamically involves accessing them based on dynamic parameters or conditions rather than fixed paths or names
+	- The restaurant model has a "lowername" field added to it to facilitate the dynamic creation of directories and accessing files within those directories.
+	- Displaying images dynamically involves accessing them based on dynamic parameters or conditions rather than fixed paths or names.
 
 March 22 2024:	
-	- When the administrator updates the restaurant name to a new one, the function I've created automatically deletes the parent directory of the old restaurant name and replaces it with the new restaurant name in the directory path. This ensures consistency throughout the project. For example, "public/images/restaurant/<oldRestaurantName>/banner/" will be replaced with "public/images/restaurant/<newRestaurantName>/banner/"
+	- When the administrator updates the restaurant name to a new one, the function I've created automatically deletes the parent directory of the old restaurant name and replaces it with the new restaurant name in the directory path. This ensures consistency throughout the project. For example, "public/images/restaurant/<oldRestaurantName>/banner/" will be replaced with "public/images/restaurant/<newRestaurantName>/banner/".
 
 March 23 2024:	
-	- Fixing the bugs caused by the creation of a new directory each time an admin updates the name and banner image of a restaurant
+	- Fixing the bugs caused by the creation of a new directory each time an admin updates the name and banner image of a restaurant.
 
 March 24 2024:	
-	- When a restaurant updates its name, the corresponding banner image directory is replaced with the new one, leading to space savings. For example, if the current path is '/burgerbarn/banner/burgersmash.jpg' and the administrator changes the restaurant's name and image to '/tokyoterrace/banner/tokyofood.png', this enhancement ensures a more upscale and space-efficient system.
-	- Admin can see the existing banner image and new updated image in update restaurant page
+	- When a restaurant updates its name, the corresponding banner image directory is replaced with the new one, leading to space savings. For example, if the current path is '/burgerbarn/banner/burgersmash.jpg' and the administrator changes the restaurant's name and image to '/tokyoterrace/banner/tokyofood.png', this enhancement ensures a more upscale and space-efficient system..
+	- Admin can see the existing banner image and new updated image in update restaurant page.
+
+March 27 2024:
+	- "npm run node" added to my npm for manipulating files.
+
+March 28 2024:
+	- Exploring methods to establish the directory for the restaurant.
+
+March 29 2024:
+	- Directories for restaurants have been established within Multer.
 
 
 Restaurant:
-
 The Hungry Hound
 Gourmet Grove
 Flavor Junction
@@ -67,8 +75,8 @@ Java Junction
 Espresso Emporium
 Bean Bliss
 Caffeine Cove
-Burger:
 
+Burger:
 Burger Barn
 Patty Palace
 Grill House
@@ -76,7 +84,6 @@ Burger Bistro
 Juicy Joint
 
 Japanese:
-
 Sushi Samurai
 Tokyo Terrace
 Ramen Republic

@@ -1,4 +1,5 @@
 const deleteRestaurant = async (restaurantId) => {
+  console.log(restaurantId);
   const confirmed = confirm('Are you sure you want to delete this restaurant?');
   if (confirmed) {
     try {
