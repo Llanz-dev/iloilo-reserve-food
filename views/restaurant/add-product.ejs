@@ -18,7 +18,8 @@
   </div>
   <div class="form-group">
     <label for="category">Category</label>
-    <input type="text" class="form-control" id="category" name="category" required>
+    <input type="text" class="form-control" id="text" name="category" required>
+    <input type="hidden" class="form-control hidden-text" id="lowerText" name="lowerCategory" value="">
   </div>
   <div class="form-group">
     <label for="image" class="form-label">Banner</label>
@@ -35,4 +36,5 @@
 </form>
 
 <script src="/js/showExistingImage.js"></script>
+<script src="/js/add-restaurant.js"></script>            
 <%- include('.././footer.ejs') %>

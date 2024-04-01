@@ -60,7 +60,13 @@ March 28 2024:
 
 March 29 2024:
 	- Directories for restaurants have been established within Multer.
+	- Enhancing the code structure within the Multer configuration file through refactoring.
 
+April 1 2024:
+	- Create a category model and associate to both product and restaurant.
+	- Create a button for category page creation.
+	- In category you could update and delete.
+	- Fix the directories in product and category.
 
 Restaurant:
 The Hungry Hound

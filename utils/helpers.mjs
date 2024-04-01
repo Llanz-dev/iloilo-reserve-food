@@ -49,15 +49,16 @@ const handleErrors = (err) => {
   return errors;
 };
 
-// To format the username and fullname
-// Example a customer input username: 'jHoNNy321' format into -> 'jhonny321'
-// Example a customer input fullname: 'jHON DoE' format into -> 'Jhon Doe'
-const toTitleCase = (getUsername, getFullname) => {
-  const usernameAndFullname = { username: "", fullname: "" };
-  usernameAndFullname.username = getUsername.toLowerCase().split("").map((char) => (char.toUpperCase() === char ? char : char.toLowerCase())).join("");
-  usernameAndFullname.fullname = getFullname.toLowerCase().split(" ").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
-  return usernameAndFullname;
+// To format the text
+// Example a text value is 'jHoNNy321' format into -> 'jhonny321'
+const toTitleCase = (textValue) => {
+  return textValue.toLowerCase().split(" ").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
 };
+
+// Example a customer input fullname: 'jHON DoE' format into -> 'Jhon Doe'
+const toSmallerCase = (textValue) => {
+  return textValue.toLowerCase().split("").map((char) => (char.toUpperCase() === char ? char : char.toLowerCase())).join("");
+}
 
 // To format a text to all lowercase
 // Example a customer input username: 'The Hungry Hound' format into -> 'thehungryhound'
@@ -72,4 +73,4 @@ const createToken = (id) => {
   });
 }
 
-export { hashPassword, comparePassword, handleErrors, toTitleCase, fourtyEightHours, createToken, lowerCase };
+export { hashPassword, comparePassword, handleErrors, toTitleCase, toSmallerCase, fourtyEightHours, createToken, lowerCase };

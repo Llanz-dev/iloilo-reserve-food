@@ -15,28 +15,21 @@ const deleteDirectory = (filePath) => {
 }
 
 const renameFolder = (oldPath, newPath) => {
-  console.log('oldPath:', oldPath);
-  console.log('newPath:', newPath);
   if (fs.existsSync(oldPath)) {
     fs.renameSync(oldPath, newPath);
   }
 }
 
-const renameAndDeleteOldFolder = (oldPath, newPath) => {
-  if (fs.existsSync(oldPath)) {
-    const oldRestaurantFolderPath = path.dirname(path.dirname(oldPath));
-    console.log('oldPath:', oldPath);
-    console.log('newPath:', newPath);
-    renameFolder(oldPath, newPath);
-  }
-};
+const createDirectory = (destinationPath) => {
+  fs.mkdirSync(destinationPath, { recursive: true });
+}
 
-// fs.unlink(oldPath, (unlinkErr) => {
-//   if (unlinkErr) {
-//     console.error('Error deleting file:', unlinkErr);
-//     return;
-//   }
-//   console.log('File deleted successfully:', oldPath);
-// });
-
-export { deleteDirectory, renameFolder, renameAndDeleteOldFolder };
+const deleteFile = (filePathToDelete) => { 
+  fs.unlink(filePathToDelete, (unlinkErr) => {
+    if (unlinkErr) {
+        console.error('Error deleting file:', unlinkErr);
+        return;
+    }          
+  });
+}
+export { deleteDirectory, renameFolder, createDirectory, deleteFile };

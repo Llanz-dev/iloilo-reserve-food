@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 const { Schema } = mongoose;
 
-const productSchema = new Schema({
+const categorySchema = new Schema({
   name: {
     type: String,
     required: true
@@ -10,26 +10,13 @@ const productSchema = new Schema({
     type: String,
     required: true
   },
-  price: {
-    type: Number,
-    required: true
-  },
-  category: {
-    type: String,
-    required: true
-  },
   lowerCategory: {
     type: String
   },
-  image: {
-    type: String,
-    required: true
-  },
-  category: {
+  products: [{
     type: Schema.Types.ObjectId,
-    ref: 'Category', // Reference the Category model
-    required: true
-  },
+    ref: 'Product'
+  }],
   restaurant: {
     type: Schema.Types.ObjectId,
     ref: 'Restaurant',
@@ -37,4 +24,4 @@ const productSchema = new Schema({
   }
 });
 
-export default mongoose.model('Product', productSchema);
+export default mongoose.model('Category', categorySchema);

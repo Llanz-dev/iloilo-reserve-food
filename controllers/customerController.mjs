@@ -1,5 +1,5 @@
 import Customer from '../models/customerModel.mjs';
-import { hashPassword, comparePassword, handleErrors, toTitleCase, createToken, fourtyEightHours } from '../utils/helpers.mjs';
+import { hashPassword, comparePassword, handleErrors, toTitleCase, toSmallerCase, createToken, fourtyEightHours } from '../utils/helpers.mjs';
 
 const GETLoginPage = (req, res) => {
     const pageTitle = 'login';
@@ -42,7 +42,6 @@ const GETRegisterPage = (req, res) => {
 }
 
 const POSTRegisterPage = async (req, res) => {
-  const pageTitle = 'register';
   try {
     // Extract user input from the request body
     const { password, reEnterPassword } = req.body;
@@ -53,8 +52,8 @@ const POSTRegisterPage = async (req, res) => {
     }
 
     // Format the strings 
-    req.body.username = toTitleCase(req.body.username, req.body.fullname).username;
-    req.body.fullname = toTitleCase(req.body.username, req.body.fullname).fullname;
+    req.body.username = toSmallerCase(req.body.username);
+    req.body.fullname = toTitleCase(req.body.fullname);
 
     // Hash password
     const hashedPassword = await hashPassword(password);
@@ -86,8 +85,8 @@ const POSTUpdateProfile = async (req, res) => {
     }
 
     // Format the strings 
-    username = toTitleCase(username, fullname).username;
-    fullname = toTitleCase(username, fullname).fullname;
+    username = toSmallerCase(username);
+    fullname = toTitleCase(fullname);
   
     const updates = { username, fullname, age };
     

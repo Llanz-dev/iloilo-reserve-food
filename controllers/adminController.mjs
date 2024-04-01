@@ -1,7 +1,7 @@
 import { hashPassword, lowerCase } from '../utils/helpers.mjs';
 import Restaurant from '../models/restaurantModel.mjs';
 import Customer from '../models/customerModel.mjs';
-import { renameFolder, deleteDirectory, renameAndDeleteOldFolder } from '../utils/fileUtils.mjs';
+import { renameFolder, deleteDirectory } from '../utils/fileUtils.mjs';
 import fs from 'fs';
 import path from 'path';
 
@@ -91,10 +91,6 @@ const POSTUpdateRestaurant = async (req, res) => {
       updatedData.lowername = lowerCase(req.body.name);
       updatedData.image = req.file.filename;
 
-      // Define the old and new paths for the restaurant directory
-      
-      // Rename the restaurant directory
-      console.log('Renaaaame');
     } else if (updatedData.name && restaurant.name && updatedData.name !== restaurant.name) {
       console.log('Rename the folder with the new name of restaurant');
 
@@ -108,11 +104,8 @@ const POSTUpdateRestaurant = async (req, res) => {
       // Rename the restaurant directory
       renameFolder(oldPath, newPath);
     } else if (req.file) {
-        console.log('Only image update');
         updatedData.image = req.file.filename;
-        console.log('updatedData.image:', updatedData.image);
     } else {
-      console.log('No updated');
       updatedData.image = req.body.old_restaurant_banner_image;
     }
 
@@ -148,16 +141,17 @@ const DELETERestaurant = async (req, res) => {
   console.log('DELETERestaurant');
   try {
     const restaurantID = req.params.id;
-    console.log('restaurantID:', restaurantID);
+
     const restaurant = await Restaurant.findById(restaurantID);
-    console.log('restaurant.lowername:', restaurant.lowername);
+
     if (!restaurant) {
       return res.status(404).json({ msg: 'Restaurant not found' });
     }
     
-    // Delete the associated directory
+    // Delete the restaurant directory
     deleteDirectory(`./public/images/restaurant/${restaurant.lowername}`);
 
+    // Delete the restaurant
     await Restaurant.findByIdAndDelete(restaurantID)
 
     res.json('successfully deleted');

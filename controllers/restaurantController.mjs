@@ -1,6 +1,7 @@
 import Restaurant from '../models/restaurantModel.mjs';
 import Product from '../models/productModel.mjs';
-import { hashPassword, comparePassword, handleErrors, toTitleCase, createToken, fourtyEightHours } from '../utils/helpers.mjs';
+import { hashPassword, comparePassword, handleErrors, createToken, fourtyEightHours, lowerCase, toTitleCase } from '../utils/helpers.mjs';
+import { deleteFile, renameFolder } from '../utils/fileUtils.mjs';
 
 const GETrestaurantLogin = async (req, res) => {
     const pageTitle = 'Restaurant';
@@ -74,16 +75,19 @@ const GETAddProduct = (req, res) => {
 
 const POSTAddProduct = async (req, res) => {
     try {
+        console.log('---- POSTAddProduct ----');
         const { name, description, price, category } = req.body;
         const image = req.file.filename; // Get the filename of the uploaded image
         const restaurantID = req.restaurantID; // Assuming you have restaurant ID in req.restaurantID
+        const restaurant = await Restaurant.findById(restaurantID);
 
         // Create a new product and set the restaurant field to the restaurant ID
         const product = await Product.create({
             name,
             description,
             price,
-            category,
+            category: toTitleCase(category),
+            lowerCategory: lowerCase(category),
             restaurant: restaurantID,
             image
         });        
@@ -118,24 +122,33 @@ const POSTUpdateProduct = async (req, res) => {
     console.log('POSTUpdateProduct');
     try {
         const productID = req.params.id;
-        const { name, description, price, category } = req.body;
-        const image = req.file ? req.file.filename : undefined; // Get the filename of the uploaded image if provided
-        console.log(req.body);
-        if (image) {
-            // Define the current path for the existing restaurant name and its banner image
-            const currPath = `./public/images/restaurant/${restaurant.lowername}/banner/${req.body.old_restaurant_banner_image}`;
+        const restaurantID = req.restaurantID;
+        const restaurant = await Restaurant.findById(restaurantID);
+        const restaurantName = restaurant.lowername;
+        const product = await Product.findById(productID);
+        const updatedData = req.body;
+        const oldCategoryName = product.lowerCategory;
+        const newCategoryName = updatedData.lowerCategory;     
+        // Check if the user has updated the image
+        const productImage = req.file ? req.file.filename : undefined;       
+        
+        if (newCategoryName && oldCategoryName !== newCategoryName) {
+            // Define the old and new paths for the restaurant directory
+            const oldPath = `./public/images/restaurant/${restaurantName}/products/${oldCategoryName}`;
+            const newPath = `./public/images/restaurant/${restaurantName}/products/${newCategoryName}`;
             
-            // Replace the old path with the new path in the directory structure
-            const updatedPath = replaceImagePath(currPath, req.body.old_restaurant_banner_image, req.file.filename);
-            console.log('updatedPath:', updatedPath);
+            // Rename the restaurant directory
+            renameFolder(oldPath, newPath);
         }
+
         // Update the product details
         const updatedProduct = await Product.findByIdAndUpdate(productID, {
-            name,
-            description,
-            price,
-            category,
-            ...(image && { image }) // Include image field only if a new image is provided
+            name: updatedData.name,
+            description: updatedData.description,
+            price: updatedData.price,
+            category: updatedData.category,
+            ...(newCategoryName && { lowerCategory: newCategoryName }), // Include lowerCategoy field only if it is updated
+            ...(productImage && { image: productImage }) // Include image field only if a new image is provided
         }, { new: true });
 
         if (!updatedProduct) {
@@ -149,21 +162,30 @@ const POSTUpdateProduct = async (req, res) => {
     }
 };
 
-
-// Delete Restaurant
+// Delete Product
 const DELETEProduct = async (req, res) => {
     console.log('DELETEProduct');
     try {
-      const productId = req.params.id;
-      const deleteProduct = await Product.findByIdAndDelete(productId);
-  
-      if (!deleteProduct) {
-        return res.status(404).json({ msg: 'Product not found' });
-      }
-  
-      res.json('successfully deleted');
+        const productID = req.params.id;
+        const product = await Product.findById(productID);
+    
+        if (!product) {
+            return res.status(404).json({ msg: 'Product not found' });
+        }
+
+        const restaurantID = req.restaurantID;
+        const restaurant = await Restaurant.findById(restaurantID);
+
+        const restaurantName = restaurant.lowername;
+        const categoryName = product.lowerCategory;
+        const productImage = product.image;
+        const productImagePath = `./public/images/restaurant/${restaurantName}/products/${categoryName}/${productImage}`;
+        // Delete the product image
+        deleteFile(productImagePath);
+        await Product.findByIdAndDelete(productID);
+        res.json('successfully deleted');
     } catch (err) {
-      res.status(500).json({ msg: err });
+        res.status(500).json({ msg: err });
     }
 };
 

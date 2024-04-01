@@ -7,11 +7,12 @@
       <input type="text" class="form-control" id="username" name="username" value="<%= restaurant.username %>" required
         minlength="5" maxlength="40">
     </div>
+
     <div class="form-group">
       <label for="name">Name</label>
-      <input type="text" class="form-control restaurant-name" id="name" name="name" value="<%= restaurant.name %>" required
+      <input type="text" class="form-control hidden-text" id="text" name="name" value="<%= restaurant.name %>" required
         minlength="5" maxlength="40">
-      <input type="hidden" class="form-control" id="lowername" name="lowername" value=" ">
+      <input type="hidden" class="form-control" id="lowerText" name="lowername" value="">
     </div>
 
     <div class="form-group">
@@ -56,5 +57,5 @@
 
   <a href="/adminux" type="button" class="btn btn-warning text-decoration-none">Back</a>  
   <script src="/js/showExistingImage.js"></script>
-  <script src="/js/admin/add-restaurant.js"></script>
+  <script src="/js/add-restaurant.js"></script>            
   <%- include('.././footer.ejs') %>
