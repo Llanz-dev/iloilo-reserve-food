@@ -4,7 +4,7 @@ import { lowerCase } from '../utils/helpers.mjs';
 import Restaurant from '../models/restaurantModel.mjs';
 import Product from '../models/productModel.mjs';
 import { renameFolder, createDirectory, deleteFile } from '../utils/fileUtils.mjs';
-
+import Category from '../models/categoryModel.mjs';
 
 const getRestaurant = async (restaurantID) => {
     try {
@@ -22,8 +22,9 @@ const uploadBannerStorage = multer.diskStorage({
         console.log('---- uploadBannerStorage ----');      
         try {
             // Create a directory for restaurant
-            console.log('req.body.lowername:', req.body.lowername);
-            const destinationPath = `./public/images/restaurant/${req.body.lowername}/banner`;  
+            const restaurantName = req.body.lowername;
+
+            const destinationPath = `./public/images/restaurant/${restaurantName}/banner`;  
             fs.mkdirSync(destinationPath, {recursive: true});
             cb(null, destinationPath);
         } catch (error) {
@@ -93,13 +94,11 @@ const uploadProductStorage = multer.diskStorage({
             }
 
             // Use the category name for creating the directory path
-            const categoryName = req.body.lowerCategory;
             const restaurantName = restaurant.lowername;
+            const categoryName = req.body.lowerCategory;
             const destinationPath = `./public/images/restaurant/${restaurantName}/products/${categoryName}`;
 
-            if (!fs.existsSync(destinationPath)) {
-                createDirectory(destinationPath);
-            }
+            createDirectory(destinationPath);
 
             cb(null, destinationPath);
         } catch (err) {

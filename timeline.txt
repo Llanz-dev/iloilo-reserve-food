@@ -68,6 +68,16 @@ April 1 2024:
 	- In category you could update and delete.
 	- Fix the directories in product and category.
 
+April 2 2024:
+	- Converted the delete restaurant javascript client side file to delete object for more dynamic.
+
+April 5 2024
+	- Created an update product
+
+Problems:
+	- All the database and associates to restaurant must be deleted when that restaurant would be deleted.
+	- In the admin side it must be shown to it all the category, product and revenue of the restaurant.
+
 Restaurant:
 The Hungry Hound
 Gourmet Grove

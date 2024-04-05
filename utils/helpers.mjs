@@ -73,4 +73,10 @@ const createToken = (id) => {
   });
 }
 
-export { hashPassword, comparePassword, handleErrors, toTitleCase, toSmallerCase, fourtyEightHours, createToken, lowerCase };
+const hasProduct = async () => {
+  const restaurantID = req.restaurantID;
+  const categories = await Category.find({restaurant: restaurantID});
+  return categories.length; 
+}
+
+export { hashPassword, comparePassword, handleErrors, toTitleCase, toSmallerCase, fourtyEightHours, createToken, lowerCase, hasProduct };

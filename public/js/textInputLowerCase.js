@@ -1,4 +1,5 @@
-// Get the text input and hidden input elements by their IDs
+//The purpose of this function is to make text from 'Test nAmE' to 'testname'
+
 let textInput = document.getElementById('text');
 let lowerTextInput = document.getElementById('lowerText');
 const textName = document.querySelector('.hidden-text');

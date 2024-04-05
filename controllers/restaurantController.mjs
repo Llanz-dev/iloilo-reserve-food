@@ -1,7 +1,9 @@
 import Restaurant from '../models/restaurantModel.mjs';
 import Product from '../models/productModel.mjs';
-import { hashPassword, comparePassword, handleErrors, createToken, fourtyEightHours, lowerCase, toTitleCase } from '../utils/helpers.mjs';
-import { deleteFile, renameFolder } from '../utils/fileUtils.mjs';
+import Category from '../models/categoryModel.mjs';
+import { hashPassword, comparePassword, handleErrors, createToken, fourtyEightHours, lowerCase, toTitleCase, hasProduct } from '../utils/helpers.mjs';
+import { createDirectory, deleteDirectory, deleteFile, renameFolder } from '../utils/fileUtils.mjs';
+
 
 const GETrestaurantLogin = async (req, res) => {
     const pageTitle = 'Restaurant';
@@ -41,13 +43,17 @@ const POSTRestaurantLogin = async (req, res) => {
 const GETProducts = async (req, res) => {
     try {
         const restaurantId = req.restaurantID;
-        const restaurant = await Restaurant.findById(restaurantId).populate('products');
+        const restaurant = await Restaurant.findById(restaurantId).populate({
+            path: 'products',
+            populate: { path: 'category' } // Populate the category field within products
+        });
         
         if (!restaurant) {
             return res.status(404).json({ message: 'Restaurant not found' });
         }
 
         const products = restaurant.products;
+        console.log(products);
 
         const pageTitle = 'Products';
         res.render('restaurant/products', { pageTitle, products });
@@ -68,28 +74,31 @@ const GETProfileDashboard = async (req, res) => {
     res.render('restaurant/profile', { pageTitle });
 }
 
-const GETAddProduct = (req, res) => {
+const GETAddProduct = async (req, res) => {
     const pageTitle = 'Add Product';
-    res.render('restaurant/add-product', { pageTitle });
+    const restaurantID = req.restaurantID;
+    const categories = await Category.find({restaurant: restaurantID});
+    const hasProduct = categories.length;
+    res.render('restaurant/add-product', { pageTitle, hasProduct, categories });
 };
 
 const POSTAddProduct = async (req, res) => {
     try {
         console.log('---- POSTAddProduct ----');
-        const { name, description, price, category } = req.body;
+        const { name, description, price, lowerCategory } = req.body;
         const image = req.file.filename; // Get the filename of the uploaded image
         const restaurantID = req.restaurantID; // Assuming you have restaurant ID in req.restaurantID
-        const restaurant = await Restaurant.findById(restaurantID);
+        const category = await Category.findOne({ lowername: lowerCategory });
+        const categoryID = category._id;
 
         // Create a new product and set the restaurant field to the restaurant ID
         const product = await Product.create({
             name,
             description,
             price,
-            category: toTitleCase(category),
-            lowerCategory: lowerCase(category),
-            restaurant: restaurantID,
-            image
+            image,
+            category: categoryID,
+            restaurant: restaurantID         
         });        
         
         // Add the product to the products array of the corresponding restaurant    
@@ -103,15 +112,22 @@ const POSTAddProduct = async (req, res) => {
 };
 
 const GETUpdateProduct = async (req, res) => {
+    console.log('---- GETUpdateProduct ----');
     try {
-        const product = await Product.findById(req.params.id);
-        
+        const product = await Product.findById(req.params.id).populate('restaurant category');
+        const restaurantName = product.restaurant.lowername;
+        const productImage = product.image;
+        const categoryName = product.category.lowername;
+        console.log('categoryName:', categoryName);
         if (!product) {
             return res.status(404).json({ message: 'Product not found' });
         }
 
         const pageTitle = 'Update Product';
-        res.render('restaurant/update-product', { pageTitle, product });
+        // Fetch categories to populate the dropdown
+        const restaurantID = req.restaurantID;
+        const categories = await Category.find({ restaurant: restaurantID }).populate('restaurant');
+        res.render('restaurant/update-product', { pageTitle, product, categories, restaurantName, productImage, categoryName, hasProduct });
     } catch (err) {
         console.error(err);
         res.status(500).send('Server Error');
@@ -162,6 +178,74 @@ const POSTUpdateProduct = async (req, res) => {
     }
 };
 
+const GETAddCategory = async (req, res) => {
+    console.log('---- GETAddCategory ----');
+    try {
+        const restaurantID = req.restaurantID; // Assuming you have restaurant ID in req.restaurantID
+        const categories = await Category.find({ restaurant: restaurantID });
+        console.log('categories:', categories);
+        const pageTitle = 'Add Category';
+        res.render('restaurant/add-category', { pageTitle, categories });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+}
+
+const POSTAddCategory = async (req, res) => {
+    console.log('---- POSTAddCategory ----');
+    try {
+        const { name, description } = req.body;
+        const restaurantID = req.restaurantID; // Assuming you have restaurant ID in req.restaurantID
+
+        // Check if the category name is already registered on the specific restaurant
+        const existingCategoryName = await Category.findOne({ name, restaurant: restaurantID });
+        if (existingCategoryName) {
+            return res.status(400).json({ error: `${name} already registered` });
+        }
+
+        const restaurant = await Restaurant.findById(restaurantID);
+        const restaurantName = restaurant.lowername;
+        const categoryName = lowerCase(name);   
+        console.log('restaurantName:', restaurantName);
+        console.log('categoryName:', categoryName);
+        const destinationPath = `./public/images/restaurant/${restaurantName}/products/${categoryName}`;
+        createDirectory(destinationPath);
+
+        const category = await Category.create({ name, description, lowername: lowerCase(name), restaurant: restaurantID });
+        console.log('category:', category);
+        res.redirect('add-category');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+}
+
+const DELETECategory = async (req, res) => {
+    console.log('---- POSTDeleteCategory ----');
+    try {
+        const categoryID = req.params.id;
+        const restaurantID = req.restaurantID;
+
+        const restaurant = await Restaurant.findById(restaurantID);
+        const category = await Category.findById(categoryID);
+        console.log('restaurant:', restaurant);
+        console.log('category:', category);
+
+        const restaurantName = restaurant.lowername;
+        const categoryName = category.lowername;
+
+        const destinationPath = `./public/images/restaurant/${restaurantName}/products/${categoryName}`;
+        deleteDirectory(destinationPath);
+
+        await Category.findByIdAndDelete(categoryID);
+        res.json('successfully deleted');
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ msg: err });
+    }
+}
+
 // Delete Product
 const DELETEProduct = async (req, res) => {
     console.log('DELETEProduct');
@@ -179,6 +263,7 @@ const DELETEProduct = async (req, res) => {
         const restaurantName = restaurant.lowername;
         const categoryName = product.lowerCategory;
         const productImage = product.image;
+
         const productImagePath = `./public/images/restaurant/${restaurantName}/products/${categoryName}/${productImage}`;
         // Delete the product image
         deleteFile(productImagePath);
@@ -189,6 +274,7 @@ const DELETEProduct = async (req, res) => {
     }
 };
 
+// Logout restaurant
 const GETRestaurantLogout = (req, res) => {
     // Clear the restaurantToken cookie
     res.clearCookie('restaurantToken');
@@ -197,4 +283,4 @@ const GETRestaurantLogout = (req, res) => {
 };
 
 
-export { GETrestaurantLogin, POSTRestaurantLogin, GETRestaurantDashboard, GETProfileDashboard, GETAddProduct, POSTAddProduct, POSTUpdateProduct, GETProducts, GETUpdateProduct, DELETEProduct, GETRestaurantLogout };
+export { GETrestaurantLogin, POSTRestaurantLogin, GETRestaurantDashboard, GETProfileDashboard, GETAddProduct, POSTAddProduct, POSTUpdateProduct, GETProducts, GETUpdateProduct, GETAddCategory, POSTAddCategory, DELETECategory, DELETEProduct, GETRestaurantLogout };

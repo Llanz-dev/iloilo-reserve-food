@@ -10,13 +10,9 @@ const categorySchema = new Schema({
     type: String,
     required: true
   },
-  lowerCategory: {
+  lowername: {
     type: String
   },
-  products: [{
-    type: Schema.Types.ObjectId,
-    ref: 'Product'
-  }],
   restaurant: {
     type: Schema.Types.ObjectId,
     ref: 'Restaurant',
