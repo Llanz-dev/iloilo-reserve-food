@@ -1,32 +1,43 @@
-<%- include('.././header.ejs') %>
+<%- include('./layout/header.ejs') %>
 <!-- Include the navbar from the layout -->
 <%- include('./layout/navbar.ejs') %>
 
-<h2>Products</h2>
 
 <div class="container">
-  <div class="row">
-    <% if (products.length > 0) { %>
-      <% products.forEach(product => { %>
-        <div class="col-md-4">
-          <div class="card mb-4">
-            <img src="/images/restaurant/<%= restaurant.lowername %>/products/<%= product.category.lowername %>/<%= product.image %>" class="card-img-top" alt="Product Image">
-            <div class="card-body">
-              <h5 class="card-title"><%= product.name %></h5>
-              <p class="card-text"><%= product.description %></p>
-              <p class="card-text">Price: $<%= product.price %></p>
-              <!-- Add more product details as needed -->
-              <button class="btn btn-sm btn-danger" onclick="deleteProduct('<%= product._id %>')">Delete</button>
-              <a href="/restaurant/update-products/<%= product._id %>" class="btn btn-warning">Update</a>
+  <% if (products.length > 0) { %>
+    <% const groupedProducts = {}; %>
+    <% products.forEach(product => { %>
+      <% const category = product.category.name; %>
+      <% if (!groupedProducts[category]) { %>
+        <% groupedProducts[category] = []; %>
+      <% } %>
+      <% groupedProducts[category].push(product); %>
+    <% }); %>
+    <% Object.keys(groupedProducts).forEach(category => { %>
+      <h2><%= category %></h2>
+      <div class="row">
+        <% groupedProducts[category].forEach(product => { %>
+          <div class="col-md-4">
+            <div class="card mb-4">
+              <img src="/images/restaurant/<%= product.restaurant.lowername %>/products/<%= product.category.lowername %>/<%= product.image %>" class="card-img-top" alt="Product Image">
+              <div class="card-body">
+                <h5 class="card-title"><%= product.name %></h5>
+                <p class="card-text"><%= product.description %></p>
+                <p class="card-text">Price: ₱<%= product.price %></p>
+                <!-- Add more product details as needed -->
+                <button class="btn btn-sm btn-danger" onclick="deleteProduct('<%= product._id %>')">Delete</button>
+                <a href="/restaurant/update-product/<%= product._id %>" class="btn btn-warning">Update</a>
+              </div>
             </div>
           </div>
-        </div>
-      <% }); %>
-    <% } else { %>
-      <p>No products available.</p>
-    <% } %>
-  </div>
+        <% }); %>
+      </div>
+    <% }); %>
+  <% } else { %>
+    <p>No products available.</p>
+  <% } %>
 </div>
+
 
 <script src="/js/restaurant/products.js"></script>            
 <%- include('.././footer.ejs') %>

@@ -1,0 +1,39 @@
+<%- include('.././header.ejs') %>
+<!-- I include the navbar from customer layout because they have the same navbar -->
+<%- include('../customer/layout/navbar.ejs') %>
+
+<div class="container mt-5">
+    <% if (products.length > 0) { %>
+      <% const groupedProducts = {}; %>
+      <% products.forEach(product => { %>
+        <% const category = product.category.name; %>
+        <% if (!groupedProducts[category]) { %>
+          <% groupedProducts[category] = []; %>
+        <% } %>
+        <% groupedProducts[category].push(product); %>
+      <% }); %>
+      <% Object.keys(groupedProducts).forEach(category => { %>
+        <h2 class="mb-4"><%= category %></h2>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+          <% groupedProducts[category].forEach(product => { %>
+            <div class="col">
+              <div class="card">
+                <img src="/images/restaurant/<%= product.restaurant.lowername %>/products/<%= product.category.lowername %>/<%= product.image %>" class="card-img-top" alt="Product Image">
+                <div class="card-body">
+                  <h5 class="card-title"><%= product.name %></h5>
+                  <p class="card-text"><%= product.description %></p>
+                  <p class="card-text">Price: ₱<%= product.price %></p>
+                  <!-- Add more product details as needed -->
+                  <a href="/restaurant/buy-product/<%= product._id %>" class="btn btn-primary">Buy</a>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+      <% }); %>
+    <% } else { %>
+      <p>No products available.</p>
+    <% } %>
+  </div>
+
+<%- include('.././footer.ejs') %>

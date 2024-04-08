@@ -1,0 +1,9 @@
+
+.card {
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+  }
+
+  .row-cols-md-3 > * {
+    width: 20% !important;
+  }

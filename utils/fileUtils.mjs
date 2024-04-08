@@ -32,4 +32,15 @@ const deleteFile = (filePathToDelete) => {
     }          
   });
 }
-export { deleteDirectory, renameFolder, createDirectory, deleteFile };
+
+const moveImageToNewDirectory = async (oldPath, newPath) => {
+  try {
+      await fs.promises.rename(oldPath, newPath);
+      console.log('Image moved successfully.');
+  } catch (error) {
+      console.error('Error moving image:', error);
+  }
+};
+
+
+export { deleteDirectory, renameFolder, createDirectory, deleteFile, moveImageToNewDirectory };

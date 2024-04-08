@@ -14,7 +14,6 @@
     <input type="text" class="form-control" id="description" name="description" required>
   </div>
   <!-- Set the restaurant -->
-  <input type="hidden" class="form-control" id="restaurant" name="restaurant" value="" required>
     <button type="submit" class="btn btn-primary">Add Product</button>   
 </form>
 <% if (categories.length) { %>
@@ -36,7 +35,7 @@
           <td><%= category.name %></td>
           <td>
             <p class="d-none" id="route-path">/restaurant/delete-category</p>
-            <a href="/adminux/update-category/<%= category._id %>" class="btn btn-sm btn-primary">Update</a>
+            <a href="/restaurant/update-category/<%= category._id %>" class="btn btn-sm btn-warning">Update</a>
             <button class="btn btn-sm btn-danger" onclick="deleteObject('<%= category._id %>')">Delete</button>
           </td>
           <!-- Display other properties of the Restaurant model as needed -->

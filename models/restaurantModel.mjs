@@ -36,11 +36,7 @@ const restaurantSchema = new Schema({
     image: {
         type: String,
         required: true
-    },
-    products: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Product'
-      }]
+    }
 });
 
 const Restaurant = mongoose.model('Restaurant', restaurantSchema);

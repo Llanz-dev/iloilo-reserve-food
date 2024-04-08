@@ -1,6 +1,7 @@
 import { hashPassword, lowerCase } from '../utils/helpers.mjs';
 import Restaurant from '../models/restaurantModel.mjs';
-import Customer from '../models/customerModel.mjs';
+import Product from '../models/productModel.mjs';
+import Category from '../models/categoryModel.mjs';
 import { renameFolder, deleteDirectory } from '../utils/fileUtils.mjs';
 import fs from 'fs';
 import path from 'path';
@@ -81,9 +82,6 @@ const POSTUpdateRestaurant = async (req, res) => {
     const restaurantID = req.params.id;
     const updatedData = req.body;
     const restaurant = await Restaurant.findById(restaurantID);
-    console.log('----------------------');
-    console.log('updatedData.name:', updatedData.name);
-    console.log('restaurant.name:', restaurant.name);
 
     // Check if a new image file exists, and if both the name and image have been updated
     if (req.file && updatedData.name && updatedData.name !== restaurant.name) {
@@ -92,21 +90,21 @@ const POSTUpdateRestaurant = async (req, res) => {
       updatedData.image = req.file.filename;
 
     } else if (updatedData.name && restaurant.name && updatedData.name !== restaurant.name) {
-      console.log('Rename the folder with the new name of restaurant');
+        console.log('Rename the folder with the new name of restaurant');
 
-      // Convert the updated restaurant name to lowercase
-      updatedData.lowername = lowerCase(req.body.name);
+        // Convert the updated restaurant name to lowercase
+        updatedData.lowername = lowerCase(req.body.name);
 
-      // Define the old and new paths for the restaurant directory
-      const oldPath = `./public/images/restaurant/${restaurant.lowername}`;
-      const newPath = `./public/images/restaurant/${updatedData.lowername}`;
-      
-      // Rename the restaurant directory
-      renameFolder(oldPath, newPath);
+        // Define the old and new paths for the restaurant directory
+        const oldPath = `./public/images/restaurant/${restaurant.lowername}`;
+        const newPath = `./public/images/restaurant/${updatedData.lowername}`;
+        
+        // Rename the restaurant directory
+        renameFolder(oldPath, newPath);
     } else if (req.file) {
         updatedData.image = req.file.filename;
     } else {
-      updatedData.image = req.body.old_restaurant_banner_image;
+        updatedData.image = req.body.old_restaurant_banner_image;
     }
 
     if (updatedData.password !== updatedData.reEnterPassword) {
@@ -151,8 +149,14 @@ const DELETERestaurant = async (req, res) => {
     // Delete the restaurant directory
     deleteDirectory(`./public/images/restaurant/${restaurant.lowername}`);
 
+    // Delete associated products
+    await Product.deleteMany({ restaurant: restaurantID });
+
+    // Delete associated categories
+    await Category.deleteMany({ restaurant: restaurantID });
+
     // Delete the restaurant
-    await Restaurant.findByIdAndDelete(restaurantID)
+    await Restaurant.findByIdAndDelete(restaurantID);
 
     res.json('successfully deleted');
   } catch (err) {

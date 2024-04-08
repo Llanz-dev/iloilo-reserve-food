@@ -4,14 +4,14 @@ const selectElement = document.getElementById('category');
 const lowerText = document.getElementById('lowerText');
 
 const convertLowerCase = (text) => {
-    return text.toLowerCase().toLowerCase().replace(/\s/g, '');
+    return text.toLowerCase().replace(/\s/g, '');
 }
 
-lowerText.value = convertLowerCase(selectElement.value);
+lowerText.value = convertLowerCase(selectElement.options[selectElement.selectedIndex].innerHTML);
 
 console.log('lowerText.value:', lowerText.value);
 
 selectElement.onchange = () => {
-    lowerText.value = convertLowerCase(selectElement.value);
+    lowerText.value = convertLowerCase(selectElement.options[selectElement.selectedIndex].innerHTML);
     console.log('lowerText.value:', lowerText.value);
 }

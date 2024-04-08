@@ -3,7 +3,7 @@ import fs from 'fs';
 import { lowerCase } from '../utils/helpers.mjs';
 import Restaurant from '../models/restaurantModel.mjs';
 import Product from '../models/productModel.mjs';
-import { renameFolder, createDirectory, deleteFile } from '../utils/fileUtils.mjs';
+import { renameFolder, createDirectory, deleteFile, moveImageToNewDirectory } from '../utils/fileUtils.mjs';
 import Category from '../models/categoryModel.mjs';
 
 const getRestaurant = async (restaurantID) => {
@@ -98,7 +98,7 @@ const uploadProductStorage = multer.diskStorage({
             const categoryName = req.body.lowerCategory;
             const destinationPath = `./public/images/restaurant/${restaurantName}/products/${categoryName}`;
 
-            createDirectory(destinationPath);
+            createDirectory(destinationPath);            
 
             cb(null, destinationPath);
         } catch (err) {
@@ -113,6 +113,8 @@ const uploadProductStorage = multer.diskStorage({
 
 const updateProductStorage = multer.diskStorage({
     destination: async function (req, file, cb) {
+        console.log('---- updateProductStorage ----');
+
         try {
             // Get the restaurant ID from the request
             const restaurantID = req.restaurantID;
@@ -120,50 +122,38 @@ const updateProductStorage = multer.diskStorage({
 
             // Retrieve the restaurant details from the database
             const restaurant = await getRestaurant(restaurantID);
-            const product = await Product.findOne({ _id: productID, restaurant: restaurantID });
+            const product = await Product.findById(productID).populate('category restaurant');
 
             if (!restaurant) {
                 throw new Error('Restaurant not found');
             }
 
             // Use the restaurant name for creating the directory path
-            const oldCategoryName = product.lowerCategory;
-            const productImage = product.image;
+            const oldCategoryName = product.category.lowername;
             const newCategoryName = req.body.lowerCategory;
-            const restaurantName = restaurant.lowername;
+            const restaurantName = product.restaurant.lowername;
 
-            // If the restaurant change the banner image only
-            if (oldCategoryName === newCategoryName) {
-                const filePathToDelete = `./public/images/restaurant/${restaurantName}/products/${oldCategoryName}/${productImage}`;
-                // File exists, proceed with deletion
-                deleteFile(filePathToDelete);
-                const destinationPath = `./public/images/restaurant/${restaurantName}/products/${oldCategoryName}`; 
-                cb(null, destinationPath);  
-            // If the restaurant change both product image and product category
+            // If the restaurant changes only the product image
+            if (oldCategoryName !== newCategoryName) {
+                const destinationPath = `./public/images/restaurant/${restaurantName}/products/${newCategoryName}`;
+               cb(null, destinationPath);
+            // If the restaurant changes only the product category
             } else {
-                // Get the restaurant existing banner image
-                const filePathToDelete = `./public/images/restaurant/${restaurantName}/products/${oldCategoryName}/${productImage}`;
-                // File exists, proceed with deletion             
-                deleteFile(filePathToDelete);
-                // Define a path for old and new
-                const oldPath = `./public/images/restaurant/${restaurantName}/products/${oldCategoryName}`;
-                const newPath = `./public/images/restaurant/${restaurantName}/products/${newCategoryName}`;
-                // Then rename the folder of restaurant
-                renameFolder(oldPath, newPath);
-                const destinationPath = `./public/images/restaurant/${restaurantName}/products/${newCategoryName}`;  
-                cb(null, destinationPath);  
+                const destinationPath = `./public/images/restaurant/${restaurantName}/products/${oldCategoryName}`;
+                cb(null, destinationPath);
             }
 
         } catch (err) {
             console.error('Error creating destination directory:', err);
             cb(err);
         }
-    }, 
+    },
     filename: function (req, file, cb) {
         // Generate a unique filename using timestamp and original filename
         cb(null, file.originalname);
     }
 });
+
 
 // Check file type
 const fileFilter = (req, file, cb) => {

@@ -71,12 +71,23 @@ April 1 2024:
 April 2 2024:
 	- Converted the delete restaurant javascript client side file to delete object for more dynamic.
 
-April 5 2024
-	- Created an update product
+April 5 2024:
+	- Created an update product page and display the information.
+
+April 6 2024:
+	- Update product page is functional. You can now update and delete.
+	- When you delete the restaurant it will also delete all the associates with it.
+	
+April 7 to 8 2024:
+	- Categorized display of the products.
+	- Fix the directories of updating the products. 
 
 Problems:
 	- All the database and associates to restaurant must be deleted when that restaurant would be deleted.
 	- In the admin side it must be shown to it all the category, product and revenue of the restaurant.
+	- When you delete a specific category then what will happen to the products associates with it?
+	- When you add a category name with a slash like his: "Native Blend Coffee (Hot/Iced)" it does not create a folder for this name. So you need to prevent entering if there is slash "/"
+	- When you add or update the same image file then the error arise. You need to create a uniqie name of file on every upload.
 
 Restaurant:
 The Hungry Hound

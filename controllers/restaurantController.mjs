@@ -1,8 +1,8 @@
 import Restaurant from '../models/restaurantModel.mjs';
 import Product from '../models/productModel.mjs';
 import Category from '../models/categoryModel.mjs';
-import { hashPassword, comparePassword, handleErrors, createToken, fourtyEightHours, lowerCase, toTitleCase, hasProduct } from '../utils/helpers.mjs';
-import { createDirectory, deleteDirectory, deleteFile, renameFolder } from '../utils/fileUtils.mjs';
+import { comparePassword, handleErrors, createToken, fourtyEightHours, lowerCase, hasProduct } from '../utils/helpers.mjs';
+import { createDirectory, deleteDirectory, deleteFile, renameFolder, moveImageToNewDirectory } from '../utils/fileUtils.mjs';
 
 
 const GETrestaurantLogin = async (req, res) => {
@@ -41,22 +41,12 @@ const POSTRestaurantLogin = async (req, res) => {
 };
 
 const GETProducts = async (req, res) => {
+    console.log('---- GETProducts ----');
     try {
-        const restaurantId = req.restaurantID;
-        const restaurant = await Restaurant.findById(restaurantId).populate({
-            path: 'products',
-            populate: { path: 'category' } // Populate the category field within products
-        });
-        
-        if (!restaurant) {
-            return res.status(404).json({ message: 'Restaurant not found' });
-        }
-
-        const products = restaurant.products;
-        console.log(products);
-
-        const pageTitle = 'Products';
-        res.render('restaurant/products', { pageTitle, products });
+        const restaurantID = req.restaurantID;
+        const products = await Product.find({ restaurant: restaurantID }).populate('restaurant category');
+    
+        res.render('restaurant/products', { pageTitle: 'Products', products });
     } catch (err) {
         console.error(err);
         res.status(500).send('Server Error');
@@ -104,7 +94,7 @@ const POSTAddProduct = async (req, res) => {
         // Add the product to the products array of the corresponding restaurant    
         await Restaurant.findByIdAndUpdate(restaurantID, { $push: { products: product._id } });
 
-        res.redirect('/restaurant/dashboard'); // Redirect to dashboard after adding product
+        res.redirect('/restaurant/products'); // Redirect to dashboard after adding product
     } catch (err) {
         console.error(err);
         res.status(500).send('Server Error');
@@ -114,20 +104,18 @@ const POSTAddProduct = async (req, res) => {
 const GETUpdateProduct = async (req, res) => {
     console.log('---- GETUpdateProduct ----');
     try {
+        const pageTitle = 'Update Product';
+
         const product = await Product.findById(req.params.id).populate('restaurant category');
-        const restaurantName = product.restaurant.lowername;
-        const productImage = product.image;
-        const categoryName = product.category.lowername;
-        console.log('categoryName:', categoryName);
+
         if (!product) {
             return res.status(404).json({ message: 'Product not found' });
         }
 
-        const pageTitle = 'Update Product';
         // Fetch categories to populate the dropdown
-        const restaurantID = req.restaurantID;
-        const categories = await Category.find({ restaurant: restaurantID }).populate('restaurant');
-        res.render('restaurant/update-product', { pageTitle, product, categories, restaurantName, productImage, categoryName, hasProduct });
+        const categories = await Category.find({ restaurant: product.restaurant }).populate('restaurant');
+
+        res.render('restaurant/update-product', { pageTitle, product, categories, hasProduct });
     } catch (err) {
         console.error(err);
         res.status(500).send('Server Error');
@@ -135,55 +123,55 @@ const GETUpdateProduct = async (req, res) => {
 }
 
 const POSTUpdateProduct = async (req, res) => {
-    console.log('POSTUpdateProduct');
+    console.log('---- POSTUpdateProduct ----');
     try {
         const productID = req.params.id;
-        const restaurantID = req.restaurantID;
-        const restaurant = await Restaurant.findById(restaurantID);
-        const restaurantName = restaurant.lowername;
-        const product = await Product.findById(productID);
+        const product = await Product.findById(productID).populate('category restaurant');
         const updatedData = req.body;
-        const oldCategoryName = product.lowerCategory;
-        const newCategoryName = updatedData.lowerCategory;     
-        // Check if the user has updated the image
-        const productImage = req.file ? req.file.filename : undefined;       
-        
-        if (newCategoryName && oldCategoryName !== newCategoryName) {
-            // Define the old and new paths for the restaurant directory
-            const oldPath = `./public/images/restaurant/${restaurantName}/products/${oldCategoryName}`;
-            const newPath = `./public/images/restaurant/${restaurantName}/products/${newCategoryName}`;
-            
-            // Rename the restaurant directory
-            renameFolder(oldPath, newPath);
+        const oldCategoryName = product.category.lowername;
+        const newCategoryName = updatedData.lowerCategory;
+        const restaurantName = product.restaurant.lowername;
+        const oldProductImage = updatedData.old_product_image;
+        updatedData.image = req.file ? req.file.filename : undefined;
+
+        // If category name and product image change
+        if (oldCategoryName !== newCategoryName && updatedData.image) {
+            const imagePath = `./public/images/restaurant/${restaurantName}/products/${oldCategoryName}/${oldProductImage}`;
+            deleteFile(imagePath);
         }
 
-        // Update the product details
-        const updatedProduct = await Product.findByIdAndUpdate(productID, {
-            name: updatedData.name,
-            description: updatedData.description,
-            price: updatedData.price,
-            category: updatedData.category,
-            ...(newCategoryName && { lowerCategory: newCategoryName }), // Include lowerCategoy field only if it is updated
-            ...(productImage && { image: productImage }) // Include image field only if a new image is provided
-        }, { new: true });
+        // If only category name change
+        if (oldCategoryName !== newCategoryName) {
+            // Construct old and new image paths
+            const oldImagePath = `./public/images/restaurant/${restaurantName}/products/${oldCategoryName}/${oldProductImage}`;
+            const newImagePath = `./public/images/restaurant/${restaurantName}/products/${newCategoryName}/${oldProductImage}`;
 
-        if (!updatedProduct) {
-            return res.status(404).send('Product not found');
+            // Move the image file to the new directory
+            await moveImageToNewDirectory(oldImagePath, newImagePath);
         }
 
-        res.redirect('/restaurant/dashboard'); // Redirect to dashboard after updating product
+        // If only product image change
+        if (updatedData.image) {
+            // Delete old image
+            const imagePath = `./public/images/restaurant/${restaurantName}/products/${oldCategoryName}/${oldProductImage}`;
+            deleteFile(imagePath);
+        }
+
+        if (!product) res.status(404).json('Product was not found');
+
+        await Product.findByIdAndUpdate(productID, updatedData);
+        res.redirect('/restaurant/products'); 
     } catch (err) {
         console.error(err);
-        res.status(500).send('Server Error');
+        res.json(err);
     }
 };
 
 const GETAddCategory = async (req, res) => {
     console.log('---- GETAddCategory ----');
     try {
-        const restaurantID = req.restaurantID; // Assuming you have restaurant ID in req.restaurantID
+        const restaurantID = req.restaurantID;
         const categories = await Category.find({ restaurant: restaurantID });
-        console.log('categories:', categories);
         const pageTitle = 'Add Category';
         res.render('restaurant/add-category', { pageTitle, categories });
     } catch (err) {
@@ -207,8 +195,6 @@ const POSTAddCategory = async (req, res) => {
         const restaurant = await Restaurant.findById(restaurantID);
         const restaurantName = restaurant.lowername;
         const categoryName = lowerCase(name);   
-        console.log('restaurantName:', restaurantName);
-        console.log('categoryName:', categoryName);
         const destinationPath = `./public/images/restaurant/${restaurantName}/products/${categoryName}`;
         createDirectory(destinationPath);
 
@@ -221,37 +207,104 @@ const POSTAddCategory = async (req, res) => {
     }
 }
 
+const GETUpdateCategory = async (req, res) => {
+    try {
+        const categoryID = req.params.id;
+        const getCategory = await Category.findById(categoryID);
+
+        if (!getCategory) return res.status(404).json({ error: `Category was not found` });
+
+        const restaurantID = req.restaurantID;
+        const categories = await Category.find({ restaurant: restaurantID });
+
+        res.render('restaurant/update-category', { pageTitle: 'Update Category', getCategory, categories });
+    } catch(err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+}
+
+const POSTUpdateCategory = async (req, res) => {
+    console.log('---- POSTUpdateCategory ----');
+    try {
+        const categoryID = req.params.id;
+        console.log('categoryID:', categoryID);
+        const category = await Category.findById(categoryID).populate('restaurant');
+        console.log('category:', category);
+
+        if (!category) return res.status(404).json({ error: `Category was not found` });
+
+        const updatedData = req.body;
+        console.log('updatedData:', updatedData);
+
+        const restaurantID = req.restaurantID;
+        const existingCategoryName = await Category.findOne({ name: updatedData.name, restaurant: restaurantID });
+        if (existingCategoryName) {
+            return res.status(400).json({ error: `${updatedData.name} category name already registered` });
+        }
+
+        const oldCategoryName = category.lowername;
+        const newCategoryName = updatedData.lowername;
+        console.log('oldCategoryName:', oldCategoryName);
+        console.log('newCategoryName:', newCategoryName);
+        const restaurantName = category.restaurant.lowername;
+        console.log('restaurantName:', restaurantName);
+        const oldPath = `./public/images/restaurant/${restaurantName}/products/${oldCategoryName}`;
+        const newPath = `./public/images/restaurant/${restaurantName}/products/${newCategoryName}`;
+        renameFolder(oldPath, newPath);
+
+        // Update the category from database
+        await Category.findByIdAndUpdate(categoryID, updatedData);
+        res.redirect('/restaurant/add-category');
+    } catch(err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+}
+
 const DELETECategory = async (req, res) => {
     console.log('---- POSTDeleteCategory ----');
     try {
         const categoryID = req.params.id;
-        const restaurantID = req.restaurantID;
 
-        const restaurant = await Restaurant.findById(restaurantID);
-        const category = await Category.findById(categoryID);
-        console.log('restaurant:', restaurant);
-        console.log('category:', category);
+        // Find the category to be deleted and populate the associated restaurant
+        const category = await Category.findById(categoryID).populate('restaurant');
 
-        const restaurantName = restaurant.lowername;
+        if (!category) {
+            return res.status(404).json({ error: 'Category not found' });
+        }
+
+        // Get the restaurant name and category name
+        const restaurantName = category.restaurant.lowername;
         const categoryName = category.lowername;
 
-        const destinationPath = `./public/images/restaurant/${restaurantName}/products/${categoryName}`;
-        deleteDirectory(destinationPath);
+        // Find all products belonging to the category
+        const products = await Product.find({ category: categoryID });
 
-        await Category.findByIdAndDelete(categoryID);
-        res.json('successfully deleted');
+        // Delete all associated products
+        for (const product of products) {
+            const productImagePath = `./public/images/restaurant/${restaurantName}/products/${categoryName}/${product.image}`;
+            deleteFile(productImagePath); // Delete product image
+            await Product.findByIdAndDelete(product._id); // Delete product from database
+        }
+
+        // Delete the category
+        const destinationPath = `./public/images/restaurant/${restaurantName}/products/${categoryName}`;
+        deleteDirectory(destinationPath); // Delete category folder
+        await Category.findByIdAndDelete(categoryID); // Delete category from database
+
+        res.json('Category and associated products successfully deleted');
     } catch (err) {
         console.error(err);
         res.status(500).json({ msg: err });
     }
 }
 
-// Delete Product
 const DELETEProduct = async (req, res) => {
     console.log('DELETEProduct');
     try {
         const productID = req.params.id;
-        const product = await Product.findById(productID);
+        const product = await Product.findById(productID).populate('category');
     
         if (!product) {
             return res.status(404).json({ msg: 'Product not found' });
@@ -261,11 +314,11 @@ const DELETEProduct = async (req, res) => {
         const restaurant = await Restaurant.findById(restaurantID);
 
         const restaurantName = restaurant.lowername;
-        const categoryName = product.lowerCategory;
+        const categoryName = product.category.lowername;
         const productImage = product.image;
 
-        const productImagePath = `./public/images/restaurant/${restaurantName}/products/${categoryName}/${productImage}`;
         // Delete the product image
+        const productImagePath = `./public/images/restaurant/${restaurantName}/products/${categoryName}/${productImage}`;
         deleteFile(productImagePath);
         await Product.findByIdAndDelete(productID);
         res.json('successfully deleted');
@@ -274,7 +327,6 @@ const DELETEProduct = async (req, res) => {
     }
 };
 
-// Logout restaurant
 const GETRestaurantLogout = (req, res) => {
     // Clear the restaurantToken cookie
     res.clearCookie('restaurantToken');
@@ -283,4 +335,4 @@ const GETRestaurantLogout = (req, res) => {
 };
 
 
-export { GETrestaurantLogin, POSTRestaurantLogin, GETRestaurantDashboard, GETProfileDashboard, GETAddProduct, POSTAddProduct, POSTUpdateProduct, GETProducts, GETUpdateProduct, GETAddCategory, POSTAddCategory, DELETECategory, DELETEProduct, GETRestaurantLogout };
+export { GETrestaurantLogin, POSTRestaurantLogin, GETRestaurantDashboard, GETProfileDashboard, GETAddProduct, POSTAddProduct, POSTUpdateProduct, GETProducts, GETUpdateProduct, GETAddCategory, POSTAddCategory, DELETECategory, DELETEProduct, GETUpdateCategory, POSTUpdateCategory, GETRestaurantLogout };
