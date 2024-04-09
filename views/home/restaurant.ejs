@@ -24,7 +24,10 @@
                   <p class="card-text"><%= product.description %></p>
                   <p class="card-text">Price: ₱<%= product.price %></p>
                   <!-- Add more product details as needed -->
-                  <a href="/restaurant/buy-product/<%= product._id %>" class="btn btn-primary">Buy</a>
+                  <form action="/add-to-cart" method="post">
+                    <input type="hidden" name="productId" value="<%= product._id %>">
+                    <button type="submit" class="btn btn-primary">Add to Cart</button>
+                  </form>
                 </div>
               </div>
             </div>

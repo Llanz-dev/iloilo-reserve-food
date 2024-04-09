@@ -1,4 +1,5 @@
 import Customer from '../models/customerModel.mjs';
+import Cart from '../models/cartModel.mjs';
 import { hashPassword, comparePassword, handleErrors, toTitleCase, toSmallerCase, createToken, fourtyEightHours } from '../utils/helpers.mjs';
 
 const GETLoginPage = (req, res) => {
@@ -104,9 +105,129 @@ const POSTUpdateProfile = async (req, res) => {
   }
 }
 
+// Function to handle GET request for cart page
+// Function to handle GET request for cart page
+const GETCartPage = async (req, res) => {
+  try {
+    // Retrieve the customer's ID from the authenticated user object
+    const customerID = res.locals.customer ? res.locals.customer._id : null;
+    console.log('customerID:', customerID);
+
+    if (!customerID) {
+      // If customer ID is not available, render the cart page with an empty cart
+      return res.render('customer/cart', { pageTitle: 'Cart', cartItems: [] });
+    }
+
+    // Fetch cart items for the logged-in customer
+    const cart = await Cart.findOne({ customer: customerID }).populate('items.product');
+
+    if (!cart) {
+      // If cart is empty, render the cart page with an empty cart
+      return res.render('customer/cart', { pageTitle: 'Cart', cartItems: [] });
+    }
+
+    // If cart has items, render the cart page with cart items
+    res.render('customer/cart', { pageTitle: 'Cart', cartItems: cart.items });
+  } catch (err) {
+    // Handle any errors that occur during fetching cart items
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Function to handle POST request for adding product to cart
+const POSTAddToCart = async (req, res) => {
+  console.log('---- POSTAddToCart ----');
+  try {
+    // Retrieve product ID from request body
+    const productId = req.body.productId;
+    console.log('productId:', productId);
+
+    // Retrieve the customer ID from res.locals.customer
+    const customerId = res.locals.customer ? res.locals.customer._id : null;
+    console.log('res.locals.customer:', res.locals.customer);
+
+    // Check if customer ID is available
+    if (!customerId) {
+      // Handle case where customer ID is not available (e.g., customer not authenticated)
+      return res.status(401).json({ error: 'Customer not authenticated' });
+    }
+
+    // Find the cart for the customer or create a new one if it doesn't exist
+    let cart = await Cart.findOne({ customer: customerId });
+    if (!cart) {
+      cart = new Cart({
+        customer: customerId,
+        items: []
+      });
+    }
+
+    // Check if the product is already in the cart
+    const existingItemIndex = cart.items.findIndex(item => {
+      console.log('item.product:', item.product);
+      console.log('productId:', productId);
+      return item.product.equals(productId); // Assuming productId is a MongoDB ObjectId
+    });
+    console.log('existingItemIndex:', existingItemIndex);
+    if (existingItemIndex !== -1) {
+      // If the product already exists in the cart, increment its quantity
+      cart.items[existingItemIndex].quantity += 1;
+    } else {
+      // If the product doesn't exist in the cart, add it with a quantity of 1
+      cart.items.push({ product: productId, quantity: 1 });
+    }
+
+    // Save the updated cart
+    await cart.save();
+
+    // Redirect or send response as needed
+    res.redirect('/cart'); // Redirect to the cart page
+  } catch (err) {
+    // Handle errors
+    console.error('Error adding product to cart:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+const POSTRemoveFromCart = async (req, res) => {
+  try {
+    // Retrieve product ID from request body
+    const productId = req.body.productId;
+
+    // Retrieve the customer ID from res.locals.customer
+    const customerId = res.locals.customer ? res.locals.customer._id : null;
+
+    // Check if customer ID is available
+    if (!customerId) {
+      // Handle case where customer ID is not available (e.g., customer not authenticated)
+      return res.status(401).json({ error: 'Customer not authenticated' });
+    }
+
+    // Find the cart for the customer
+    const cart = await Cart.findOne({ customer: customerId });
+
+    // If cart doesn't exist, return an error
+    if (!cart) {
+      return res.status(404).json({ error: 'Cart not found' });
+    }
+
+    // Remove the item from the cart
+    cart.items = cart.items.filter(item => item.product != productId);
+
+    // Save the updated cart
+    await cart.save();
+
+    // Redirect or send response as needed
+    res.redirect('/cart'); // Redirect to the cart page
+  } catch (err) {
+    // Handle errors
+    console.error('Error removing product from cart:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 const GETLogout = (req, res) => {
   res.cookie('jwt', '', { maxAge: 1 });
   res.redirect('/');
 }
 
-export { GETLoginPage, POSTLoginPage, GETRegisterPage, POSTRegisterPage, GETProfilePage, POSTUpdateProfile, GETLogout };
+export { GETLoginPage, POSTLoginPage, GETRegisterPage, POSTRegisterPage, GETProfilePage, POSTUpdateProfile, GETCartPage, POSTAddToCart, POSTRemoveFromCart, GETLogout };

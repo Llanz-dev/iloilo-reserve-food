@@ -27,7 +27,7 @@ app.use('/bootstrapjs', express.static('node_modules/bootstrap/dist/js'));
 connectDB();
 
 // check user
-app.get('*', checkCustomer);
+app.use('*', checkCustomer);
 // set routes
 app.use('/', homeRoutes);
 app.use(customerRoutes);
