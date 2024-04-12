@@ -81,6 +81,18 @@ April 6 2024:
 April 7 to 8 2024:
 	- Categorized display of the products.
 	- Fix the directories of updating the products. 
+	- All the products display on customer side by restaurant.
+
+April 9 2024:
+	- I create a cart page.
+	- The "add to cart" button is functioning.
+	- You can increase the quantity of the product if the customer click the same product.
+
+April 12 2024:
+ 	- The cart is automatically cleared when the customer removes all items from it.
+ 	- Each restaurant now maintains its dedicated cart, listing all items ordered at that specific establishment.
+ 	- The cart functionality has been enhanced to adapt dynamically.
+ 	- The cart model now includes a foreign key for the restaurant, facilitating seamless association between carts and their respective restaurants.
 
 Problems:
 	- All the database and associates to restaurant must be deleted when that restaurant would be deleted.

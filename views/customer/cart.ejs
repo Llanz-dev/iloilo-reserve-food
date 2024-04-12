@@ -19,6 +19,7 @@
             <!-- Add a form for removing the product from the cart if needed -->
             <form action="/remove-from-cart" method="post">
               <input type="hidden" name="productId" value="<%= item.product._id %>">
+              <input type="hidden" name="restaurantId" value="<%= item.product.restaurant %>">
               <button type="submit" class="btn btn-danger">Remove</button>
             </form>
           </td>

@@ -1,5 +1,7 @@
 import Customer from '../models/customerModel.mjs';
 import Cart from '../models/cartModel.mjs';
+import Product from '../models/productModel.mjs';
+import Restaurant from '../models/restaurantModel.mjs';
 import { hashPassword, comparePassword, handleErrors, toTitleCase, toSmallerCase, createToken, fourtyEightHours } from '../utils/helpers.mjs';
 
 const GETLoginPage = (req, res) => {
@@ -111,7 +113,7 @@ const GETCartPage = async (req, res) => {
   try {
     // Retrieve the customer's ID from the authenticated user object
     const customerID = res.locals.customer ? res.locals.customer._id : null;
-    console.log('customerID:', customerID);
+    const restaurantId = req.params.id;
 
     if (!customerID) {
       // If customer ID is not available, render the cart page with an empty cart
@@ -119,7 +121,7 @@ const GETCartPage = async (req, res) => {
     }
 
     // Fetch cart items for the logged-in customer
-    const cart = await Cart.findOne({ customer: customerID }).populate('items.product');
+    const cart = await Cart.findOne({ customer: customerID, restaurant: restaurantId }).populate('items.product');
 
     if (!cart) {
       // If cart is empty, render the cart page with an empty cart
@@ -138,13 +140,8 @@ const GETCartPage = async (req, res) => {
 const POSTAddToCart = async (req, res) => {
   console.log('---- POSTAddToCart ----');
   try {
-    // Retrieve product ID from request body
-    const productId = req.body.productId;
-    console.log('productId:', productId);
-
     // Retrieve the customer ID from res.locals.customer
     const customerId = res.locals.customer ? res.locals.customer._id : null;
-    console.log('res.locals.customer:', res.locals.customer);
 
     // Check if customer ID is available
     if (!customerId) {
@@ -152,22 +149,25 @@ const POSTAddToCart = async (req, res) => {
       return res.status(401).json({ error: 'Customer not authenticated' });
     }
 
+    // Retrieve product ID from request body
+    const restaurantId = req.body.restaurantId;
+    const productId = req.body.productId;
+
     // Find the cart for the customer or create a new one if it doesn't exist
-    let cart = await Cart.findOne({ customer: customerId });
+    let cart = await Cart.findOne({ customer: customerId, restaurant: restaurantId });
     if (!cart) {
       cart = new Cart({
         customer: customerId,
+        restaurant: restaurantId,
         items: []
       });
     }
 
-    // Check if the product is already in the cart
+    // // Check if the product is already in the cart
     const existingItemIndex = cart.items.findIndex(item => {
-      console.log('item.product:', item.product);
-      console.log('productId:', productId);
       return item.product.equals(productId); // Assuming productId is a MongoDB ObjectId
     });
-    console.log('existingItemIndex:', existingItemIndex);
+
     if (existingItemIndex !== -1) {
       // If the product already exists in the cart, increment its quantity
       cart.items[existingItemIndex].quantity += 1;
@@ -180,7 +180,7 @@ const POSTAddToCart = async (req, res) => {
     await cart.save();
 
     // Redirect or send response as needed
-    res.redirect('/cart'); // Redirect to the cart page
+    res.redirect(`/cart/${restaurantId}`); // Redirect to the cart page
   } catch (err) {
     // Handle errors
     console.error('Error adding product to cart:', err);
@@ -202,8 +202,9 @@ const POSTRemoveFromCart = async (req, res) => {
       return res.status(401).json({ error: 'Customer not authenticated' });
     }
 
+    const restaurantId = req.body.restaurantId;
     // Find the cart for the customer
-    const cart = await Cart.findOne({ customer: customerId });
+    const cart = await Cart.findOne({ customer: customerId, restaurant: restaurantId });
 
     // If cart doesn't exist, return an error
     if (!cart) {
@@ -216,8 +217,14 @@ const POSTRemoveFromCart = async (req, res) => {
     // Save the updated cart
     await cart.save();
 
+    // If there is no items left in cart, then delete the cart
+    const hasItemsLeft = cart.items.length;
+    if (!hasItemsLeft) {
+      await Cart.deleteOne({ customer: customerId, restaurant: restaurantId })
+    }
+
     // Redirect or send response as needed
-    res.redirect('/cart'); // Redirect to the cart page
+    res.redirect(`/cart/${restaurantId}`); // Redirect to the cart page
   } catch (err) {
     // Handle errors
     console.error('Error removing product from cart:', err);

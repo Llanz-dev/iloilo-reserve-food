@@ -1,7 +1,8 @@
 <%- include('.././header.ejs') %>
 <!-- I include the navbar from customer layout because they have the same navbar -->
-<%- include('../customer/layout/navbar.ejs') %>
+<%- include('./layout/navbar.ejs') %>
 
+<h1><a href="/cart/<%= restaurant._id %>">Cart: <%= numberOfItems %></a></h1>
 <div class="container mt-5">
     <% if (products.length > 0) { %>
       <% const groupedProducts = {}; %>
@@ -26,6 +27,7 @@
                   <!-- Add more product details as needed -->
                   <form action="/add-to-cart" method="post">
                     <input type="hidden" name="productId" value="<%= product._id %>">
+                    <input type="hidden" name="restaurantId" value="<%= product.restaurant._id %>">
                     <button type="submit" class="btn btn-primary">Add to Cart</button>
                   </form>
                 </div>
