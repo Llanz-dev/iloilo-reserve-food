@@ -93,6 +93,11 @@ April 12 2024:
  	- Each restaurant now maintains its dedicated cart, listing all items ordered at that specific establishment.
  	- The cart functionality has been enhanced to adapt dynamically.
  	- The cart model now includes a foreign key for the restaurant, facilitating seamless association between carts and their respective restaurants.
+	- When there is only one product remaining in the cart, if you choose to click either the decrease button or the delete button, the cart will be removed from the database.
+	- Cart amount was calculated.
+
+April 13 2024:
+	
 
 Problems:
 	- All the database and associates to restaurant must be deleted when that restaurant would be deleted.

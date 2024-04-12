@@ -108,28 +108,31 @@ const POSTUpdateProfile = async (req, res) => {
 }
 
 // Function to handle GET request for cart page
-// Function to handle GET request for cart page
 const GETCartPage = async (req, res) => {
+  console.log('---- GETCartPage ----');
   try {
     // Retrieve the customer's ID from the authenticated user object
     const customerID = res.locals.customer ? res.locals.customer._id : null;
     const restaurantId = req.params.id;
 
+    // If customer ID is not available, render the cart page with an empty cart
     if (!customerID) {
-      // If customer ID is not available, render the cart page with an empty cart
       return res.render('customer/cart', { pageTitle: 'Cart', cartItems: [] });
     }
 
     // Fetch cart items for the logged-in customer
     const cart = await Cart.findOne({ customer: customerID, restaurant: restaurantId }).populate('items.product');
+    let cartAmount = 0;
 
+    // If cart is empty, render the cart page with an empty cart
     if (!cart) {
-      // If cart is empty, render the cart page with an empty cart
-      return res.render('customer/cart', { pageTitle: 'Cart', cartItems: [] });
+      return res.render('customer/cart', { pageTitle: 'Cart', cartItems: [], cartAmount });
     }
 
+    cartAmount = cart.amount;
+    
     // If cart has items, render the cart page with cart items
-    res.render('customer/cart', { pageTitle: 'Cart', cartItems: cart.items });
+    res.render('customer/cart', { pageTitle: 'Cart', cartItems: cart.items, cartAmount });
   } catch (err) {
     // Handle any errors that occur during fetching cart items
     res.status(500).json({ error: err.message });
@@ -153,27 +156,40 @@ const POSTAddToCart = async (req, res) => {
     const restaurantId = req.body.restaurantId;
     const productId = req.body.productId;
 
+    const product = await Product.findById(productId);
+    const productPrice = product.price;
+
     // Find the cart for the customer or create a new one if it doesn't exist
     let cart = await Cart.findOne({ customer: customerId, restaurant: restaurantId });
     if (!cart) {
       cart = new Cart({
         customer: customerId,
         restaurant: restaurantId,
+        amount: productPrice,
         items: []
       });
     }
 
-    // // Check if the product is already in the cart
+    // Check if the product is already in the cart
     const existingItemIndex = cart.items.findIndex(item => {
       return item.product.equals(productId); // Assuming productId is a MongoDB ObjectId
     });
 
     if (existingItemIndex !== -1) {
-      // If the product already exists in the cart, increment its quantity
+      // If the product already exists in the cart, increment its quantity and amount
+      console.log('If');
       cart.items[existingItemIndex].quantity += 1;
+      cart.amount += productPrice;
     } else {
-      // If the product doesn't exist in the cart, add it with a quantity of 1
-      cart.items.push({ product: productId, quantity: 1 });
+      // If the product does exist in the cart, add it with a quantity of 1
+      // Increment the amount when adding a new item to the cart
+      if (cart.items.length) {
+        cart.amount += productPrice;
+        cart.items.push({ product: productId, quantity: 1, amount: productPrice });
+      } else {
+        // If the product doesn't exist in the cart, add it with a quantity of 1
+        cart.items.push({ product: productId, quantity: 1, amount: productPrice });
+      }
     }
 
     // Save the updated cart
@@ -232,9 +248,58 @@ const POSTRemoveFromCart = async (req, res) => {
   }
 };
 
+const POSTUpdateCart = async (req, res) => {
+  try {
+    const { customerId, restaurantId, productId, action } = req.body;
+
+    // Find the cart for the customer and the specific restaurant
+    const cart = await Cart.findOne({ customer: customerId, restaurant: restaurantId });
+
+    if (!cart) {
+      return res.status(404).json({ error: 'Cart not found' });
+    }
+
+    // Find the index of the product in the cart items array
+    const productIndex = cart.items.findIndex(item => item.product.toString() === productId);
+
+    if (productIndex === -1) {
+      return res.status(404).json({ error: 'Product not found in cart' });
+    }
+    
+    const product = await Product.findById(productId);
+    const productPrice = product.price;
+
+    // Update the quantity of the product in the cart
+    if (action === 'increase') {
+        cart.items[productIndex].quantity += 1;
+        cart.amount += productPrice;
+    } else if (cart.items[productIndex].quantity === 1 && cart.items.length === 1 && action === 'decrease') {
+        cart.amount -= productPrice;
+        return await POSTRemoveFromCart(req, res);
+    } else if (cart.items[productIndex].quantity === 1 && action === 'decrease') {
+        cart.amount -= productPrice;
+        cart.items.splice(productIndex, 1);
+    } else if (action === 'decrease') {
+        cart.amount -= productPrice;
+        cart.items[productIndex].quantity -= 1;
+    }
+
+    // Save the updated cart
+    await cart.save();
+
+    // Send success response
+    res.redirect(`/cart/${restaurantId}`); // Redirect to the cart page
+  } catch (err) {
+    // Handle errors
+    console.error('Error updating cart:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+
 const GETLogout = (req, res) => {
   res.cookie('jwt', '', { maxAge: 1 });
   res.redirect('/');
 }
 
-export { GETLoginPage, POSTLoginPage, GETRegisterPage, POSTRegisterPage, GETProfilePage, POSTUpdateProfile, GETCartPage, POSTAddToCart, POSTRemoveFromCart, GETLogout };
+export { GETLoginPage, POSTLoginPage, GETRegisterPage, POSTRegisterPage, GETProfilePage, POSTUpdateProfile, GETCartPage, POSTAddToCart, POSTRemoveFromCart, POSTUpdateCart, GETLogout };

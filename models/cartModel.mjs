@@ -26,6 +26,11 @@ const cartSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Restaurant',
     required: true
+  },  
+  amount: {
+    type: Number,
+    default: 0,
+    required: true
   },
   items: [cartItemSchema] // Array of cart items
 }, {
