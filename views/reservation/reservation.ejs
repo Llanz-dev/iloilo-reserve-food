@@ -1,0 +1,31 @@
+<%- include('.././header.ejs') %>
+<%- include('../customer/layout/navbar.ejs') %>
+<div class="container">
+  <h1>Create Reservation</h1>
+  <h2>Amount: <%= cart.amount %></h2>
+  <form action="/reservation/<%= cart._id %>" method="POST">
+    <input type="hidden" id="customer" name="customer" class="form-control" value="<%= cart.customer._id %>">
+    <input type="hidden" id="restaurant" name="restaurant" class="form-control" value="<%= cart.restaurant._id %>">
+    <div class="form-group">
+      <label for="reservation_date">Reservation Date:</label>
+      <input type="date" id="reservation_date" name="reservation_date" class="form-control" required>
+    </div>
+    <div class="form-group">
+      <label for="reservation_time">Reservation Time:</label>
+      <input type="time" id="reservation_time" name="reservation_time" class="form-control" required>
+    </div>
+    <div class="form-group">
+      <label for="num_pax">Number of Pax:</label>
+      <br>
+      <small><i>From 1 to 17</i></small>
+      <input type="number" id="num_pax" name="num_pax" class="form-control" required>
+    </div>
+    <div class="form-group">
+      <label for="notes">Notes:</label>
+      <textarea id="notes" name="notes" class="form-control" placeholder="optional"></textarea>
+    </div>
+    <a href="/cart/<%= restaurantID %>" class="btn btn-warning">Back</a>
+    <button type="submit" class="btn btn-primary">Create Reservation</button>
+  </form>
+</div>
+<%- include('.././footer.ejs') %>

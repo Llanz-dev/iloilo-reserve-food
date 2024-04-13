@@ -1,7 +1,6 @@
 import Customer from '../models/customerModel.mjs';
 import Cart from '../models/cartModel.mjs';
 import Product from '../models/productModel.mjs';
-import Restaurant from '../models/restaurantModel.mjs';
 import { hashPassword, comparePassword, handleErrors, toTitleCase, toSmallerCase, createToken, fourtyEightHours } from '../utils/helpers.mjs';
 
 const GETLoginPage = (req, res) => {
@@ -123,16 +122,17 @@ const GETCartPage = async (req, res) => {
     // Fetch cart items for the logged-in customer
     const cart = await Cart.findOne({ customer: customerID, restaurant: restaurantId }).populate('items.product');
     let cartAmount = 0;
+    const cartID = cart._id;
 
     // If cart is empty, render the cart page with an empty cart
     if (!cart) {
-      return res.render('customer/cart', { pageTitle: 'Cart', cartItems: [], cartAmount });
+      return res.render('customer/cart', { pageTitle: 'Cart', cartItems: [], cartID, cartAmount });
     }
 
     cartAmount = cart.amount;
     
     // If cart has items, render the cart page with cart items
-    res.render('customer/cart', { pageTitle: 'Cart', cartItems: cart.items, cartAmount });
+    res.render('customer/cart', { pageTitle: 'Cart', cartItems: cart.items, cartID, cartAmount });
   } catch (err) {
     // Handle any errors that occur during fetching cart items
     res.status(500).json({ error: err.message });
@@ -177,7 +177,6 @@ const POSTAddToCart = async (req, res) => {
 
     if (existingItemIndex !== -1) {
       // If the product already exists in the cart, increment its quantity and amount
-      console.log('If');
       cart.items[existingItemIndex].quantity += 1;
       cart.amount += productPrice;
     } else {
@@ -239,8 +238,9 @@ const POSTRemoveFromCart = async (req, res) => {
     const productQuantity = cart.items[productIndex].quantity;
     const amountOfProduct = productPrice * productQuantity;
 
+    // This will decrease the amount of the cart if you click the remove button.
     cart.amount -= amountOfProduct;
-    
+
     // Remove the item from the cart
     cart.items = cart.items.filter(item => item.product != productId);
 
@@ -309,7 +309,6 @@ const POSTUpdateCart = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
-
 
 const GETLogout = (req, res) => {
   res.cookie('jwt', '', { maxAge: 1 });

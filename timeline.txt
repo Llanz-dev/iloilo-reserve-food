@@ -97,7 +97,9 @@ April 12 2024:
 	- Cart amount was calculated.
 
 April 13 2024:
-	- Amount of product will decrease if the remove button will clicked in cart page.
+	- The quantity of the product will decrease when the remove button is clicked on the cart page.
+	- I have created models, controllers, and routes for reservations.
+	- I have separated the payment and reservation functionalities into their own applications.
 
 Problems:
 	- All the database and associates to restaurant must be deleted when that restaurant would be deleted.
