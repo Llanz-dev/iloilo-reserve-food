@@ -97,7 +97,7 @@ April 12 2024:
 	- Cart amount was calculated.
 
 April 13 2024:
-	
+	- Amount of product will decrease if the remove button will clicked in cart page.
 
 Problems:
 	- All the database and associates to restaurant must be deleted when that restaurant would be deleted.

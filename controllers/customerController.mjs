@@ -227,6 +227,20 @@ const POSTRemoveFromCart = async (req, res) => {
       return res.status(404).json({ error: 'Cart not found' });
     }
 
+    // Find the index of the product in the cart items array
+    const productIndex = cart.items.findIndex(item => item.product.toString() === productId);
+
+    if (productIndex === -1) {
+      return res.status(404).json({ error: 'Product not found in cart' });
+    }
+    
+    const product = await Product.findById(productId);
+    const productPrice = product.price;
+    const productQuantity = cart.items[productIndex].quantity;
+    const amountOfProduct = productPrice * productQuantity;
+
+    cart.amount -= amountOfProduct;
+    
     // Remove the item from the cart
     cart.items = cart.items.filter(item => item.product != productId);
 
