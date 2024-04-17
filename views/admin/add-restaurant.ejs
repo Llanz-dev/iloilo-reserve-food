@@ -6,6 +6,16 @@
       <div class="card bg-black text-white">
         <div class="card-body">
           <h1 class="card-title text-center mb-4">Restaurant Registration</h1>
+          <% if (typeof error !== 'undefined') { %>
+            <div class="alert alert-danger">
+              <%= error %>
+            </div>
+          <% } %>
+          <!-- <div id="error-container" class="alert alert-danger" style="display: none;">
+            <p id="error-username"></p>
+            <p id="error-name"></p>
+            <p id="error-password"></p>
+          </div> -->
           <form action="/adminux/restaurant-registration" method="post" id="registration-restaurant-form" enctype="multipart/form-data">
             <div class="form-group">
               <label for="username" class="form-label">Username</label>
@@ -57,4 +67,5 @@
 
 <script src="/js/showExistingImage.js"></script>            
 <script src="/js/textInputLowerCase.js"></script>            
+<script src="/js/admin/add-restaurant.js"></script>            
 <%- include('.././footer.ejs') %>

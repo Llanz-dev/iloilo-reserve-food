@@ -31,14 +31,19 @@ const POSTAddRestaurant = async (req, res) => {
 
     // Check if the restaurant name is already registered
     const existingUsername = await Restaurant.findOne({ username });
-    if (existingUsername) {
-      return res.status(400).json({ error: `${username} already registered` });
+    if (existingUsername) { 
+      throw Error(`Username "${username}" already registered`);
+    }
+
+    const existingName = await Restaurant.findOne({ name });
+    if (existingName) { 
+      throw Error(`Name "${name}" already registered`);
     }
 
     // Check if the restaurant email is already registered
     const existingEmail = await Restaurant.findOne({ email });
     if (existingEmail) {
-      return res.status(400).json({ error: `${email} already registered` });
+      throw Error(`Email "${email}" already registered`);
     }
 
     // Check if passwords match
@@ -55,7 +60,8 @@ const POSTAddRestaurant = async (req, res) => {
     res.redirect('/adminux');
   } catch (err) {
     console.log('POSTAddRestaurant:', err);
-    res.status(500).json({ error: err.message });
+    // If there's an error, render the template with the error message
+    res.status(500).render('admin/add-restaurant', { pageTitle: 'Restaurant registration', error: err.message });
   }
 };
 
