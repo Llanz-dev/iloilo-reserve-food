@@ -11,11 +11,6 @@
               <%= error %>
             </div>
           <% } %>
-          <!-- <div id="error-container" class="alert alert-danger" style="display: none;">
-            <p id="error-username"></p>
-            <p id="error-name"></p>
-            <p id="error-password"></p>
-          </div> -->
           <form action="/adminux/restaurant-registration" method="post" id="registration-restaurant-form" enctype="multipart/form-data">
             <div class="form-group">
               <label for="username" class="form-label">Username</label>
@@ -67,5 +62,4 @@
 
 <script src="/js/showExistingImage.js"></script>            
 <script src="/js/textInputLowerCase.js"></script>            
-<script src="/js/admin/add-restaurant.js"></script>            
 <%- include('.././footer.ejs') %>

@@ -121,18 +121,20 @@ const GETCartPage = async (req, res) => {
 
     // Fetch cart items for the logged-in customer
     const cart = await Cart.findOne({ customer: customerID, restaurant: restaurantId }).populate('items.product');
+    
+    const numberOfItems = cart ? cart.items.length : 0;
     let cartAmount = 0;
-    const cartID = cart._id;
 
     // If cart is empty, render the cart page with an empty cart
     if (!cart) {
-      return res.render('customer/cart', { pageTitle: 'Cart', cartItems: [], cartID, cartAmount });
+      return res.render('customer/cart', { pageTitle: 'Cart', cartItems: [], cartID: 0, cartAmount, numberOfItems });
     }
+    const cartID = cart._id;
 
     cartAmount = cart.amount;
     
     // If cart has items, render the cart page with cart items
-    res.render('customer/cart', { pageTitle: 'Cart', cartItems: cart.items, cartID, cartAmount });
+    res.render('customer/cart', { pageTitle: 'Cart', cartItems: cart.items, cartID, cartAmount, numberOfItems });
   } catch (err) {
     // Handle any errors that occur during fetching cart items
     res.status(500).json({ error: err.message });

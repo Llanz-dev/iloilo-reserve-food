@@ -34,9 +34,9 @@ const POSTRestaurantLogin = async (req, res) => {
         res.cookie('restaurantToken', token, { httpOnly: true, maxAge: fourtyEightHours * 1000 });
         res.redirect('/restaurant/dashboard');
     } catch (err) {
-        const errors = handleErrors(err);
-        console.log(errors);
-        return res.status(400).json({ errors });
+        console.log('POSTRestaurantLogin:', err);
+        // If there's an error, render the template with the error message
+        res.status(500).render('restaurant/login', { pageTitle: 'Restaurant', error: err.message });
     }
 };
 
@@ -45,7 +45,6 @@ const GETProducts = async (req, res) => {
     try {
         const restaurantID = req.restaurantID;
         const products = await Product.find({ restaurant: restaurantID }).populate('restaurant category');
-    
         res.render('restaurant/products', { pageTitle: 'Products', products });
     } catch (err) {
         console.error(err);

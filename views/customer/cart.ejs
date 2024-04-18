@@ -3,7 +3,9 @@
 <!-- Assuming you have a table to display the cart items -->
 <h2>Amount: <%= cartAmount %></h2>
 <!-- Help me to route my reservation -->
-<h2><a href="/reservation/<%= cartID %>">Reservation</a></h2>
+<% if (numberOfItems !== 0) { %>
+    <h2><a href="/reservation/<%= cartID %>">Reservation</a></h2> 
+<% } %>
 <table class="table">
     <thead>
         <tr>

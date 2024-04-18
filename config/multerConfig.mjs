@@ -25,7 +25,7 @@ const uploadBannerStorage = multer.diskStorage({
             const restaurantName = req.body.lowername;
 
             const destinationPath = `./public/images/restaurant/${restaurantName}/banner`;  
-            fs.mkdirSync(destinationPath, {recursive: true});
+            createDirectory(destinationPath);
             cb(null, destinationPath);
         } catch (error) {
             console.error(error);
@@ -153,7 +153,6 @@ const updateProductStorage = multer.diskStorage({
         cb(null, file.originalname);
     }
 });
-
 
 // Check file type
 const fileFilter = (req, file, cb) => {

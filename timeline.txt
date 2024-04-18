@@ -101,6 +101,13 @@ April 13 2024:
 	- I have created models, controllers, and routes for reservations.
 	- I have separated the payment and reservation functionalities into their own applications.
 
+April 14 to 17 2024:
+	- I was stuck to catching the errors to display to front-end.
+
+April 18 2924:
+	- Finally, display the errors to front-end.
+	
+
 Problems:
 	- All the database and associates to restaurant must be deleted when that restaurant would be deleted.
 	- In the admin side it must be shown to it all the category, product and revenue of the restaurant.

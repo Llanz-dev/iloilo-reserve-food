@@ -1,6 +1,11 @@
 <%- include('.././header.ejs') %>
     <div class="form-container">
         <h2>Restaurant Login</h2>
+        <% if (typeof error !== 'undefined') { %>
+            <div class="alert alert-danger">
+              <%= error %>
+            </div>
+          <% } %>
         <form action="/restaurant" method="post" id="login-form">          
             <div class="mb-3">
                 <p class="error-field" id="error-username"></p>
