@@ -106,7 +106,10 @@ April 14 to 17 2024:
 
 April 18 2924:
 	- Finally, display the errors to front-end.
-	
+
+April 19 2024:
+	- The code modifies a boolean variable in response to dynamically determining if three particular form input fields in the front-end JavaScript environment of a web page have non-empty values.
+
 
 Problems:
 	- All the database and associates to restaurant must be deleted when that restaurant would be deleted.

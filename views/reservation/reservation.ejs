@@ -2,7 +2,12 @@
 <%- include('../customer/layout/navbar.ejs') %>
 <div class="container">
   <h1>Create Reservation</h1>
-  <h2>Amount: <%= cart.amount %></h2>
+  <h2>Amount: <span id="cart-amount"><%= cart.amount %></span></h2>
+  <% if (typeof error !== 'undefined') { %>
+    <div class="alert alert-danger">
+      <%= error %>
+    </div>
+  <% } %>
   <form action="/reservation/<%= cart._id %>" method="POST">
     <input type="hidden" id="customer" name="customer" class="form-control" value="<%= cart.customer._id %>">
     <input type="hidden" id="restaurant" name="restaurant" class="form-control" value="<%= cart.restaurant._id %>">
@@ -18,6 +23,8 @@
       <label for="num_pax">Number of Pax:</label>
       <br>
       <small><i>From 1 to 17</i></small>
+      <br>
+      <small class="text-danger" id="out-of-range"><i>"<span id="out-of-range-value"></span>" is out of range!</i></small>
       <input type="number" id="num_pax" name="num_pax" class="form-control" required>
     </div>
     <div class="form-group">
@@ -25,7 +32,8 @@
       <textarea id="notes" name="notes" class="form-control" placeholder="optional"></textarea>
     </div>
     <a href="/cart/<%= restaurantID %>" class="btn btn-warning">Back</a>
-    <button type="submit" class="btn btn-primary">Create Reservation</button>
+    <button type="submit" class="btn btn-primary" id="create-reservation-button">Create Reservation</button>
   </form>
 </div>
+<script src="/js/reservation/reservation.js"></script>            
 <%- include('.././footer.ejs') %>
