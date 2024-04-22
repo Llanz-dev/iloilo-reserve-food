@@ -6,6 +6,7 @@ import adminRoutes from '../routes/adminRoutes.mjs'
 import restaurantRoutes from '../routes/restaurantRoutes.mjs'
 import reservationRoutes from '../routes/reservationRoutes.mjs';
 import paymentRoutes from '../routes/paymentRoutes.mjs';
+import checkoutRoutes from '../routes/checkoutRoutes.mjs';
 import { requireAuthentication } from '../middleware/authenticationMiddleware.mjs';
 import cookieParser from 'cookie-parser';
 import 'dotenv/config';
@@ -36,11 +37,11 @@ app.use('/', homeRoutes);
 app.use(customerRoutes);
 app.use('/reservation', requireAuthentication, reservationRoutes);
 app.use('/payment', requireAuthentication, paymentRoutes);
+app.use('/checkout', requireAuthentication, checkoutRoutes);
 app.get('*', checkRestaurant);
 app.use('/restaurant', restaurantRoutes);
 app.use('/adminux', adminRoutes);
 
-console.log('PORT:', PORT);
 app.listen(PORT, () => {
     console.log(`Server is listening on ${PORT}`);
 });
