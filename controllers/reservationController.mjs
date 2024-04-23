@@ -52,10 +52,9 @@ const POSTCreateReservation = async (req, res) => {
     } 
 
     console.log('total:', cart.amount);
-    // await cart.save();
+    await cart.save();
 
-    // const reservation = await Reservation.create({ customer, restaurant, reservation_date, reservation_time, num_pax, notes });
-    const reservation = undefined;
+    const reservation = await Reservation.create({ customer, restaurant, reservation_date, reservation_time, num_pax, notes });
     console.log('successfully reserve:', reservation);
     res.redirect(`/checkout/${ reservation.restaurant._id }/${ cartID }`);
   } catch (err) {
