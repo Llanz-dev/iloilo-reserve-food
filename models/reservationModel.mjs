@@ -13,6 +13,11 @@ const reservationSchema = new Schema({
       ref: 'Restaurant',
       required: true
     },
+    cart: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Cart',
+      required: true
+    },
     reservation_date: {
       type: Date,
       required: true

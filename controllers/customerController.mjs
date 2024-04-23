@@ -1,5 +1,6 @@
 import Customer from '../models/customerModel.mjs';
 import Cart from '../models/cartModel.mjs';
+import Reservation from '../models/reservationModel.mjs';
 import Product from '../models/productModel.mjs';
 import { hashPassword, comparePassword, handleErrors, toTitleCase, toSmallerCase, createToken, fourtyEightHours } from '../utils/helpers.mjs';
 
@@ -249,9 +250,10 @@ const POSTRemoveFromCart = async (req, res) => {
     // Save the updated cart
     await cart.save();
 
-    // If there is no items left in cart, then delete the cart
+    // If there is no items left in cart, then delete the cart and reservation
     const hasItemsLeft = cart.items.length;
     if (!hasItemsLeft) {
+      await Reservation.deleteOne({ cart });
       await Cart.deleteOne({ customer: customerId, restaurant: restaurantId })
     }
 

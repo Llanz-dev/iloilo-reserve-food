@@ -115,6 +115,7 @@ April 22 2024:
 
 April 23 2024:
 	- Created a feature that, when the number of guests input goes outside of a given range, will disable the reservation button and display an out-of-range notice; when the input is within the range, both will be enabled.
+	- Reservation table will be deleted if the cart table is empty.
 
 Problems:
 	- All the database and associates to restaurant must be deleted when that restaurant would be deleted.
