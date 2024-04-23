@@ -1,6 +1,7 @@
 import fetch from "node-fetch";
 import "dotenv/config";
 import path from "path";
+import Cart from '../models/cartModel.mjs';
   
 const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
 const base = "https://api-m.sandbox.paypal.com";
@@ -32,8 +33,8 @@ const generateAccessToken = async () => {
 };
   
 /**
-* Create an order to start the transaction.
-*/
+ * Create an order to start the transaction.
+ */
 const createOrder = async (cart) => {
   // use the cart information passed from the front-end to calculate the purchase unit details
   console.log(
@@ -48,8 +49,8 @@ const createOrder = async (cart) => {
     purchase_units: [
       {
         amount: {
-          currency_code: "USD",
-          value: "100.00",
+          currency_code: "PHP",
+          value: cart.amount.toFixed(2), // Use the actual cart amount
         },
       },
     ],
@@ -59,11 +60,6 @@ const createOrder = async (cart) => {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
-      // Uncomment one of these to force an error for negative testing (in sandbox mode only). Documentation:
-      // https://developer.paypal.com/tools/sandbox/negative-testing/request-headers/
-      // "PayPal-Mock-Response": '{"mock_application_codes": "MISSING_REQUIRED_PARAMETER"}'
-      // "PayPal-Mock-Response": '{"mock_application_codes": "PERMISSION_DENIED"}'
-      // "PayPal-Mock-Response": '{"mock_application_codes": "INTERNAL_SERVER_ERROR"}'
     },
     method: "POST",
     body: JSON.stringify(payload),
@@ -71,7 +67,7 @@ const createOrder = async (cart) => {
   
   return handleResponse(response);
 };
-  
+
 /**
 * Capture payment for the created order to complete the transaction.
 */
@@ -109,20 +105,27 @@ async function handleResponse(response) {
 }
   
 const createOrderHandler = async (req, res) => {
-    try {
-      // use the cart information passed from the front-end to calculate the order amount details
-      const { cart } = req.body;
-      const { jsonResponse, httpStatusCode } = await createOrder(cart);
-      res.status(httpStatusCode).json(jsonResponse);
-    } catch (error) {
-      console.error("Failed to create order:", error);
-      res.status(500).json({ error: "Failed to create order." });
+  try {
+    const cartID = req.body.cart._id;
+    console.log('req.body:', req.body);
+    console.log('cartID:', cartID);
+    const cart = await Cart.findById(cartID);
+    console.log('createOrderHandler cart:', cart);
+    if (!cart) {
+      throw new Error("Cart not found");
     }
-  };
+    const { jsonResponse, httpStatusCode } = await createOrder(cart);
+    res.status(httpStatusCode).json(jsonResponse);
+  } catch (error) {
+    console.error("Failed to create order:", error);
+    res.status(500).json({ error: "Failed to create order." });
+  }
+};
 
 const captureOrderHandler = async (req, res) => {
     try {
         const { orderID } = req.params;
+        console.log('orderID:', orderID);
         const { jsonResponse, httpStatusCode } = await captureOrder(orderID);
         res.status(httpStatusCode).json(jsonResponse);
     } catch (error) {
@@ -131,9 +134,17 @@ const captureOrderHandler = async (req, res) => {
     }
 };
 
-const serveCheckoutPage = (req, res) => {
-    res.render('checkout/checkout', { pageTitle: 'Checkout with PayPal' })
+const serveCheckoutPage = async (req, res) => {
+  try {
+    const customerID = res.locals.customer ? res.locals.customer._id : null;
+    const restaurantID = req.params.restaurantID;
+    const cartID = req.params.cartID;
+    const cart = await Cart.findById(cartID);
+    res.render('checkout/checkout', { pageTitle: 'Checkout with PayPal', cart });
+  } catch (err) {
+    console.error("Failed to serve checkout page:", err);
+    res.status(500).json({ error: "Failed to serve checkout page." });
+  }
 };
-  
   
 export { createOrderHandler, captureOrderHandler, serveCheckoutPage };

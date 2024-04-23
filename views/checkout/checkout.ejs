@@ -1,8 +1,12 @@
 <%- include('.././header.ejs') %>
 <%- include('../customer/layout/navbar.ejs') %>
-    <div id="paypal-button-container"></div>
-    <p id="result-message"></p>
-    <!-- Replace the "test" client-id value with your client-id -->
-<script src="https://www.paypal.com/sdk/js?client-id=test&currency=USD"></script>
+<h2>Grand total: <%= cart.amount %></h2>
+<span id="cart-id"><%= cart._id %></span>
+<!-- Add a hidden input field to store the cart JSON -->
+<input type="hidden" id="cart-data" value='<%= JSON.stringify(cart) %>' />
+<div id="paypal-button-container"></div>
+<p id="result-message"></p>
+<!-- Replace the "test" client-id value with your client-id -->
+<script src="https://www.paypal.com/sdk/js?client-id=ARQ5lVhOidCkFvUQWhWtGcav4Oxws-CUTzu7uME6IzCtZpvhWUEXFzsXp5dntimzAxJp-znYpJsg_urs&currency=PHP"></script>
 <script src="/js/checkout/checkout.js"></script>            
 <%- include('.././footer.ejs') %>

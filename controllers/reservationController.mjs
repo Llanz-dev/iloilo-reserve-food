@@ -4,6 +4,8 @@ import Cart from '../models/cartModel.mjs';
 const GETCreateReservation = async (req, res) => {
   try {
     const cartID = req.params.id;
+  console.log('cartID:', cartID);
+
     const cart = await Cart.findById(cartID).populate('restaurant');
     const restaurantID = cart.restaurant._id;
     res.render('reservation/reservation', { pageTitle: 'Reservation', restaurantID, cart });
@@ -14,7 +16,6 @@ const GETCreateReservation = async (req, res) => {
 
 const POSTCreateReservation = async (req, res) => {
   const cartID = req.params.id;
-
   const cart = await Cart.findById(cartID);
   const restaurantID = cart.restaurant._id;
 
@@ -45,17 +46,18 @@ const POSTCreateReservation = async (req, res) => {
       console.log('10 to 13 = 110');
       cart.amount += 110;
       // 14 to 17 = 140
-
     } else {
       console.log('14 to 17 = 140');
       cart.amount += 140;
     } 
 
     console.log('total:', cart.amount);
-    await cart.save();
+    // await cart.save();
 
-    const reservation = await Reservation.create({ customer, restaurant, reservation_date, reservation_time, num_pax, notes });
-    res.redirect(`/payment/${ reservation._id }`);
+    // const reservation = await Reservation.create({ customer, restaurant, reservation_date, reservation_time, num_pax, notes });
+    const reservation = undefined;
+    console.log('successfully reserve:', reservation);
+    res.redirect(`/checkout/${ reservation.restaurant._id }/${ cartID }`);
   } catch (err) {
     console.log('POSTCreateReservation:', err);
     // If there's an error, render the template with the error message

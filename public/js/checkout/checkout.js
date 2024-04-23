@@ -1,3 +1,7 @@
+const cartID = document.getElementById('cart-id');
+const cartDataInput = document.getElementById('cart-data');
+const cartData = JSON.parse(cartDataInput.value);
+
 window.paypal
   .Buttons({
     async createOrder() {
@@ -7,15 +11,9 @@ window.paypal
           headers: {
             "Content-Type": "application/json",
           },
-          // use the "body" param to optionally pass additional order information
-          // like product ids and quantities
+          // use the "body" param to pass the cart object
           body: JSON.stringify({
-            cart: [
-              {
-                id: "YOUR_PRODUCT_ID",
-                quantity: "YOUR_PRODUCT_QUANTITY",
-              },
-            ],
+            cart: cartData, // Pass the parsed cart object
           }),
         });
         

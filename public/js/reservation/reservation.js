@@ -1,16 +1,12 @@
 const createReservationButton = document.getElementById('create-reservation-button');
 const numPaxInput = document.getElementById('num_pax');
 
-
-// To restrict the date input to allow only today and future dates
 // Get the current date
 const today = new Date();
 // Format the date to YYYY-MM-DD
 const formattedDate = today.toISOString().split('T')[0];
 // Set the min attribute of the date input to today's date
 document.getElementById('reservation_date').setAttribute('min', formattedDate);
-
-// -----------------------------------------------------------------------------------------------------------
 
 // To restrict the selection of past times in the input field for reservation time
 // Get the current time
@@ -21,11 +17,6 @@ const currentMinute = currentTime.getMinutes();
 // Format the current time as a string
 const formattedCurrentTime = `${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`;
 
-// Set the minimum value for the time input field
-document.getElementById('reservation_time').min = formattedCurrentTime;
-
-// -----------------------------------------------------------------------------------------------------------
-
 // Initialize a variable to keep track of form completion
 let formCompleted = false;
 
@@ -34,36 +25,54 @@ const checkFormCompletion = () => {
   const reservationDate = document.getElementById('reservation_date').value;
   const reservationTime = document.getElementById('reservation_time').value;
   const numPax = document.getElementById('num_pax').value;
-
+  
   // Check if all fields have non-empty values
   formCompleted = reservationDate.trim() !== '' && reservationTime.trim() !== '' && numPax.trim() !== '';
-  console.log('reservationDate:', reservationDate);
-  console.log('reservationTime:', reservationTime);
-  console.log('numPax:', numPax);
-  console.log('formCompleted:', formCompleted);
+  
+  // Enable or disable the button based on form completion
+  createReservationButton.disabled = !formCompleted;
+  };
+
+// Function to disable input fields if date is not selected
+const disableInputsIfDateNotSelected = () => {
+  const reservationDateInput = document.getElementById('reservation_date');
+  const reservationTimeInput = document.getElementById('reservation_time');
+
+  // Check if the date input has a value
+  const isDateSelected = reservationDateInput.value.trim() !== '';
+  const isTimeSelected = reservationTimeInput.value.trim() !== '';
+
+  // Disable or enable the time input based on date selection
+  reservationTimeInput.disabled = !isDateSelected;
+
+  // Disable or enable the numPax input based on date selection
+  numPaxInput.disabled = !isTimeSelected;
 };
+
+// Call the function initially to set the initial state
+disableInputsIfDateNotSelected();
 
 // Event listeners for input fields
-document.getElementById('reservation_date').oninput = () => {
+document.getElementById('reservation_date').addEventListener('input', () => {
     checkFormCompletion();
-};
+    disableInputsIfDateNotSelected();
+    if (isCurrentSelectedDate()) {
+      // Set the minimum value for the time input field
+      document.getElementById('reservation_time').min = formattedCurrentTime;
+    } else {
+      document.getElementById('reservation_time').min = null;
+    }
+});
   
-document.getElementById('reservation_time').oninput = () => {
+document.getElementById('reservation_time').addEventListener('input', () => {
+    disableInputsIfDateNotSelected();
     checkFormCompletion();
-};
+});
 
-numPaxInput.oninput = () => {
+numPaxInput.addEventListener('input', () => {
     checkFormCompletion();
-};
+});
   
-// Function to disable/enable the button based on form completion
-const toggleButtonDisabledState = () => {
-    createReservationButton.disabled = !formCompleted;
-};
-  
-// Call the function initially to set the initial state
-toggleButtonDisabledState();
-
 // -----------------------------------------------------------------------------------------------------------
 
 const cartAmountSpan = document.getElementById('cart-amount');
@@ -73,14 +82,11 @@ const outOfRange = document.getElementById('out-of-range');
 const outOfRangeValue = document.getElementById('out-of-range-value');
 outOfRange.style.display = 'none';
 
-// Select the button element
-// Disable the button
+// Disable the button initially
 createReservationButton.disabled = true;
 
-numPaxInput.oninput = () => {
+numPaxInput.addEventListener('input', () => {
     const numPax = parseInt(numPaxInput.value);
-    console.log('totalAmountCart:', totalAmountCart);
-    console.log('numPax:', numPax);
 
     if (isInRange(numPax)) {
         outOfRange.style.display = 'block';  
@@ -88,20 +94,17 @@ numPaxInput.oninput = () => {
         createReservationButton.disabled = true;
     } else {
         outOfRange.style.display = 'none';    
-        createReservationButton.disabled = false;
     }
 
     if (isNaN(numPax) || isInRange(numPax)) return cartAmountSpan.textContent = totalAmountCart;
     
     const cartAmount = calculateCartAmount(numPax);
     cartAmountSpan.textContent = cartAmount;
-}
+});
 
 const isInRange = (num_pax) => {
-    if (num_pax < 1 || num_pax > 17) return true;
-    
-    return false;
-}
+    return num_pax < 1 || num_pax > 17;
+};
 
 const calculateCartAmount = (numPax) => {
     const currentCartAmount = parseInt(cartAmountSpan.textContent);
@@ -118,4 +121,23 @@ const calculateCartAmount = (numPax) => {
         amount += 140;
     }
     return amount;
+};
+
+const isCurrentSelectedDate = () => {
+    const reservationDate = document.getElementById('reservation_date').value;
+    const currentDate = new Date();
+    const selectedDate = new Date(reservationDate);
+
+    // Extract year, month, and day from currentDate
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth();
+    const currentDay = currentDate.getDate();
+
+    // Extract year, month, and day from selectedDate
+    const selectedYear = selectedDate.getFullYear();
+    const selectedMonth = selectedDate.getMonth();
+    const selectedDay = selectedDate.getDate();
+
+    // Compare year, month, and day
+    return currentYear === selectedYear && currentMonth === selectedMonth && currentDay === selectedDay;
 };
