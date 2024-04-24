@@ -1,7 +1,7 @@
 <%- include('.././header.ejs') %>
 <%- include('./layout/navbar.ejs') %>
 <!-- Assuming you have a table to display the cart items -->
-<h2>Amount: <%= cartAmount %></h2>
+<h2>Total Amount: ₱ <span class="cart-amount"><%= cartAmount %></span></h2>
 <!-- Help me to route my reservation -->
 <% if (numberOfItems !== 0) { %>
     <h2><a href="/reservation/<%= cartID %>">Reservation</a></h2> 
@@ -43,4 +43,5 @@
         <% }); %>
     </tbody>
 </table>
+<script src="/js/amountFormatter.js"></script>             
 <%- include('.././footer.ejs') %>

@@ -2,7 +2,7 @@
 <%- include('../customer/layout/navbar.ejs') %>
 <div class="container">
   <h1>Create Reservation</h1>
-  <h2>Amount: <span id="cart-amount"><%= cart.amount %></span></h2>
+  <h2>Total Amount: ₱ <span class="cart-amount"><%= cart.totalAmount %></span></h2>
   <% if (typeof error !== 'undefined') { %>
     <div class="alert alert-danger">
       <%= error %>
@@ -35,5 +35,7 @@
     <button type="submit" class="btn btn-primary" id="create-reservation-button">Submit</button>
   </form>
 </div>
-<script src="/js/reservation/reservation.js"></script>            
+
+<script src="/js/reservation/reservation.js"></script> 
+<script src="/js/amountFormatter.js"></script>             
 <%- include('.././footer.ejs') %>

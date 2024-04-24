@@ -117,6 +117,9 @@ April 23 2024:
 	- Created a feature that, when the number of guests input goes outside of a given range, will disable the reservation button and display an out-of-range notice; when the input is within the range, both will be enabled.
 	- Reservation table will be deleted if the cart table is empty.
 
+April 23 2024:
+	- There is now a comma will be added if the amount goes to thousands.
+	
 Problems:
 	- All the database and associates to restaurant must be deleted when that restaurant would be deleted.
 	- In the admin side it must be shown to it all the category, product and revenue of the restaurant.

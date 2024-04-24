@@ -75,7 +75,7 @@ numPaxInput.addEventListener('input', () => {
   
 // -----------------------------------------------------------------------------------------------------------
 
-const cartAmountSpan = document.getElementById('cart-amount');
+const cartAmountSpan = document.querySelector('.cart-amount');
 const totalAmountCart = parseInt(cartAmountSpan.textContent);
 
 const outOfRange = document.getElementById('out-of-range');
@@ -99,7 +99,8 @@ numPaxInput.addEventListener('input', () => {
     if (isNaN(numPax) || isInRange(numPax)) return cartAmountSpan.textContent = totalAmountCart;
     
     const cartAmount = calculateCartAmount(numPax);
-    cartAmountSpan.textContent = cartAmount;
+                                // To put comma
+    cartAmountSpan.textContent = cartAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 });
 
 const isInRange = (num_pax) => {
@@ -107,7 +108,7 @@ const isInRange = (num_pax) => {
 };
 
 const calculateCartAmount = (numPax) => {
-    const currentCartAmount = parseInt(cartAmountSpan.textContent);
+    const currentCartAmount = parseInt(totalAmountCart);
     let amount = currentCartAmount;
     if (numPax <= 2) {
         amount += 15;

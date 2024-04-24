@@ -27,7 +27,17 @@ const cartSchema = new mongoose.Schema({
     ref: 'Restaurant',
     required: true
   },  
-  amount: {
+  halfAmount: {
+    type: Number,
+    default: 0,
+    required: true
+  },
+  leftAmount: {
+    type: Number,
+    default: 0,
+    required: true
+  },
+  totalAmount: {
     type: Number,
     default: 0,
     required: true

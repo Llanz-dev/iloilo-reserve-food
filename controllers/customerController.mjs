@@ -107,7 +107,6 @@ const POSTUpdateProfile = async (req, res) => {
   }
 }
 
-// Function to handle GET request for cart page
 const GETCartPage = async (req, res) => {
   console.log('---- GETCartPage ----');
   try {
@@ -132,7 +131,7 @@ const GETCartPage = async (req, res) => {
     }
     const cartID = cart._id;
 
-    cartAmount = cart.amount;
+    cartAmount = cart.totalAmount;
     
     // If cart has items, render the cart page with cart items
     res.render('customer/cart', { pageTitle: 'Cart', cartItems: cart.items, cartID, cartAmount, numberOfItems });
@@ -142,7 +141,6 @@ const GETCartPage = async (req, res) => {
   }
 };
 
-// Function to handle POST request for adding product to cart
 const POSTAddToCart = async (req, res) => {
   console.log('---- POSTAddToCart ----');
   try {
@@ -161,6 +159,8 @@ const POSTAddToCart = async (req, res) => {
 
     const product = await Product.findById(productId);
     const productPrice = product.price;
+    const halfAmount = productPrice / 2;
+    const leftAmount = productPrice / 2;
 
     // Find the cart for the customer or create a new one if it doesn't exist
     let cart = await Cart.findOne({ customer: customerId, restaurant: restaurantId });
@@ -168,7 +168,9 @@ const POSTAddToCart = async (req, res) => {
       cart = new Cart({
         customer: customerId,
         restaurant: restaurantId,
-        amount: productPrice,
+        halfAmount,
+        leftAmount,
+        totalAmount: productPrice,
         items: []
       });
     }
@@ -179,18 +181,22 @@ const POSTAddToCart = async (req, res) => {
     });
 
     if (existingItemIndex !== -1) {
-      // If the product already exists in the cart, increment its quantity and amount
+      // If the product already exists in the cart, increment its quantity and totalAmount
       cart.items[existingItemIndex].quantity += 1;
-      cart.amount += productPrice;
+      cart.totalAmount += productPrice;
+      cart.halfAmount += halfAmount;
+      cart.leftAmount += leftAmount;
     } else {
       // If the product does exist in the cart, add it with a quantity of 1
-      // Increment the amount when adding a new item to the cart
+      // Increment the totalAmount when adding a new item to the cart
       if (cart.items.length) {
-        cart.amount += productPrice;
-        cart.items.push({ product: productId, quantity: 1, amount: productPrice });
+        cart.totalAmount += productPrice;
+        cart.halfAmount += halfAmount;
+        cart.leftAmount += leftAmount;
+        cart.items.push({ product: productId, quantity: 1, totalAmount: productPrice, halfAmount: halfAmount, leftAmount: leftAmount });
       } else {
         // If the product doesn't exist in the cart, add it with a quantity of 1
-        cart.items.push({ product: productId, quantity: 1, amount: productPrice });
+        cart.items.push({ product: productId, quantity: 1, totalAmount: productPrice, halfAmount: halfAmount, leftAmount: leftAmount });
       }
     }
 
@@ -240,9 +246,13 @@ const POSTRemoveFromCart = async (req, res) => {
     const productPrice = product.price;
     const productQuantity = cart.items[productIndex].quantity;
     const amountOfProduct = productPrice * productQuantity;
+    const halfAmount = productPrice / 2;
+    const leftAmount = productPrice / 2;
 
-    // This will decrease the amount of the cart if you click the remove button.
-    cart.amount -= amountOfProduct;
+    // This will decrease the totalAmount of the cart if you click the remove button.
+    cart.totalAmount -= amountOfProduct;
+    cart.halfAmount -= halfAmount;
+    cart.leftAmount -= leftAmount;
 
     // Remove the item from the cart
     cart.items = cart.items.filter(item => item.product != productId);
@@ -286,19 +296,29 @@ const POSTUpdateCart = async (req, res) => {
     
     const product = await Product.findById(productId);
     const productPrice = product.price;
+    const halfAmount = productPrice / 2;
+    const leftAmount = productPrice / 2;
 
     // Update the quantity of the product in the cart
     if (action === 'increase') {
         cart.items[productIndex].quantity += 1;
-        cart.amount += productPrice;
+        cart.totalAmount += productPrice;
+        cart.halfAmount += halfAmount;
+        cart.leftAmount += leftAmount;
     } else if (cart.items[productIndex].quantity === 1 && cart.items.length === 1 && action === 'decrease') {
-        cart.amount -= productPrice;
+        cart.totalAmount -= productPrice;
+        cart.halfAmount -= halfAmount;
+        cart.leftAmount -= leftAmount;
         return await POSTRemoveFromCart(req, res);
     } else if (cart.items[productIndex].quantity === 1 && action === 'decrease') {
-        cart.amount -= productPrice;
+        cart.totalAmount -= productPrice;
+        cart.halfAmount -= halfAmount;
+        cart.leftAmount -= leftAmount;
         cart.items.splice(productIndex, 1);
     } else if (action === 'decrease') {
-        cart.amount -= productPrice;
+        cart.totalAmount -= productPrice;
+        cart.halfAmount -= halfAmount;
+        cart.leftAmount -= leftAmount;
         cart.items[productIndex].quantity -= 1;
     }
 

@@ -2,6 +2,15 @@ const cartID = document.getElementById('cart-id');
 const cartDataInput = document.getElementById('cart-data');
 const cartData = JSON.parse(cartDataInput.value);
 
+const cartTotalAmount = document.getElementById('cart-total-amount');
+const cartHalfAmount = document.getElementById('cart-half-amount');
+
+const amountFormatter = (amount) => {
+  return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+} 
+
+cartTotalAmount.textContent = amountFormatter(cartTotalAmount.textContent);
+cartHalfAmount.textContent = amountFormatter(cartHalfAmount.textContent);
 window.paypal
   .Buttons({
     async createOrder() {
