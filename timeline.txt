@@ -119,6 +119,7 @@ April 23 2024:
 
 April 23 2024:
 	- There is now a comma will be added if the amount goes to thousands.
+	- Successfully pay half amount using paypal.
 	
 Problems:
 	- All the database and associates to restaurant must be deleted when that restaurant would be deleted.

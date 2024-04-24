@@ -50,7 +50,7 @@ const createOrder = async (cart) => {
       {
         amount: {
           currency_code: "PHP",
-          value: cart.amount.toFixed(2), // Use the actual cart amount
+          value: cart.halfAmount.toFixed(2), // Use the actual cart amount
         },
       },
     ],
