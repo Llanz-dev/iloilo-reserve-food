@@ -6,6 +6,7 @@
 <h2>Half amount: ₱ <span id="cart-half-amount"><%= cart.halfAmount %></span></h2>
 <!-- Add a hidden input field to store the cart JSON -->
 <input type="hidden" id="cart-data" value='<%= JSON.stringify(cart) %>' />
+<input type="hidden" id="reservation-data" value='<%= JSON.stringify(reservation) %>' />
 <div id="paypal-button-container"></div>
 <p id="result-message"></p>
 <!-- Replace the "test" client-id value with your client-id -->

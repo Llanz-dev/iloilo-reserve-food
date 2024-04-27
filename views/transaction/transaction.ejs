@@ -1,0 +1,33 @@
+<%- include('.././header.ejs') %>
+<!-- I include the navbar from customer layout because they have the same navbar -->
+<%- include('../home/layout/navbar.ejs') %>
+
+<h2>Transactions</h2>
+<div class="container">
+    <div class="row">
+        <% transactions.forEach(transaction => { %>
+            <div class="col-md-4">
+                <div class="card mb-4 shadow-sm">
+                    <img src="/images/restaurant/<%= transaction.restaurant.lowername %>/banner/<%= transaction.restaurant.image %>" class="card-img-top" alt="<%= transaction.restaurant.name %>">
+                    <div class="card-body">
+                        <h5 class="card-title">Transaction ID: <%= transaction._id %></h5>
+                        <p class="card-text">Restaurant: <%= transaction.restaurant.name %></p>
+                        <p class="card-text">Reservation Date: <%= transaction.reservation.reservation_date.toDateString() %></p>
+                        <p class="card-text">Total Amount: ₱ <%= transaction.cart.totalAmount %> isRefunded: <%= transaction.isRefunded %></p>
+                        <% if (transaction.isTransactionComplete) { %>
+                            <span class="badge badge-success">Completed</span>
+                        <% } else { %>
+                            <span class="badge badge-warning text-black">Pending</span>
+                            <div class="d-flex justify-content-end">
+                                <a href="/transaction/cancel/<%= transaction._id %>" class="btn btn-danger btn-sm">Cancel Reservation</a>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+</div>
+
+<script src="/js/customer/home.js"></script>            
+<%- include('.././footer.ejs') %>

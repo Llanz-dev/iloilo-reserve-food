@@ -1,0 +1,41 @@
+import mongoose from 'mongoose';
+
+const transactionSchema = new mongoose.Schema({
+    customer: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Customer',
+      required: true
+    },
+    restaurant: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Restaurant',
+      required: true
+    },  
+    cart: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Cart',
+      required: true
+    },  
+    reservation: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Reservation',
+      required: true
+    },  
+    isTransactionComplete: {
+      type: Boolean,
+      default: false // Assuming payment is not successful by default
+    },
+    captureId: {
+      type: String,
+      required: false,
+    },
+    isRefunded: {
+      type: Boolean,
+      default: false 
+    },
+  }
+);
+
+const Transaction = mongoose.model('Transaction', transactionSchema);
+
+export default Transaction;

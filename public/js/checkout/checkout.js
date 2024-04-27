@@ -1,6 +1,8 @@
 const cartID = document.getElementById('cart-id');
 const cartDataInput = document.getElementById('cart-data');
+const reservationDataInput = document.getElementById('reservation-data');
 const cartData = JSON.parse(cartDataInput.value);
+const reservationData = JSON.parse(reservationDataInput.value);
 
 const cartTotalAmount = document.getElementById('cart-total-amount');
 const cartHalfAmount = document.getElementById('cart-half-amount');
@@ -23,6 +25,7 @@ window.paypal
           // use the "body" param to pass the cart object
           body: JSON.stringify({
             cart: cartData, // Pass the parsed cart object
+            reservation: reservationData
           }),
         });
         
@@ -83,6 +86,8 @@ window.paypal
             orderData,
             JSON.stringify(orderData, null, 2),
           );
+          // Call history.replaceState after a successful payment
+          history.replaceState(null, '', '/transaction');
         }
       } catch (error) {
         console.error(error);

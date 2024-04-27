@@ -120,7 +120,7 @@ const GETCartPage = async (req, res) => {
     }
 
     // Fetch cart items for the logged-in customer
-    const cart = await Cart.findOne({ customer: customerID, restaurant: restaurantId }).populate('items.product');
+    const cart = await Cart.findOne({ customer: customerID, restaurant: restaurantId, isHalfPaymentSuccessful: false }).populate('items.product');
     
     const numberOfItems = cart ? cart.items.length : 0;
     let cartAmount = 0;
@@ -160,16 +160,14 @@ const POSTAddToCart = async (req, res) => {
     const product = await Product.findById(productId);
     const productPrice = product.price;
     const halfAmount = productPrice / 2;
-    const leftAmount = productPrice / 2;
 
     // Find the cart for the customer or create a new one if it doesn't exist
-    let cart = await Cart.findOne({ customer: customerId, restaurant: restaurantId });
+    let cart = await Cart.findOne({ customer: customerId, restaurant: restaurantId, isHalfPaymentSuccessful: false });
     if (!cart) {
       cart = new Cart({
         customer: customerId,
         restaurant: restaurantId,
         halfAmount,
-        leftAmount,
         totalAmount: productPrice,
         items: []
       });
@@ -185,18 +183,16 @@ const POSTAddToCart = async (req, res) => {
       cart.items[existingItemIndex].quantity += 1;
       cart.totalAmount += productPrice;
       cart.halfAmount += halfAmount;
-      cart.leftAmount += leftAmount;
     } else {
       // If the product does exist in the cart, add it with a quantity of 1
       // Increment the totalAmount when adding a new item to the cart
       if (cart.items.length) {
         cart.totalAmount += productPrice;
         cart.halfAmount += halfAmount;
-        cart.leftAmount += leftAmount;
-        cart.items.push({ product: productId, quantity: 1, totalAmount: productPrice, halfAmount: halfAmount, leftAmount: leftAmount });
+        cart.items.push({ product: productId, quantity: 1, totalAmount: productPrice, halfAmount: halfAmount });
       } else {
         // If the product doesn't exist in the cart, add it with a quantity of 1
-        cart.items.push({ product: productId, quantity: 1, totalAmount: productPrice, halfAmount: halfAmount, leftAmount: leftAmount });
+        cart.items.push({ product: productId, quantity: 1, totalAmount: productPrice, halfAmount: halfAmount });
       }
     }
 
@@ -228,7 +224,7 @@ const POSTRemoveFromCart = async (req, res) => {
 
     const restaurantId = req.body.restaurantId;
     // Find the cart for the customer
-    const cart = await Cart.findOne({ customer: customerId, restaurant: restaurantId });
+    const cart = await Cart.findOne({ customer: customerId, restaurant: restaurantId, isHalfPaymentSuccessful: false });
 
     // If cart doesn't exist, return an error
     if (!cart) {
@@ -247,12 +243,10 @@ const POSTRemoveFromCart = async (req, res) => {
     const productQuantity = cart.items[productIndex].quantity;
     const amountOfProduct = productPrice * productQuantity;
     const halfAmount = productPrice / 2;
-    const leftAmount = productPrice / 2;
 
     // This will decrease the totalAmount of the cart if you click the remove button.
     cart.totalAmount -= amountOfProduct;
     cart.halfAmount -= halfAmount;
-    cart.leftAmount -= leftAmount;
 
     // Remove the item from the cart
     cart.items = cart.items.filter(item => item.product != productId);
@@ -264,7 +258,7 @@ const POSTRemoveFromCart = async (req, res) => {
     const hasItemsLeft = cart.items.length;
     if (!hasItemsLeft) {
       await Reservation.deleteOne({ cart });
-      await Cart.deleteOne({ customer: customerId, restaurant: restaurantId })
+      await Cart.deleteOne({ customer: customerId, restaurant: restaurantId, isHalfPaymentSuccessful: false });
     }
 
     // Redirect or send response as needed
@@ -281,7 +275,7 @@ const POSTUpdateCart = async (req, res) => {
     const { customerId, restaurantId, productId, action } = req.body;
 
     // Find the cart for the customer and the specific restaurant
-    const cart = await Cart.findOne({ customer: customerId, restaurant: restaurantId });
+    const cart = await Cart.findOne({ customer: customerId, restaurant: restaurantId, isHalfPaymentSuccessful: false });
 
     if (!cart) {
       return res.status(404).json({ error: 'Cart not found' });
@@ -297,28 +291,23 @@ const POSTUpdateCart = async (req, res) => {
     const product = await Product.findById(productId);
     const productPrice = product.price;
     const halfAmount = productPrice / 2;
-    const leftAmount = productPrice / 2;
 
     // Update the quantity of the product in the cart
     if (action === 'increase') {
         cart.items[productIndex].quantity += 1;
         cart.totalAmount += productPrice;
         cart.halfAmount += halfAmount;
-        cart.leftAmount += leftAmount;
     } else if (cart.items[productIndex].quantity === 1 && cart.items.length === 1 && action === 'decrease') {
         cart.totalAmount -= productPrice;
         cart.halfAmount -= halfAmount;
-        cart.leftAmount -= leftAmount;
         return await POSTRemoveFromCart(req, res);
     } else if (cart.items[productIndex].quantity === 1 && action === 'decrease') {
         cart.totalAmount -= productPrice;
         cart.halfAmount -= halfAmount;
-        cart.leftAmount -= leftAmount;
         cart.items.splice(productIndex, 1);
     } else if (action === 'decrease') {
         cart.totalAmount -= productPrice;
         cart.halfAmount -= halfAmount;
-        cart.leftAmount -= leftAmount;
         cart.items[productIndex].quantity -= 1;
     }
 

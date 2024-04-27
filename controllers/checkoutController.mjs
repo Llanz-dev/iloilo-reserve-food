@@ -2,7 +2,9 @@ import fetch from "node-fetch";
 import "dotenv/config";
 import path from "path";
 import Cart from '../models/cartModel.mjs';
-  
+import Reservation from '../models/reservationModel.mjs';
+import Transaction from '../models/transactionModel.mjs';
+import Paypal from 'paypal-rest-sdk';
 const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
 const base = "https://api-m.sandbox.paypal.com";
   
@@ -35,7 +37,8 @@ const generateAccessToken = async () => {
 /**
  * Create an order to start the transaction.
  */
-const createOrder = async (cart) => {
+let transactionID = undefined;
+const createOrder = async (cart, reservation) => {
   // use the cart information passed from the front-end to calculate the purchase unit details
   console.log(
     "shopping cart information passed from the frontend createOrder() callback:",
@@ -65,32 +68,92 @@ const createOrder = async (cart) => {
     body: JSON.stringify(payload),
   });
   
+  cart.isHalfPaymentSuccessful = true;
+  await cart.save();
+
+  const reservationObject = await Reservation.create({ customer: reservation.customer, restaurant: reservation.restaurantID, cart: reservation.cartID, reservation_date: reservation.reservation_date, reservation_time: reservation.reservation_time, num_pax: reservation.num_pax, notes: reservation.notes });  
+  const transaction = await Transaction.create({ customer: cart.customer, restaurant: cart.restaurant, cart: cart, reservation: reservationObject });
+  transactionID = transaction._id;
+
   return handleResponse(response);
 };
 
 /**
-* Capture payment for the created order to complete the transaction.
-*/
-const captureOrder = async (orderID) => {
-  const accessToken = await generateAccessToken();
-  const url = `${base}/v2/checkout/orders/${orderID}/capture`;
-  
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-      // Uncomment one of these to force an error for negative testing (in sandbox mode only). Documentation:
-      // https://developer.paypal.com/tools/sandbox/negative-testing/request-headers/
-      // "PayPal-Mock-Response": '{"mock_application_codes": "INSTRUMENT_DECLINED"}'
-      // "PayPal-Mock-Response": '{"mock_application_codes": "TRANSACTION_REFUSED"}'
-      // "PayPal-Mock-Response": '{"mock_application_codes": "INTERNAL_SERVER_ERROR"}'
-    },
-  });
-  
-  return handleResponse(response);
+ * Capture payment for the created order to complete the transaction.
+ */
+const captureOrder = async (orderID, transactionObject, isCancellation) => {
+  if (isCancellation) {
+    console.log('orderID:', orderID);
+    // Refund the order
+    const accessToken = await generateAccessToken();
+    const url = `${base}/v2/payments/captures/${orderID}/refund`;
+    const payload = {
+      amount: {
+        value: transactionObject.cart.halfAmount.toFixed(2),
+        currency_code: 'PHP',
+      },
+    };
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const responseData = await response.json();
+    console.log('responseData:', responseData);
+
+    const httpStatusCode = response.status; // Assign the HTTP status code
+
+    if (!response.ok) {
+      if (response.status === 404 && responseData.details && responseData.details[0].issue === 'CAPTURE_NOT_FOUND') {
+        throw new Error('Capture not found');
+      } else if (response.status === 400 && responseData.details && responseData.details[0].issue === 'CAPTURE_FULLY_REFUNDED') {
+        console.log('Capture has already been fully refunded');
+        transactionObject.isRefunded = true;
+        await transactionObject.save();
+        return { success: false, responseData };
+      } else {
+        throw new Error(responseData.error || 'Failed to refund payment');
+      }
+    }
+
+    transactionObject.isRefunded = true;
+    await transactionObject.save();
+
+    return { success: true, responseData, httpStatusCode }; // Return httpStatusCode
+  } else {
+    // Capture the order
+    const accessToken = await generateAccessToken();
+    const url = `${base}/v2/checkout/orders/${orderID}/capture`;
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    const jsonResponse = await response.json();
+
+    const httpStatusCode = response.status; // Assign the HTTP status code
+
+    console.log('jsonResponse:', jsonResponse);
+    if (httpStatusCode === 201) {
+      const captureId = jsonResponse.purchase_units[0].payments.captures[0].id; // Extract captureId from the response
+      transactionObject.captureId = captureId; // Store captureId in transactionObject
+      await transactionObject.save();
+    }
+
+    return { jsonResponse, httpStatusCode };
+  }
 };
-  
+
+ 
 async function handleResponse(response) {
   try {
     const jsonResponse = await response.json();
@@ -106,15 +169,14 @@ async function handleResponse(response) {
   
 const createOrderHandler = async (req, res) => {
   try {
+    console.log('createOrderHandler req.body:', req.body);
     const cartID = req.body.cart._id;
-    console.log('req.body:', req.body);
-    console.log('cartID:', cartID);
     const cart = await Cart.findById(cartID);
-    console.log('createOrderHandler cart:', cart);
+    const reservation = req.body.reservation;
     if (!cart) {
       throw new Error("Cart not found");
     }
-    const { jsonResponse, httpStatusCode } = await createOrder(cart);
+    const { jsonResponse, httpStatusCode } = await createOrder(cart, reservation);
     res.status(httpStatusCode).json(jsonResponse);
   } catch (error) {
     console.error("Failed to create order:", error);
@@ -124,9 +186,11 @@ const createOrderHandler = async (req, res) => {
 
 const captureOrderHandler = async (req, res) => {
     try {
+        console.log('captureOrderHandler');
+        const transactionObject = await Transaction.findById(transactionID).populate('cart');
+        console.log('transactionObject:', transactionObject);
         const { orderID } = req.params;
-        console.log('orderID:', orderID);
-        const { jsonResponse, httpStatusCode } = await captureOrder(orderID);
+        const { jsonResponse, httpStatusCode } = await captureOrder(orderID, transactionObject, false);
         res.status(httpStatusCode).json(jsonResponse);
     } catch (error) {
         console.error("Failed to capture order:", error);
@@ -138,13 +202,17 @@ const serveCheckoutPage = async (req, res) => {
   try {
     const customerID = res.locals.customer ? res.locals.customer._id : null;
     const restaurantID = req.params.restaurantID;
+    console.log('customerID:', customerID);
+    console.log('restaurantID:', restaurantID);
+
     const cartID = req.params.cartID;
     const cart = await Cart.findById(cartID);
-    res.render('checkout/checkout', { pageTitle: 'Checkout with PayPal', cart });
+    const reservation = req.query;
+    res.render('checkout/checkout', { pageTitle: 'Checkout with PayPal', cart, reservation });
   } catch (err) {
     console.error("Failed to serve checkout page:", err);
     res.status(500).json({ error: "Failed to serve checkout page." });
   }
 };
   
-export { createOrderHandler, captureOrderHandler, serveCheckoutPage };
+export { createOrderHandler, captureOrderHandler, serveCheckoutPage, captureOrder };

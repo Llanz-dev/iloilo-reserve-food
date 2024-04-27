@@ -22,7 +22,7 @@ const GETRestaurantProductsPage = async (req, res) => {
         // Find the cart for the customer and restaurant combination
         let cart = null;
         if (customerID) {
-            cart = await Cart.findOne({ customer: customerID, restaurant: restaurantID });
+            cart = await Cart.findOne({ customer: customerID, restaurant: restaurantID, isHalfPaymentSuccessful: false });
         }
         
         const numberOfItems = cart ? cart.items.length : 0;

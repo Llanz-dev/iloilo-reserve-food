@@ -49,23 +49,27 @@ const POSTCreateReservation = async (req, res) => {
     } else if (num_pax >= 10 && num_pax <= 13) {
       console.log('10 to 13 = 110');
       cart.totalAmount += 110;
-      // 14 to 17 = 140
+      // 14 to 17 = 140
     } else {
       console.log('14 to 17 = 140');
       cart.totalAmount += 140;
     } 
 
     console.log('total:', cart.totalAmount);
+    cart.halfAmount = cart.totalAmount / 2;
     await cart.save();
 
-    const reservation = await Reservation.create({ customer, restaurant, cart, reservation_date, reservation_time, num_pax, notes });
-    console.log('successfully reserve:', reservation);
-    res.redirect(`/checkout/${ reservation.restaurant._id }/${ cartID }`);
+    // Construct URL with reservation data parameters
+    const redirectURL = `/checkout/${restaurantID}/${cartID}/?restaurantID=${restaurantID}&cartID=${cartID}&customer=${customer}&reservation_date=${reservation_date}&reservation_time=${reservation_time}&num_pax=${num_pax}&notes=${notes}`;
+    
+    // Redirect to checkout page with reservation data parameters
+    res.redirect(redirectURL);
   } catch (err) {
     console.log('POSTCreateReservation:', err);
     // If there's an error, render the template with the error message
     res.status(500).render('reservation/reservation', { pageTitle: 'Reservation', error: err.message, restaurantID, cart });
   }
 }
+
 
 export { GETCreateReservation, POSTCreateReservation };

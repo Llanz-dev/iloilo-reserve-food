@@ -32,17 +32,16 @@ const cartSchema = new mongoose.Schema({
     default: 0,
     required: true
   },
-  leftAmount: {
-    type: Number,
-    default: 0,
-    required: true
-  },
   totalAmount: {
     type: Number,
     default: 0,
     required: true
   },
-  items: [cartItemSchema] // Array of cart items
+  items: [cartItemSchema], // Array of cart items
+  isHalfPaymentSuccessful: {
+    type: Boolean,
+    default: false // Assuming payment is not successful by default
+  }
 }, {
   versionKey: false, 
 });

@@ -117,9 +117,18 @@ April 23 2024:
 	- Created a feature that, when the number of guests input goes outside of a given range, will disable the reservation button and display an out-of-range notice; when the input is within the range, both will be enabled.
 	- Reservation table will be deleted if the cart table is empty.
 
-April 23 2024:
+April 24 2024:
 	- There is now a comma will be added if the amount goes to thousands.
 	- Successfully pay half amount using paypal.
+
+April 25 2024:
+	- Integrate Paypal payment successfully.
+
+April 26 2024:
+	- Stuck on refund of paypal.
+
+April 27 2024:
+	- Successfully implemented cancellation and refund functionality in your application, handling HTTP status codes, error responses, and ensuring proper communication with the PayPal API.
 	
 Problems:
 	- All the database and associates to restaurant must be deleted when that restaurant would be deleted.
