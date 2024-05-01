@@ -86,8 +86,8 @@ window.paypal
             orderData,
             JSON.stringify(orderData, null, 2),
           );
-          // Call history.replaceState after a successful payment
-          history.replaceState(null, '', '/transaction');
+          // Redirect to '/transaction' after successful transaction
+          window.location.replace('/transaction');
         }
       } catch (error) {
         console.error(error);

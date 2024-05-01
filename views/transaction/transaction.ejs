@@ -4,6 +4,10 @@
 
 <h2>Transactions</h2>
 <div class="container">
+    <% if (transactions.length) { %>      
+        <h2>Current time: <span id="current-date-and-time"></span></h2> 
+        <p><i>Kindly note, if you cancel your reservation more than 12 hours before your scheduled date and time, your half payment remains refundable.</i></p>
+    <% } %>
     <div class="row">
         <% transactions.forEach(transaction => { %>
             <div class="col-md-4">
@@ -12,16 +16,20 @@
                     <div class="card-body">
                         <h5 class="card-title">Transaction ID: <%= transaction._id %></h5>
                         <p class="card-text">Restaurant: <%= transaction.restaurant.name %></p>
-                        <p class="card-text">Reservation Date: <%= transaction.reservation.reservation_date.toDateString() %></p>
-                        <p class="card-text">Total Amount: ₱ <%= transaction.cart.totalAmount %> isRefunded: <%= transaction.isRefunded %></p>
-                        <% if (transaction.isTransactionComplete) { %>
-                            <span class="badge badge-success">Completed</span>
+                        <p class="card-text">Reservation Date and Time: <%= transaction.reservation.reservation_date.toDateString() %> <span class="reservation-time"><%= transaction.reservation.reservation_time %></span></p>
+                        <p class="card-text">Half Amount: ₱ <span class="total-amount"><%= transaction.cart.halfAmount %></span></p>
+                        <% if (transaction.isWithinAday) { %>
+                            <p>₱<%= transaction.cart.halfAmount %> is unrefundable</p>
                         <% } else { %>
-                            <span class="badge badge-warning text-black">Pending</span>
-                            <div class="d-flex justify-content-end">
-                                <a href="/transaction/cancel/<%= transaction._id %>" class="btn btn-danger btn-sm">Cancel Reservation</a>
-                            </div>
+                            <p>₱<%= transaction.cart.halfAmount %> is still refundable</p>
                         <% } %>
+                        <div class="d-flex justify-content-end">
+                            <% if (transaction.isWithinAday) { %>
+                                <a href="/transaction/cancel-reservation-unrefundable/<%= transaction._id %>" class="btn btn-danger btn-sm">Unrefundable Cancel Reservation</a>
+                            <% } else { %>
+                                <a href="/transaction/cancel-reservation-refundable/<%= transaction._id %>" class="btn btn-danger btn-sm">Refundable Cancel Reservation</a>
+                            <% } %>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -30,4 +38,5 @@
 </div>
 
 <script src="/js/customer/home.js"></script>            
+<script src="/js/transaction/transaction.js"></script>            
 <%- include('.././footer.ejs') %>

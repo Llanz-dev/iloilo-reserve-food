@@ -7,6 +7,9 @@ import Transaction from '../models/transactionModel.mjs';
 import Paypal from 'paypal-rest-sdk';
 const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
 const base = "https://api-m.sandbox.paypal.com";
+import moment from 'moment-timezone';
+import { calculateTimeDifference } from "../utils/timeUtils.mjs";
+
   
 /**
 * Generate an OAuth 2.0 access token for authenticating with PayPal REST APIs.
@@ -83,73 +86,74 @@ const createOrder = async (cart, reservation) => {
  */
 const captureOrder = async (orderID, transactionObject, isCancellation) => {
   if (isCancellation) {
-    console.log('orderID:', orderID);
-    // Refund the order
-    const accessToken = await generateAccessToken();
-    const url = `${base}/v2/payments/captures/${orderID}/refund`;
-    const payload = {
-      amount: {
-        value: transactionObject.cart.halfAmount.toFixed(2),
-        currency_code: 'PHP',
-      },
-    };
+      // Refund the order
+      const accessToken = await generateAccessToken();
+      const url = `${base}/v2/payments/captures/${orderID}/refund`;
+      const payload = {
+        amount: {
+          value: transactionObject.cart.halfAmount.toFixed(2),
+          currency_code: 'PHP',
+        },
+      };
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify(payload),
-    });
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(payload),
+      });
 
-    const responseData = await response.json();
-    console.log('responseData:', responseData);
+      const responseData = await response.json();
+      console.log('responseData:', responseData);
+      console.log('response.ok:', response.ok);
 
-    const httpStatusCode = response.status; // Assign the HTTP status code
+      const httpStatusCode = response.status; // Assign the HTTP status code
 
-    if (!response.ok) {
-      if (response.status === 404 && responseData.details && responseData.details[0].issue === 'CAPTURE_NOT_FOUND') {
-        throw new Error('Capture not found');
-      } else if (response.status === 400 && responseData.details && responseData.details[0].issue === 'CAPTURE_FULLY_REFUNDED') {
-        console.log('Capture has already been fully refunded');
-        transactionObject.isRefunded = true;
-        await transactionObject.save();
-        return { success: false, responseData };
-      } else {
-        throw new Error(responseData.error || 'Failed to refund payment');
+      if (!response.ok) {
+        if (response.status === 404 && responseData.details && responseData.details[0].issue === 'CAPTURE_NOT_FOUND') {
+          throw new Error('Capture not found');
+        } else if (response.status === 400 && responseData.details && responseData.details[0].issue === 'CAPTURE_FULLY_REFUNDED') {
+          console.log('Capture has already been fully refunded');
+          transactionObject.isRefunded = true;
+          await transactionObject.save();
+          return { success: false, responseData };
+        } else {
+          throw new Error(responseData.error || 'Failed to refund payment');
+        }
       }
-    }
 
-    transactionObject.isRefunded = true;
-    await transactionObject.save();
-
-    return { success: true, responseData, httpStatusCode }; // Return httpStatusCode
-  } else {
-    // Capture the order
-    const accessToken = await generateAccessToken();
-    const url = `${base}/v2/checkout/orders/${orderID}/capture`;
-
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-
-    const jsonResponse = await response.json();
-
-    const httpStatusCode = response.status; // Assign the HTTP status code
-
-    console.log('jsonResponse:', jsonResponse);
-    if (httpStatusCode === 201) {
-      const captureId = jsonResponse.purchase_units[0].payments.captures[0].id; // Extract captureId from the response
-      transactionObject.captureId = captureId; // Store captureId in transactionObject
+      transactionObject.isRefunded = true;
       await transactionObject.save();
-    }
 
-    return { jsonResponse, httpStatusCode };
+      return { success: true, responseData, httpStatusCode }; // Return httpStatusCode
+  } else {
+      // Capture the order
+      const accessToken = await generateAccessToken();
+      const url = `${base}/v2/checkout/orders/${orderID}/capture`;
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const jsonResponse = await response.json();
+      const httpStatusCode = response.status; // Assign the HTTP status code
+
+      calculateTimeDifference(transactionObject);
+      console.log('transactionObject.isWithinAday:', transactionObject.isWithinAday);
+      console.log('calculateTimeDifference(transactionObject):', calculateTimeDifference(transactionObject));
+      if (httpStatusCode === 201) {
+        const captureId = jsonResponse.purchase_units[0].payments.captures[0].id; // Extract captureId from the response
+        transactionObject.captureId = captureId; // Store captureId in transactionObject
+        await transactionObject.save();
+      }
+
+      return { jsonResponse, httpStatusCode };
   }
 };
 
@@ -187,7 +191,7 @@ const createOrderHandler = async (req, res) => {
 const captureOrderHandler = async (req, res) => {
     try {
         console.log('captureOrderHandler');
-        const transactionObject = await Transaction.findById(transactionID).populate('cart');
+        const transactionObject = await Transaction.findById(transactionID).populate('cart reservation');
         console.log('transactionObject:', transactionObject);
         const { orderID } = req.params;
         const { jsonResponse, httpStatusCode } = await captureOrder(orderID, transactionObject, false);

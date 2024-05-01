@@ -1,5 +1,7 @@
 import Reservation from '../models/reservationModel.mjs';
 import Cart from '../models/cartModel.mjs';
+import { calculateTimeDifference } from '../utils/timeUtils.mjs';
+import calculateTotalAmountByPax from '../utils/paxUtils.mjs';
 
 const GETCreateReservation = async (req, res) => {
   try {
@@ -33,27 +35,7 @@ const POSTCreateReservation = async (req, res) => {
       throw Error(`Number of pax "${num_pax}" is invalid!`);
     }
 
-    // 1 to 2 = 15
-    if (num_pax <= 2) {
-      console.log('1 to 2 = 15');
-      cart.totalAmount += 15;
-      // 3 to 5 = 50
-    } else if (num_pax >= 3 && num_pax <= 5) {
-      console.log('3 to 5 = 50');
-      cart.totalAmount += 50;
-      // 6 to 9 = 80
-    } else if (num_pax >= 6 && num_pax <= 9) {
-      console.log('6 to 9 = 80');
-      cart.totalAmount += 80;
-      // 10 to 13 = 110
-    } else if (num_pax >= 10 && num_pax <= 13) {
-      console.log('10 to 13 = 110');
-      cart.totalAmount += 110;
-      // 14 to 17 = 140
-    } else {
-      console.log('14 to 17 = 140');
-      cart.totalAmount += 140;
-    } 
+    calculateTotalAmountByPax(num_pax, cart);
 
     console.log('total:', cart.totalAmount);
     cart.halfAmount = cart.totalAmount / 2;

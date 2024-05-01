@@ -33,8 +33,16 @@ const transactionSchema = new mongoose.Schema({
       type: Boolean,
       default: false 
     },
-  }
-);
+    isWithinAday: {
+      type: Boolean,
+      default: false
+    },
+    isCancelled: {
+      type: Boolean,
+      default: false
+    }
+});
+
 
 const Transaction = mongoose.model('Transaction', transactionSchema);
 

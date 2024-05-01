@@ -31,7 +31,7 @@ const checkFormCompletion = () => {
   
   // Enable or disable the button based on form completion
   createReservationButton.disabled = !formCompleted;
-  };
+};
 
 // Function to disable input fields if date is not selected
 const disableInputsIfDateNotSelected = () => {
@@ -96,12 +96,16 @@ numPaxInput.addEventListener('input', () => {
         outOfRange.style.display = 'none';    
     }
 
-    if (isNaN(numPax) || isInRange(numPax)) return cartAmountSpan.textContent = totalAmountCart;
+    if (isNaN(numPax) || isInRange(numPax)) return cartAmountSpan.textContent = putComma(totalAmountCart);
     
     const cartAmount = calculateCartAmount(numPax);
-                                // To put comma
-    cartAmountSpan.textContent = cartAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+    cartAmountSpan.textContent = putComma(cartAmount);
 });
+
+const putComma = (amount) => {
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 
 const isInRange = (num_pax) => {
     return num_pax < 1 || num_pax > 17;
