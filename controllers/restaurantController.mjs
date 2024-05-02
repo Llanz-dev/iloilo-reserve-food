@@ -1,6 +1,8 @@
 import Restaurant from '../models/restaurantModel.mjs';
 import Product from '../models/productModel.mjs';
+import Transaction from '../models/transactionModel.mjs';
 import Category from '../models/categoryModel.mjs';
+import voucherGenerator from '../utils/voucherUtils.mjs';
 import { comparePassword, handleErrors, createToken, fourtyEightHours, lowerCase, hasProduct } from '../utils/helpers.mjs';
 import { createDirectory, deleteDirectory, deleteFile, renameFolder, moveImageToNewDirectory } from '../utils/fileUtils.mjs';
 
@@ -52,14 +54,23 @@ const GETProducts = async (req, res) => {
     }
 }
 
-const GETRestaurantDashboard = (req, res) => {
-    const pageTitle = 'Dashboard';
-    res.render('restaurant/dashboard', { pageTitle });
+const GETRestaurantDashboard = async (req, res) => {
+    try {
+        const pageTitle = 'Dashboard';
+        const restaurant = res.locals.restaurant;
+        const transactions = await Transaction.find({ restaurant: restaurant._id })
+        .populate('customer cart reservation')
+        .sort({ createdAt: -1 });
+        res.render('restaurant/dashboard', { pageTitle, transactions });
+    } catch (err) {
+        console.log('POSTRestaurantLogin:', err);
+        // If there's an error, render the template with the error message
+        res.status(500).json({error: err.message });
+    }
 };
 
 const GETProfileDashboard = async (req, res) => {
     const pageTitle = 'Profile';
-    console.log(res.locals.restaurant);
     res.render('restaurant/profile', { pageTitle });
 }
 
@@ -333,5 +344,28 @@ const GETRestaurantLogout = (req, res) => {
     res.redirect('/restaurant');
 };
 
+const DELETETransaction = async (req, res) => {
+    try {
+        console.log('DELETETransaction');
+        const transactionId = req.params.id;
+        const transaction = await Transaction.findById(transactionId);
+        console.log('transaction:', transaction);
+        res.redirect('/restaurant/dashboard');
+    } catch (err) {
+        res.status(500).json({ msg: err });
+    }
+}
 
-export { GETrestaurantLogin, POSTRestaurantLogin, GETRestaurantDashboard, GETProfileDashboard, GETAddProduct, POSTAddProduct, POSTUpdateProduct, GETProducts, GETUpdateProduct, GETAddCategory, POSTAddCategory, DELETECategory, DELETEProduct, GETUpdateCategory, POSTUpdateCategory, GETRestaurantLogout };
+const POSTtransactionComplete = async (req, res) => {
+    try {
+        const transactionId = req.params.id;
+        console.log('POSTtransactionComplete:', transactionId);
+        voucherGenerator(transactionId);
+        res.redirect('/restaurant/dashboard');
+    } catch (err) {
+        res.status(500).json({ msg: err });
+    }
+}
+
+
+export { GETrestaurantLogin, POSTRestaurantLogin, GETRestaurantDashboard, GETProfileDashboard, GETAddProduct, POSTAddProduct, POSTUpdateProduct, GETProducts, GETUpdateProduct, GETAddCategory, POSTAddCategory, DELETECategory, DELETEProduct, GETUpdateCategory, POSTUpdateCategory, GETRestaurantLogout, DELETETransaction, POSTtransactionComplete };

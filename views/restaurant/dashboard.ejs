@@ -1,4 +1,44 @@
 <%- include('.././header.ejs') %>
 <%- include('./layout/navbar.ejs') %>
-    <h2>Restaurants dashboard</h2>
+    <h2>Transactions: <%= transactions.length %></h2>
+    <% transactions.forEach(transaction => { %>
+        <hr>
+        <% if (transaction.isCancelled === true && transaction.isRefunded === true) { %>
+            <div style="background-color: #E29578;">
+            <h5>Transaction Status: Refunded Cancelled</h5>
+        <% } else if (transaction.isCancelled === true && transaction.isRefunded === false) { %>
+            <div style="background-color: #E29578;">
+            <h5>Transaction Status: Unrefunded Cancelled</h5>
+        <% } else if (transaction.isWithinAday === true) { %>
+            <div style="background-color: #83C5BE;">
+            <h5>Transaction Status: Today</h5>
+        <% } else { %>
+            <div style="background-color: #EDF6F9; color: black;">
+            <h5>Transaction Status: Pending</h5>
+        <% } %>
+        <i>code: <%= transaction._id %></i>
+        <p>customer: <%= transaction.customer.username %></p>
+        <p>Cart -----</p>
+        <p>total amount: <%= transaction.cart.totalAmount %></p>
+        <p>Half amount: <%= transaction.cart.halfAmount %></p>
+        <p>Reservation -----</p>
+        <!-- For date formatting: Thursday, May 02, 2024 -->
+        <p>reservation date: <span class="reservation-date"><%= transaction.reservation.reservation_date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: '2-digit', year: 'numeric' }) %></span></p>
+        <!-- For time formatting: 10:30am -->
+        <p>reservation time: <span class="reservation-time"><%= transaction.reservation.reservation_time %></span></p>
+        <p>number of pax: <%= transaction.reservation.num_pax %></p>
+        <p>notes: <%= transaction.reservation.notes %></p>
+        <p>created at: <%= transaction.reservation.created_at.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: '2-digit', year: 'numeric' }) %></p>
+        <a href="/restaurant/delete-transaction/<%= transaction._id %>" class="btn btn-danger btn-sm">Delete</a>
+        <% if (transaction.isCancelled === false && transaction.isTransactionComplete === false) { %>
+            <form action="/restaurant/transaction-complete/<%= transaction._id %>" method="post">
+                <button type="submit" class="btn btn-primary btn-sm">Transaction completed</button>
+            </form>
+        <% } %>
+        </div>
+        <hr>
+    <% }); %>
+
+<script src="/js/restaurant/dashboard.js"></script> 
+<script src="/js/timeFormatting.js"></script> 
 <%- include('.././footer.ejs') %>

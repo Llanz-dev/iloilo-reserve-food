@@ -2,7 +2,17 @@
 <%- include('../customer/layout/navbar.ejs') %>
 <div class="container">
   <h1>Create Reservation</h1>
-  <h2>Total Amount: ₱ <span class="cart-amount"><%= cart.totalAmount %></span></h2>
+  <h2>Total Amount: ₱<span class="cart-amount"><%= cart.totalAmount %></span></h2>
+  <% if (vouchers.length) { %>
+    <% vouchers.forEach(voucher => { %>     
+        <div class="w-25" style="background-color: #006D77;">
+          <a href="/reservation/use-voucher/<%= cart._id %>/<%= voucher._id %>" class="text-decoration-none text-white">
+            <h6>Voucher</h6>
+            <p>₱<%= voucher.amount %></p>
+          </a>
+        </div>
+    <% }); %>
+  <% } %>
   <% if (typeof error !== 'undefined') { %>
     <div class="alert alert-danger">
       <%= error %>

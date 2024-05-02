@@ -6,7 +6,7 @@
 <div class="container">
     <% if (transactions.length) { %>      
         <h2>Current time: <span id="current-date-and-time"></span></h2> 
-        <p><i>Kindly note, if you cancel your reservation more than 12 hours before your scheduled date and time, your half payment remains refundable.</i></p>
+        <p><i>Just so you know, if you cancel your reservation before the day before your planned visit, you'll get half of your money back.</i></p>
     <% } %>
     <div class="row">
         <% transactions.forEach(transaction => { %>
@@ -38,5 +38,6 @@
 </div>
 
 <script src="/js/customer/home.js"></script>            
+<script src="/js/timeFormatting.js"></script>            
 <script src="/js/transaction/transaction.js"></script>            
 <%- include('.././footer.ejs') %>

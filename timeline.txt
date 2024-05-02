@@ -130,6 +130,12 @@ April 26 2024:
 April 27 2024:
 	- Successfully implemented cancellation and refund functionality in your application, handling HTTP status codes, error responses, and ensuring proper communication with the PayPal API.
 	
+May 1 2024:
+	- I added an isCancelled field in Transaction Model.
+
+May 2 2024:
+	- Implemented a voucher, generating discount vouchers for customers based on their transaction amounts and providing functionality to calculate and apply the discount.
+
 Problems:
 	- All the database and associates to restaurant must be deleted when that restaurant would be deleted.
 	- In the admin side it must be shown to it all the category, product and revenue of the restaurant.

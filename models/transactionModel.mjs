@@ -40,7 +40,11 @@ const transactionSchema = new mongoose.Schema({
     isCancelled: {
       type: Boolean,
       default: false
-    }
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now
+  }
 });
 
 

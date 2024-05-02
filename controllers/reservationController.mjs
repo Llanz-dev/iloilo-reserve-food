@@ -2,19 +2,20 @@ import Reservation from '../models/reservationModel.mjs';
 import Cart from '../models/cartModel.mjs';
 import { calculateTimeDifference } from '../utils/timeUtils.mjs';
 import calculateTotalAmountByPax from '../utils/paxUtils.mjs';
+import Voucher from '../models/voucherModel.mjs';
 
 const GETCreateReservation = async (req, res) => {
   try {
     const cartID = req.params.id;
-    console.log('cartID:', cartID);
-
     const cart = await Cart.findById(cartID).populate('restaurant');
-    console.log('cart:', cart);
-    if (!cart) {
-      return res.redirect(`/cart/${cartID}`);
-    }
+    const customer = res.locals.customer;
+    const vouchers = await Voucher.find({ customer: customer._id, restaurant: cart.restaurant, isUsed: false });
+    console.log('vouchers:', vouchers);
+
+    if (!cart) return res.redirect(`/cart/${cartID}`);
+    
     const restaurantID = cart.restaurant._id;
-    res.render('reservation/reservation', { pageTitle: 'Reservation', restaurantID, cart });
+    res.render('reservation/reservation', { pageTitle: 'Reservation', restaurantID, cart, vouchers });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -53,5 +54,25 @@ const POSTCreateReservation = async (req, res) => {
   }
 }
 
+const GETUseVoucher = async (req, res) => {
+  try {
+    const cartId = req.params.cartId;
+    const voucherId = req.params.voucherId;
+    const voucher = await Voucher.findById(voucherId);
 
-export { GETCreateReservation, POSTCreateReservation };
+    // Minus the total amount of cart with voucher
+    const cart = await Cart.findById(cartId);
+    cart.totalAmount -= voucher.amount;
+    await cart.save();
+
+    voucher.isUsed = true;
+    await voucher.save();
+
+    res.redirect(`/reservation/${cartId}`);
+  } catch (err) {
+    res.status(500).json({ 'Error message': err });
+  }
+}
+
+
+export { GETCreateReservation, POSTCreateReservation, GETUseVoucher };

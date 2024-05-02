@@ -9,7 +9,7 @@ const GETtransaction = async (req, res) => {
     const transactions = await Transaction.find({ customer: customerID, isTransactionComplete: false, isCancelled: false }).populate('restaurant cart reservation');
     
     // Get the current date and time in the 'Asia/Manila' timezone
-    res.render('transaction/transaction', { pageTitle: 'Transaction', transactions });
+    res.render('transaction/transaction', { pageTitle: 'transactions', transactions });
   } catch (err) {
     console.error(err);
     res.status(500).json('Server error');

@@ -11,7 +11,7 @@ import { GETrestaurantLogin,
             GETUpdateProduct, 
             GETAddCategory, 
             POSTAddCategory, 
-            DELETEProduct, GETRestaurantLogout, GETUpdateCategory, POSTUpdateCategory, DELETECategory } from '../controllers/restaurantController.mjs';
+            DELETEProduct, GETRestaurantLogout, GETUpdateCategory, POSTUpdateCategory, DELETECategory, DELETETransaction, POSTtransactionComplete } from '../controllers/restaurantController.mjs';
 import { requireAuthenticationRestaurant } from '../middleware/authenticationMiddleware.mjs';
 import { uploadProductImage, updateProductImage } from '../config/multerConfig.mjs'
 
@@ -34,6 +34,8 @@ router.get('/update-product/:id', requireAuthenticationRestaurant, GETUpdateProd
 router.post('/update-product/:id', requireAuthenticationRestaurant, updateProductImage, POSTUpdateProduct);
 // Delete product
 router.delete('/delete-product/:id', requireAuthenticationRestaurant, DELETEProduct);
+router.get('/delete-transaction/:id', requireAuthenticationRestaurant, DELETETransaction);
+router.post('/transaction-complete/:id', requireAuthenticationRestaurant, POSTtransactionComplete);
 // For logout
 router.get('/logout', GETRestaurantLogout);
 
