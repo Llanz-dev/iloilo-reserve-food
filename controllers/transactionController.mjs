@@ -66,6 +66,7 @@ const cancelReservationUnrefundable = async (req, res) => {
   
       // Update the transaction status
       transactionObject.isTransactionComplete = true;
+      transactionObject.isCancelled = true;
       await transactionObject.save();
   
       res.redirect('/transaction');

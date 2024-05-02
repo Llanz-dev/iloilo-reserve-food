@@ -18,11 +18,6 @@
                         <p class="card-text">Restaurant: <%= transaction.restaurant.name %></p>
                         <p class="card-text">Reservation Date and Time: <%= transaction.reservation.reservation_date.toDateString() %> <span class="reservation-time"><%= transaction.reservation.reservation_time %></span></p>
                         <p class="card-text">Half Amount: ₱ <span class="total-amount"><%= transaction.cart.halfAmount %></span></p>
-                        <% if (transaction.isWithinAday) { %>
-                            <p>₱<%= transaction.cart.halfAmount %> is unrefundable</p>
-                        <% } else { %>
-                            <p>₱<%= transaction.cart.halfAmount %> is still refundable</p>
-                        <% } %>
                         <div class="d-flex justify-content-end">
                             <% if (transaction.isWithinAday) { %>
                                 <a href="/transaction/cancel-reservation-unrefundable/<%= transaction._id %>" class="btn btn-danger btn-sm">Unrefundable Cancel Reservation</a>
@@ -38,6 +33,8 @@
 </div>
 
 <script src="/js/customer/home.js"></script>            
-<script src="/js/timeFormatting.js"></script>            
-<script src="/js/transaction/transaction.js"></script>            
+<% if (transactions.length) { %>
+    <script src="/js/timeFormatting.js"></script>      
+    <script src="/js/transaction/transaction.js"></script>   
+<% } %>         
 <%- include('.././footer.ejs') %>

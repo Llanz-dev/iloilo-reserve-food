@@ -1,7 +1,9 @@
 import Restaurant from '../models/restaurantModel.mjs';
 import Product from '../models/productModel.mjs';
+import Cart from '../models/cartModel.mjs';
 import Transaction from '../models/transactionModel.mjs';
 import Category from '../models/categoryModel.mjs';
+import Reservation from '../models/reservationModel.mjs';
 import voucherGenerator from '../utils/voucherUtils.mjs';
 import { comparePassword, handleErrors, createToken, fourtyEightHours, lowerCase, hasProduct } from '../utils/helpers.mjs';
 import { createDirectory, deleteDirectory, deleteFile, renameFolder, moveImageToNewDirectory } from '../utils/fileUtils.mjs';
@@ -349,7 +351,12 @@ const DELETETransaction = async (req, res) => {
         console.log('DELETETransaction');
         const transactionId = req.params.id;
         const transaction = await Transaction.findById(transactionId);
-        console.log('transaction:', transaction);
+        await Cart.findByIdAndDelete(transaction.cart);
+        await Reservation.findByIdAndDelete(transaction.reservation);
+        
+        // Once cart and reservation are deleted, delete the transaction
+        await Transaction.findByIdAndDelete(transactionId);
+
         res.redirect('/restaurant/dashboard');
     } catch (err) {
         res.status(500).json({ msg: err });
@@ -366,6 +373,5 @@ const POSTtransactionComplete = async (req, res) => {
         res.status(500).json({ msg: err });
     }
 }
-
 
 export { GETrestaurantLogin, POSTRestaurantLogin, GETRestaurantDashboard, GETProfileDashboard, GETAddProduct, POSTAddProduct, POSTUpdateProduct, GETProducts, GETUpdateProduct, GETAddCategory, POSTAddCategory, DELETECategory, DELETEProduct, GETUpdateCategory, POSTUpdateCategory, GETRestaurantLogout, DELETETransaction, POSTtransactionComplete };

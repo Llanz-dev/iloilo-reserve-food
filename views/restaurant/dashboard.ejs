@@ -12,6 +12,9 @@
         <% } else if (transaction.isWithinAday === true) { %>
             <div style="background-color: #83C5BE;">
             <h5>Transaction Status: Today</h5>
+        <% } else if (transaction.isTransactionComplete === true) { %>
+            <div style="background-color: #83C5BE;">
+            <h5>Transaction Status: Completed</h5>
         <% } else { %>
             <div style="background-color: #EDF6F9; color: black;">
             <h5>Transaction Status: Pending</h5>
@@ -19,8 +22,8 @@
         <i>code: <%= transaction._id %></i>
         <p>customer: <%= transaction.customer.username %></p>
         <p>Cart -----</p>
-        <p>total amount: <%= transaction.cart.totalAmount %></p>
-        <p>Half amount: <%= transaction.cart.halfAmount %></p>
+        <p>total amount: ₱<%= transaction.cart.totalAmount %></p>
+        <p>Half amount: ₱<%= transaction.cart.halfAmount %></p>
         <p>Reservation -----</p>
         <!-- For date formatting: Thursday, May 02, 2024 -->
         <p>reservation date: <span class="reservation-date"><%= transaction.reservation.reservation_date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: '2-digit', year: 'numeric' }) %></span></p>

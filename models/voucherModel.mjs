@@ -7,6 +7,7 @@ const voucherSchema = new mongoose.Schema({
     },    
     isUsed: {
         type: Boolean,
+        default: false,
         required: true
     },    
     customer: {

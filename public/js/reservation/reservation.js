@@ -76,7 +76,8 @@ numPaxInput.addEventListener('input', () => {
 // -----------------------------------------------------------------------------------------------------------
 
 const cartAmountSpan = document.querySelector('.cart-amount');
-const totalAmountCart = parseInt(cartAmountSpan.textContent);
+const totalAmountCart = parseFloat(cartAmountSpan.textContent);
+console.log('totalAmountCart.textContent:', totalAmountCart);
 
 const outOfRange = document.getElementById('out-of-range');
 const outOfRangeValue = document.getElementById('out-of-range-value');
@@ -86,7 +87,7 @@ outOfRange.style.display = 'none';
 createReservationButton.disabled = true;
 
 numPaxInput.addEventListener('input', () => {
-    const numPax = parseInt(numPaxInput.value);
+    const numPax = parseFloat(numPaxInput.value);
 
     if (isInRange(numPax)) {
         outOfRange.style.display = 'block';  
@@ -96,9 +97,12 @@ numPaxInput.addEventListener('input', () => {
         outOfRange.style.display = 'none';    
     }
 
+    console.log('numPax:', numPax);
+
     if (isNaN(numPax) || isInRange(numPax)) return cartAmountSpan.textContent = putComma(totalAmountCart);
     
     const cartAmount = calculateCartAmount(numPax);
+    console.log('cartAmount:', cartAmount);
 
     cartAmountSpan.textContent = putComma(cartAmount);
 });
@@ -112,7 +116,7 @@ const isInRange = (num_pax) => {
 };
 
 const calculateCartAmount = (numPax) => {
-    const currentCartAmount = parseInt(totalAmountCart);
+    const currentCartAmount = parseFloat(totalAmountCart);
     let amount = currentCartAmount;
     if (numPax <= 2) {
         amount += 15;
