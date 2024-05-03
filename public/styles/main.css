@@ -5,11 +5,14 @@
 }
 
 body {
-    background-color: rgb(20, 20, 20);
-    color: white;
+    background-color: #EDF6F9;
+    color: black;
 }
 
-/* 
-form {
-    width: 200px;
-} */
+#logo {
+    width: 150px;
+}
+
+.bg-alice-blue {
+    background-color: #EDF6F9 !important;
+}

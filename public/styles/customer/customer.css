@@ -1,3 +1,27 @@
 .error-field {
     color: red;
 }
+
+#register-image {
+    width: 29rem;
+}
+
+.row {
+    --bs-gutter-x: 0;
+}
+
+.form-control {
+    width: 50%;
+}
+
+button {
+    background-color: #006D77 !important;
+}
+
+a {
+    color: #006D77;
+}
+
+.container-fluid {
+    --bs-gutter-x: 6.5rem !important;
+}

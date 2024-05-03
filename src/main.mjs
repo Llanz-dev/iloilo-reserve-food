@@ -11,7 +11,6 @@ import paymentRoutes from '../routes/paymentRoutes.mjs';
 import checkoutRoutes from '../routes/checkoutRoutes.mjs';
 import transactionRoutes from '../routes/transactionRoutes.mjs';
 
-
 import { requireAuthentication, checkCustomer, checkRestaurant } from '../middleware/authenticationMiddleware.mjs';
 import cookieParser from 'cookie-parser';
 import 'dotenv/config';
