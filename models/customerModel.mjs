@@ -23,10 +23,16 @@ const customerSchema = new Schema({
     minLength: [5, minimumLengthMessage('fullname', 5)],
     maxLength: [30, maximumLengthMessage('fullname', 30)]
   },
-  age: {
-    type: Number,
+  dateOfBirth: {
+    type: Date,
     required: true,
-    min: [15, '15 is the age limit']
+    validate: {
+      validator: function(value) {
+        // Custom validation logic to ensure the date of birth is not in the future
+        return value < new Date();
+      },
+      message: 'Date of birth cannot be in the future'
+    }
   },
   password: {
     type: String,

@@ -3,7 +3,7 @@
 <!-- testing -->
     <div class="form-container">
         <h2>Register</h2>
-        <form id="register-form" method="POST">
+        <form action="/register" id="register-form" method="POST">
             <div class="mb-3">
                 <p class="error-field" id="error-username"></p>
                 <label for="username" class="form-label">Username</label>
@@ -15,10 +15,10 @@
                 <input type="text" class="form-control" id="fullname" placeholder="Jhon Doe" name="fullname">
             </div>
             <div class="mb-3">
-                <p class="error-field" id="error-age"></p>
-                <label for="age" class="form-label">Age</label>
-                <input type="number" class="form-control" id="age" placeholder="18" name="age">
-            </div>
+                <p class="error-field" id="error-dateOfBirth"></p>
+                <label for="dateOfBirth" class="form-label">Date of Birth</label>
+                <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth">
+            </div>            
             <div class="mb-3">
                 <p class="error-field" id="error-password"></p>
                 <label for="password" class="form-label">Password</label>

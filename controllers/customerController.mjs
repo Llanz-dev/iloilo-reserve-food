@@ -47,7 +47,10 @@ const GETRegisterPage = (req, res) => {
 const POSTRegisterPage = async (req, res) => {
   try {
     // Extract user input from the request body
+    console.log('POSTRegisterPage');
     const { password, reEnterPassword } = req.body;
+    console.log('password:', password);
+    console.log('reEnterPassword:', reEnterPassword);
   
     // Check if passwords match
     if (password !== reEnterPassword) {
@@ -68,6 +71,7 @@ const POSTRegisterPage = async (req, res) => {
     res.cookie('jwt', token, { httpOnly: true, maxAge: fourtyEightHours * 1000 });
     res.status(201).json({ customer: customer._id });
   } catch (err) {
+    console.log('POSTRegisterPage');
     const errors = handleErrors(err);
     return res.status(500).json({ errors });
   }
@@ -81,7 +85,7 @@ const GETProfilePage = (req, res) => {
 const POSTUpdateProfile = async (req, res) => {
   try {
     const customerID = req.params.id;
-    let { username, fullname, age, password, reEnterPassword } = req.body;
+    let { username, fullname, dateOfBirth, password, reEnterPassword } = req.body;
 
     if (password !== reEnterPassword) {
       return res.status(400).json({ error: 'Passwords do not match' });
@@ -91,7 +95,7 @@ const POSTUpdateProfile = async (req, res) => {
     username = toSmallerCase(username);
     fullname = toTitleCase(fullname);
   
-    const updates = { username, fullname, age };
+    const updates = { username, fullname, dateOfBirth };
     
     if (password) {       
       // Hash password

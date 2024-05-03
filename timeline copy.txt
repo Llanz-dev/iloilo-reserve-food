@@ -112,3 +112,29 @@ April 19 2024:
 
 April 22 2024:
 	- Created routes and controller functions for handling checkout-related actions, including creating orders, capturing orders, and serving the checkout page.
+
+April 23 2024:
+	- Created a feature that, when the number of guests input goes outside of a given range, will disable the reservation button and display an out-of-range notice; when the input is within the range, both will be enabled.
+	- Reservation table will be deleted if the cart table is empty.
+
+April 24 2024:
+	- There is now a comma will be added if the amount goes to thousands.
+	- Successfully pay half amount using paypal.
+
+April 25 2024:
+	- Integrate Paypal payment successfully.
+
+April 26 2024:
+	- Stuck on refund of paypal.
+
+April 27 2024:
+	- Successfully implemented cancellation and refund functionality in your application, handling HTTP status codes, error responses, and ensuring proper communication with the PayPal API.
+	
+May 1 2024:
+	- I added an isCancelled field in Transaction Model.
+
+May 2 2024:
+	- Implemented a voucher, generating discount vouchers for customers based on their transaction amounts and providing functionality to calculate and apply the discount.
+
+May 3 2024:
+	- Change the age field of customer to date of birth.

@@ -136,6 +136,9 @@ May 1 2024:
 May 2 2024:
 	- Implemented a voucher, generating discount vouchers for customers based on their transaction amounts and providing functionality to calculate and apply the discount.
 
+May 3 2024:
+	- Change the age field of customer to date of birth.
+
 Problems:
 	- All the database and associates to restaurant must be deleted when that restaurant would be deleted.
 	- In the admin side it must be shown to it all the category, product and revenue of the restaurant.
