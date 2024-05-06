@@ -16,3 +16,28 @@ body {
 .bg-alice-blue {
     background-color: #EDF6F9 !important;
 }
+
+nav {
+    margin-bottom: 2rem;
+}
+
+nav .container-fluid {
+    --bs-gutter-x: 6.5rem !important;
+}
+
+.title, .nav-link {
+    color: #006D77 !important;
+    font-weight: 400;
+}
+
+@media (max-width: 500px) {
+    nav .container-fluid {
+        --bs-gutter-x: 2.5rem !important;
+    }    
+}
+
+@media (max-width: 380px) {
+    nav {
+        margin-bottom: 1rem;
+    } 
+}

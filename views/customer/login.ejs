@@ -1,7 +1,11 @@
 <%- include('.././header.ejs') %>
 <%- include('./layout/navbar.ejs') %>
-    <div class="form-container">
-        <h2>Login</h2>
+<main id="authentication">
+    <aside class="left">
+        <img src="/images/static/login.jpg" alt="Cafe table" id="register-image">
+    </aside>
+    <section class="right">
+        <h2 class="title">Login</h2>
         <form action="/login" method="post" id="login-form">          
             <div class="mb-3">
                 <p class="error-field" id="error-username"></p>
@@ -15,8 +19,9 @@
             </div>
             <button type="submit" class="btn btn-primary">Login</button>
         </form>
-        <p>Don't have an account? <a href="/register">Register</a></p>
-    </div>
+        <p class="mt-3">Don't have an account? <a href="/register">Register</a></p>
+    </section>
+</main>   
     
     <script src="/js/customer/login.js"></script>             
 <%- include('.././footer.ejs') %>

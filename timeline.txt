@@ -138,6 +138,7 @@ May 2 2024:
 
 May 3 2024:
 	- Change the age field of customer to date of birth.
+	- Register page design not yet responsive. 
 
 Problems:
 	- All the database and associates to restaurant must be deleted when that restaurant would be deleted.

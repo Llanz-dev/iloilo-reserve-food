@@ -1,12 +1,12 @@
 <%- include('.././header.ejs') %>
 <%- include('./layout/navbar.ejs') %>
 <!-- testing -->
-    <div class="row">
-        <div class="col-4">
+    <main id="authentication">
+        <aside class="left">
             <img src="/images/static/register.jpg" alt="Cafe table" id="register-image">
-        </div>
-        <div class="col-8">
-            <h2>Register</h2>
+        </aside>
+        <section class="right">
+            <h2 class="title">Register</h2>
             <form action="/register" id="register-form" method="POST">
                 <div class="mb-3">
                     <p class="error-field" id="error-username"></p>
@@ -32,12 +32,10 @@
                     <label for="reEnterPassword" class="form-label">Re-enter password</label>
                     <input type="password" class="form-control" id="reEnterPassword" placeholder="******" name="reEnterPassword">
                 </div>            
-                <button type="submit" class="btn btn-primary">register</button>
+                <button type="submit" class="btn btn-primary">Register</button>
             </form>
             <p class="mt-3">Have already an account? <a href="/login">Login</a></p>
-
-        </div>
-    </div>  
-    
+        </section>
+    </main>      
     <script src="/js/customer/register.js"></script>            
 <%- include('.././footer.ejs') %>
