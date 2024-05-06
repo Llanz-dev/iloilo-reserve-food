@@ -1,6 +1,6 @@
-<%- include('.././header.ejs') %>
-    <div class="form-container">
-        <h2>Restaurant Login</h2>
+<%- include('./layout/header.ejs') %>
+    <main class="authentication">
+        <h2 class="title">Restaurant Login</h2>
         <% if (typeof error !== 'undefined') { %>
             <div class="alert alert-danger">
               <%= error %>
@@ -19,6 +19,6 @@
             </div>
             <button type="submit" class="btn btn-primary">Login</button>
         </form>
-    </div>
+    </main>
     
 <%- include('.././footer.ejs') %>

@@ -30,10 +30,26 @@ nav .container-fluid {
     font-weight: 400;
 }
 
-@media (max-width: 500px) {
+button[type="submit"] {
+    background-color: #006D77 !important;
+}
+
+@media (max-width: 575px) {
     nav .container-fluid {
         --bs-gutter-x: 2.5rem !important;
     }    
+    .right {
+        margin: 0 1.5rem;        
+    }
+}
+
+@media (max-width: 450px) {
+    button[type="submit"] {
+        width: 100%;
+    }
+    .form-control {
+        height: 50px;
+    }
 }
 
 @media (max-width: 380px) {

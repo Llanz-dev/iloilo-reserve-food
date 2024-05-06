@@ -1,0 +1,19 @@
+main {
+    width: 400px;
+    margin: 2rem auto 0 auto;
+}
+
+@media (max-width: 600px) {    
+    main {
+        margin: 4rem auto 0 auto;
+    }
+    .form-control {
+        width: 100%;
+    }
+}
+
+@media (max-width: 450px) {
+    main {
+        width: 90%;
+    }
+}

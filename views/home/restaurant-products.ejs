@@ -1,6 +1,6 @@
 <%- include('.././header.ejs') %>
 <!-- I include the navbar from customer layout because they have the same navbar -->
-<%- include('./layout/navbar.ejs') %>
+<%- include('.././navbar.ejs') %>
 
 <h1><a href="/cart/<%= restaurant._id %>">Cart: <%= numberOfItems %></a></h1>
 <div class="container mt-5">
@@ -14,7 +14,7 @@
         <% groupedProducts[category].push(product); %>
       <% }); %>
       <% Object.keys(groupedProducts).forEach(category => { %>
-        <h2 class="mb-4"><%= category %></h2>
+        <h2 class="mb-4 title"><%= category %></h2>
         <div class="row row-cols-1 row-cols-md-3 g-4">
           <% groupedProducts[category].forEach(product => { %>
             <div class="col">

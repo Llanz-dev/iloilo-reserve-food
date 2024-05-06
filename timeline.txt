@@ -140,6 +140,15 @@ May 3 2024:
 	- Change the age field of customer to date of birth.
 	- Register page design not yet responsive. 
 
+May 4 2024:
+	- Change the age field of customer to date of birth.
+
+May 5 2024:
+	- Register page design completed and responsive.
+
+May 6 2024:
+	- Placed a navbar in restaurant products.
+
 Problems:
 	- All the database and associates to restaurant must be deleted when that restaurant would be deleted.
 	- In the admin side it must be shown to it all the category, product and revenue of the restaurant.

@@ -10,10 +10,6 @@
     width: 25rem;
 }
 
-button[type="submit"] {
-    background-color: #006D77 !important;
-}
-
 a {
     color: #006D77;
 }
@@ -25,6 +21,7 @@ main {
 
 .left img {
     width: 29rem;
+    border-top-right-radius: 8px;
 }
 
 .left {
@@ -74,17 +71,8 @@ main {
     }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 575px) {    
     .right {
         margin: 0 1.5rem;        
-    }
-}
-
-@media (max-width: 450px) {
-    .form-control {
-        height: 50px;
-    }
-    button[type="submit"] {
-        width: 100%;
     }
 }

@@ -1,23 +1,17 @@
 <%- include('.././header.ejs') %>
 <!-- I include the navbar from customer layout because they have the same navbar -->
-<%- include('./../customer/layout/navbar.ejs') %>
-
+<%- include('./../navbar.ejs') %>
     <div class="container">
         <div class="row">
             <% restaurants.forEach(restaurant => { %>
                 <div class="col-md-4">
-                    <div class="card mb-4 shadow-sm">
+                    <a href="/restaurant-products/<%= restaurant._id %>" class="card mb-4 shadow-sm text-decoration-none">
                         <img src="/images/restaurant/<%= restaurant.lowername %>/banner/<%= restaurant.image %>" class="card-img-top" alt="<%= restaurant.name %>">
                         <div class="card-body">
                             <h5 class="card-title"><%= restaurant.name %></h5>
-                            <p class="card-text"><%= restaurant.description %></p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="btn-group">
-                                    <a href="/restaurant-products/<%= restaurant._id %>" class="btn btn-sm btn-outline-secondary">View</a>
-                                </div>
-                            </div>
+                            <p class="card-text"><%= restaurant.address %></p>                         
                         </div>
-                    </div>
+                    </a>
                 </div>
             <% }) %>
         </div>

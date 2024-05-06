@@ -5,7 +5,7 @@ import Cart from '../models/cartModel.mjs';
 const GETHomePage = async (req, res) => {
     try {
         const restaurants = await Restaurant.find();
-        const pageTitle = 'home';
+        const pageTitle = 'Home';
         res.render('home/home', { pageTitle, restaurants });
     } catch (err) {
         res.json({ 'GET home page': err.message });

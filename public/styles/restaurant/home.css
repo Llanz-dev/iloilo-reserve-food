@@ -1,0 +1,12 @@
+.card:hover {
+    text-decoration: none; /* Remove default underline */
+    border-bottom: 1px solid #83C5BE; /* Set underline with desired color and thickness */
+}
+
+.card-title {
+    color: #006D77;
+}
+
+.card-text {
+    color: #83C5BE;
+}

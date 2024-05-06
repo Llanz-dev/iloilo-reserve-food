@@ -5,7 +5,7 @@ import Product from '../models/productModel.mjs';
 import { hashPassword, comparePassword, handleErrors, toTitleCase, toSmallerCase, createToken, fourtyEightHours } from '../utils/helpers.mjs';
 
 const GETLoginPage = (req, res) => {
-    const pageTitle = 'login';
+    const pageTitle = 'Login';
     res.render('customer/login', { pageTitle });
 }
 
@@ -40,7 +40,7 @@ const POSTLoginPage = async (req, res) => {
 }
 
 const GETRegisterPage = (req, res) => {
-  const pageTitle = 'register';
+  const pageTitle = 'Register';
   res.render('customer/register', { pageTitle });
 }
 
