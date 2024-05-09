@@ -10,7 +10,7 @@ import { createDirectory, deleteDirectory, deleteFile, renameFolder, moveImageTo
 
 
 const GETrestaurantLogin = async (req, res) => {
-    const pageTitle = 'Restaurant';
+    const pageTitle = 'Restaurant Login';
     res.render('restaurant/login', { pageTitle });
 };
 

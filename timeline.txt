@@ -149,6 +149,9 @@ May 5 2024:
 May 6 2024:
 	- Placed a navbar in restaurant products.
 
+May 8 2024:
+	- Complete designed in restaurant products of customer side.
+
 Problems:
 	- All the database and associates to restaurant must be deleted when that restaurant would be deleted.
 	- In the admin side it must be shown to it all the category, product and revenue of the restaurant.

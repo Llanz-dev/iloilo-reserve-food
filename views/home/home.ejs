@@ -1,7 +1,7 @@
 <%- include('.././header.ejs') %>
 <!-- I include the navbar from customer layout because they have the same navbar -->
 <%- include('./../navbar.ejs') %>
-    <div class="container">
+    <main>
         <div class="row">
             <% restaurants.forEach(restaurant => { %>
                 <div class="col-md-4">
@@ -15,6 +15,6 @@
                 </div>
             <% }) %>
         </div>
-    </div>
+    </main>
     <script src="/js/customer/home.js"></script>            
 <%- include('.././footer.ejs') %>

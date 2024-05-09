@@ -2,8 +2,7 @@
 <!-- I include the navbar from customer layout because they have the same navbar -->
 <%- include('.././navbar.ejs') %>
 
-<h1><a href="/cart/<%= restaurant._id %>">Cart: <%= numberOfItems %></a></h1>
-<div class="container mt-5">
+<main>
     <% if (products.length > 0) { %>
       <% const groupedProducts = {}; %>
       <% products.forEach(product => { %>
@@ -14,31 +13,34 @@
         <% groupedProducts[category].push(product); %>
       <% }); %>
       <% Object.keys(groupedProducts).forEach(category => { %>
-        <h2 class="mb-4 title"><%= category %></h2>
+        <h2 class="category-name title"><%= category %></h2>
         <div class="row row-cols-1 row-cols-md-3 g-4">
           <% groupedProducts[category].forEach(product => { %>
-            <div class="col">
-              <div class="card">
-                <img src="/images/restaurant/<%= product.restaurant.lowername %>/products/<%= product.category.lowername %>/<%= product.image %>" class="card-img-top" alt="Product Image">
-                <div class="card-body">
-                  <h5 class="card-title"><%= product.name %></h5>
-                  <p class="card-text"><%= product.description %></p>
-                  <p class="card-text">Price: ₱<%= product.price %></p>
-                  <!-- Add more product details as needed -->
-                  <form action="/add-to-cart" method="post">
+              <div class="square">
+                <form action="/add-to-cart" method="post">
+                <button type="submit" class="submit-btn">
+                  <img src="/images/restaurant/<%= product.restaurant.lowername %>/products/<%= product.category.lowername %>/<%= product.image %>" class="card-img-top product-image" alt="Product Image">
+                  <p class="product-name h4"><%= product.name %></p>
+                  <p class="product-description"><%= product.description %></p>
+                  <!-- <p class="product-description text-secondary">
+                  //  <%= product.description.slice(0, 30) + (product.description.length > 20 ? '...' : '') %>
+                  </p> -->
+                  <div class="flex-container">
+                    <img src="/images/static/add-icon.png" alt="" class="add-icon">
                     <input type="hidden" name="productId" value="<%= product._id %>">
                     <input type="hidden" name="restaurantId" value="<%= product.restaurant._id %>">
-                    <button type="submit" class="btn btn-primary">Add to Cart</button>
-                  </form>
-                </div>
+                    <p class="product-price">₱<%= product.price %></p>
+                  </div>
+              </button>
+              </form>
               </div>
-            </div>
           <% }); %>
         </div>
       <% }); %>
     <% } else { %>
       <p>No products available.</p>
     <% } %>
-  </div>
-
+</main>
+<script src="/js/home/restaurant-products.js"></script>            
 <%- include('.././footer.ejs') %>
+ 
