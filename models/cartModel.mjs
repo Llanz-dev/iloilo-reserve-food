@@ -12,6 +12,11 @@ const cartItemSchema = new mongoose.Schema({
     type: Number,
     required: true,
     default: 1 // Default quantity to 1
+  },
+  total: {
+    type: Number,
+    required: true,
+    default: 0 // Default quantity to 0
   }
 });
 

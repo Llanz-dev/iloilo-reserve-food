@@ -152,6 +152,9 @@ May 6 2024:
 May 8 2024:
 	- Complete designed in restaurant products of customer side.
 
+May 9 2024:
+	- 80% designed in cart.
+
 Problems:
 	- All the database and associates to restaurant must be deleted when that restaurant would be deleted.
 	- In the admin side it must be shown to it all the category, product and revenue of the restaurant.

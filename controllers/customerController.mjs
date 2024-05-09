@@ -3,6 +3,7 @@ import Cart from '../models/cartModel.mjs';
 import Reservation from '../models/reservationModel.mjs';
 import Product from '../models/productModel.mjs';
 import { hashPassword, comparePassword, handleErrors, toTitleCase, toSmallerCase, createToken, fourtyEightHours } from '../utils/helpers.mjs';
+import Restaurant from '../models/restaurantModel.mjs';
 
 const GETLoginPage = (req, res) => {
     const pageTitle = 'Login';
@@ -123,22 +124,26 @@ const GETCartPage = async (req, res) => {
       return res.render('customer/cart', { pageTitle: 'Cart', cartItems: [] });
     }
 
+    // Fetch the restaurant
+    const restaurant = await Restaurant.findById(restaurantId);
+
     // Fetch cart items for the logged-in customer
-    const cart = await Cart.findOne({ customer: customerID, restaurant: restaurantId, isHalfPaymentSuccessful: false }).populate('items.product');
+    const cart = await Cart.findOne({ customer: customerID, restaurant: restaurantId, isHalfPaymentSuccessful: false }).populate({ path: 'items.product', populate: [{ path: 'category' }, { path: 'restaurant' }]});
+  
     
     const numberOfItems = cart ? cart.items.length : 0;
     let cartAmount = 0;
 
     // If cart is empty, render the cart page with an empty cart
     if (!cart) {
-      return res.render('customer/cart', { pageTitle: 'Cart', cartItems: [], cartID: 0, cartAmount, numberOfItems });
+      return res.render('customer/cart', { pageTitle: 'Cart', cartItems: [], cartID: 0, cartAmount, numberOfItems, restaurant });
     }
     const cartID = cart._id;
 
     cartAmount = cart.totalAmount;
     
     // If cart has items, render the cart page with cart items
-    res.render('customer/cart', { pageTitle: 'Cart', cartItems: cart.items, cartID, cartAmount, numberOfItems });
+    res.render('customer/cart', { pageTitle: 'Cart', cartItems: cart.items, cartID, cartAmount, numberOfItems, restaurant });
   } catch (err) {
     // Handle any errors that occur during fetching cart items
     res.status(500).json({ error: err.message });
@@ -182,21 +187,22 @@ const POSTAddToCart = async (req, res) => {
       return item.product.equals(productId); // Assuming productId is a MongoDB ObjectId
     });
 
+    // If the product already exists in the cart, increment its quantity and totalAmount
     if (existingItemIndex !== -1) {
-      // If the product already exists in the cart, increment its quantity and totalAmount
       cart.items[existingItemIndex].quantity += 1;
       cart.totalAmount += productPrice;
       cart.halfAmount += halfAmount;
+      cart.items[existingItemIndex].total *= cart.items[existingItemIndex].quantity;
     } else {
       // If the product does exist in the cart, add it with a quantity of 1
       // Increment the totalAmount when adding a new item to the cart
       if (cart.items.length) {
         cart.totalAmount += productPrice;
         cart.halfAmount += halfAmount;
-        cart.items.push({ product: productId, quantity: 1, totalAmount: productPrice, halfAmount: halfAmount });
+        cart.items.push({ product: productId, quantity: 1, total: product.price * 1, totalAmount: productPrice, halfAmount: halfAmount });
       } else {
         // If the product doesn't exist in the cart, add it with a quantity of 1
-        cart.items.push({ product: productId, quantity: 1, totalAmount: productPrice, halfAmount: halfAmount });
+        cart.items.push({ product: productId, quantity: 1, total: product.price * 1,  totalAmount: productPrice, halfAmount: halfAmount });
       }
     }
 
@@ -280,7 +286,7 @@ const POSTUpdateCart = async (req, res) => {
 
     // Find the cart for the customer and the specific restaurant
     const cart = await Cart.findOne({ customer: customerId, restaurant: restaurantId, isHalfPaymentSuccessful: false });
-
+    console.log('------------------ POSTUpdateCart:', cart);
     if (!cart) {
       return res.status(404).json({ error: 'Cart not found' });
     }
@@ -299,20 +305,24 @@ const POSTUpdateCart = async (req, res) => {
     // Update the quantity of the product in the cart
     if (action === 'increase') {
         cart.items[productIndex].quantity += 1;
+        cart.items[productIndex].total = cart.items[productIndex].quantity * productPrice;
         cart.totalAmount += productPrice;
         cart.halfAmount += halfAmount;
     } else if (cart.items[productIndex].quantity === 1 && cart.items.length === 1 && action === 'decrease') {
         cart.totalAmount -= productPrice;
         cart.halfAmount -= halfAmount;
+        cart.items[productIndex].total -= cart.items[productIndex].quantity;
         return await POSTRemoveFromCart(req, res);
     } else if (cart.items[productIndex].quantity === 1 && action === 'decrease') {
         cart.totalAmount -= productPrice;
         cart.halfAmount -= halfAmount;
+        cart.items[productIndex].total -= productPrice;
         cart.items.splice(productIndex, 1);
     } else if (action === 'decrease') {
         cart.totalAmount -= productPrice;
         cart.halfAmount -= halfAmount;
         cart.items[productIndex].quantity -= 1;
+        cart.items[productIndex].total -= productPrice;
     }
 
     // Save the updated cart
@@ -323,7 +333,7 @@ const POSTUpdateCart = async (req, res) => {
   } catch (err) {
     // Handle errors
     console.error('Error updating cart:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: err });
   }
 };
 

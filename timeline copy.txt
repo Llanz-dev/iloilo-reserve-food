@@ -14,3 +14,102 @@
     </div>
   </div>
 </div>  
+
+  <form action="/remove-from-cart" method="post" class="d-inline">
+                        <input type="hidden" name="productId" value="<%= item.product._id %>">
+                        <input type="hidden" name="restaurantId" value="<%= item.product.restaurant %>">
+                        <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                    </form>
+
+
+                        <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Product Details</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Loop through cart items and display each item -->
+            <% cartItems.forEach(item => { %>
+            <tr>
+                <td>
+                    <img src="/images/restaurant/<%= item.product.restaurant.lowername %>/products/<%= item.product.category.lowername %>/<%= item.product.image %>" class="product-image" alt="Product Image">
+                    product name: <%= item.product.name %>
+                </td>
+                <td>
+                    <!-- Display the current quantity -->
+                    <!-- Increase and decrease buttons -->
+                    <form action="/update-cart" method="post" class="d-inline">
+                        <input type="hidden" name="productId" value="<%= item.product._id %>">
+                        <input type="hidden" name="restaurantId" value="<%= item.product.restaurant %>">
+                        <input type="hidden" name="customerId" value="<%= customer._id %>">
+                        <button type="submit" name="action" value="decrease" class="border-0 bg-transparent"><img src="/images/static/minus-icon.png" class="plus-minus-icon"  alt=""></button>
+                        <span class="item-quantity border border-2"><%= item.quantity %></span>
+                        <button type="submit" name="action" value="increase" class="border-0 bg-transparent"><img src="/images/static/plus-icon.png" class="plus-minus-icon" alt=""></button>
+                    </form>
+                </td>
+                <td>
+                    ₱ <span class="total-amount"><%= item.total %></span>
+                </td>
+            </tr>
+            <% }); %>
+        </tbody>
+    </table>
+
+    <% if (numberOfItems !== 0) { %>
+    <h2><a href="/reservation/<%= cartID %>">Reservation</a></h2> 
+<% } %>
+
+
+
+
+
+
+<%- include('./layout/header.ejs') %>
+<%- include('./../navbar.ejs') %>
+
+<!-- Assuming you have a table to display the cart items -->
+<main> 
+    <article>   
+        <section class="shopping-cart">
+            <h3 class="fw-bold"><span>Shopping Cart</span> <span><%= numberOfItems %> items</span></h3>    
+            <hr>
+            <header class="text-secondary row">
+                <p class="col-sm-6">Product details</p>
+                <p class="col-sm-3">Quantity</p>
+                <p class="col-sm-3">Total</p>
+            </header>   
+            <% cartItems.forEach(item => { %>       
+            <div class="row mb-3">
+                <div class="col-sm-6 product-details">
+                    <p class="product-name"><%= item.product.name %></p>
+                </div>
+                <div class="col-sm-3 product-quantity">
+                    <form action="/update-cart" method="post" class="d-inline">
+                        <input type="hidden" name="productId" value="<%= item.product._id %>">
+                        <input type="hidden" name="restaurantId" value="<%= item.product.restaurant %>">
+                        <input type="hidden" name="customerId" value="<%= customer._id %>">
+                        <button type="submit" name="action" value="decrease" class="border-0 bg-transparent"><img src="/images/static/minus-icon.png" class="plus-minus-icon"  alt=""></button>
+                        <span class="item-quantity border border-2"><%= item.quantity %></span>
+                        <button type="submit" name="action" value="increase" class="border-0 bg-transparent"><img src="/images/static/plus-icon.png" class="plus-minus-icon" alt=""></button>
+                    </form>
+                </div>
+                <div class="col-sm-3 product-total">
+                    ₱ <%= item.total %>
+                </div>
+            </div>
+            <% }); %>
+
+            <a href="/restaurant-products/<%= restaurant._id %>"><img src="/images/static/left-arrow.png" alt="left arrow icon" class="left-arrow"> Continue Shopping</a>
+        </section>
+        <section class="order-summary">
+            <h3 class="fw-bold">Ordery Summary</h3>    
+            <hr>
+        </section>
+    </article>
+</main>
+
+<script src="/js/amountFormatter.js"></script>             
+<%- include('.././footer.ejs') %>

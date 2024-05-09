@@ -8,17 +8,20 @@
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         
       </ul>
-      <ul class="navbar-nav ml-auto"> <!-- Added this ul for right alignment -->
+      <ul class="navbar-nav ml-auto"> <!-- Added this ul for right alignment -->     
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="/">Home</a>
         </li>
-        <% if (customer) { %>               
+        <% if (customer) { %>  
+          <% if (restaurant) { %>
+            <li class="nav-item">
+                <a class="nav-link" href="/cart/<%= restaurant._id %>">Cart</a>             
+            </li>
+          <% } %>             
           <li class="nav-item">
             <a class="nav-link" href="/profile">Profile</a>
           </li>                                       
-          <li class="nav-item">
-            <a class="nav-link" href="/cart/<%= restaurant._id %>">Cart</a>
-          </li>                                       
+                                         
           <li class="nav-item">
             <a class="nav-link" href="/transaction">Transaction</a>
           </li>                                       

@@ -10,10 +10,6 @@
     width: 25rem;
 }
 
-a {
-    color: #006D77;
-}
-
 main {
     display: flex;
     flex-direction: row;
@@ -23,6 +19,7 @@ main {
 .left img {
     width: 29rem;
     border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
 }
 
 .left {

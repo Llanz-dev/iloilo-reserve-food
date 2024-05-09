@@ -7,15 +7,14 @@ submitButtons.forEach(button => {
     button.addEventListener('mouseenter', () => {
         // Get the parent square element
         const square = button.closest('.square');
-        // Get the product name element within the square
         const productName = square.querySelector('.product-name');
-        const productDescription = square.querySelector('.product-description');
         const productPrice = square.querySelector('.product-price');
         const addIcon = square.querySelector('.add-icon');
         // Add CSS styling to the product name when hovering
-        productName.style.color = '#006D77'; // Change the color as desired
-        productDescription.style.color = '#006D77'; // Change the color as desired
-        productPrice.style.color = '#006D77';
+        const submitBtn = button.closest('.submit-btn');
+        submitBtn.style.color = '#006D77'
+        const productDescription = square.querySelector('.product-description');
+        productDescription.style.color = '#006D77'
         addIcon.src = '/images/static/add-icon-green.png';
     });
 
@@ -23,15 +22,12 @@ submitButtons.forEach(button => {
     button.addEventListener('mouseleave', () => {
         // Get the parent square element
         const square = button.closest('.square');
-        // Get the product name element within the square
-        const productName = square.querySelector('.product-name');
-        const productDescription = square.querySelector('.product-description');
-        const productPrice = square.querySelector('.product-price');
         const addIcon = square.querySelector('.add-icon');
         // Remove CSS styling when mouse leaves
-        productName.style.color = ''; // Restore the default color
-        productDescription.style.color = ''; // Change the color as desired
-        productPrice.style.color = '';
+        const submitBtn = button.closest('.submit-btn');
+        submitBtn.style.color = ''
+        const productDescription = square.querySelector('.product-description');
+        productDescription.style.color = ''
         addIcon.src = '/images/static/add-icon.png';
     });
 });

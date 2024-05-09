@@ -13,14 +13,14 @@ header a {
 }
 
 .category-name {
-    margin: 2rem 0 2.5rem 0;
+    margin: 1rem 0 2.5rem 0;
 }
 
 .square {
     display: flex;
     flex-direction: column;
     width: 250px;
-    margin: 0 10px 17px 14.5px;
+    margin: 0 10px 15px 14.5px;
     padding: 0;
 }
 
@@ -47,6 +47,7 @@ header a {
 .product-description {
     font-size: 14px;
     margin-bottom: 10px;
+    color: gray;
 }
 
 .flex-container {
@@ -66,7 +67,7 @@ button[type="submit"] {
     border-left: none;
     border-top: none;
     border-right: none;
-    padding-bottom: 9px;
+    padding-bottom: 25px;
     border-bottom: 1px solid #edf6f9;
 }
 
@@ -91,7 +92,7 @@ button[type="submit"]:hover {
         width: 150px !important;
     }
     .category-name {
-        margin: 1rem 0 2.5rem 0;
+        margin: 0 0 2.5rem 0;
     }  
     .add-icon {
         width: 20px;
@@ -105,10 +106,22 @@ button[type="submit"]:hover {
     .product-price {
         font-size: 13px;
     }
+    button[type="submit"] {
+        padding-bottom: 20px;
+    }    
 }
 
 @media (max-width: 500px) {
     .row-cols-md-3 > * {
-        width: 42% !important;
+        width: 46% !important;
+    }
+    .square {
+        margin: 0 5px 10px 9.5px;
+    }
+}
+
+@media (max-width: 410px) {
+    .row-cols-md-3 > * {
+        width: 44% !important;
     }
 }
