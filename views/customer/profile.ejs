@@ -1,5 +1,7 @@
-<%- include('.././header.ejs') %>
-<%- include('./layout/navbar.ejs') %>
+<%- include('./layout/header.ejs') %>
+<%- include('./../navbar.ejs') %>
+
+%>
     <div class="form-container">
         <h2>Profile</h2>
         <form action="/profile/<%= customer._id %>" method="post" id="profile-form">

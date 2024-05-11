@@ -81,7 +81,8 @@ const POSTRegisterPage = async (req, res) => {
 
 const GETProfilePage = (req, res) => {
   const pageTitle = 'profile';
-  res.render('customer/profile', { pageTitle });
+  const restaurant = undefined;
+  res.render('customer/profile', { pageTitle, restaurant });
 }
 
 const POSTUpdateProfile = async (req, res) => {

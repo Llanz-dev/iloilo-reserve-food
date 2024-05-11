@@ -11,8 +11,8 @@ submitButtons.forEach(button => {
         const productPrice = square.querySelector('.product-price');
         const addIcon = square.querySelector('.add-icon');
         // Add CSS styling to the product name when hovering
-        const submitBtn = button.closest('.submit-btn');
-        submitBtn.style.color = '#006D77'
+        const singleProduct = button.closest('.single-product');
+        singleProduct.style.color = '#006D77'
         const productDescription = square.querySelector('.product-description');
         productDescription.style.color = '#006D77'
         addIcon.src = '/images/static/add-icon-green.png';
@@ -24,8 +24,8 @@ submitButtons.forEach(button => {
         const square = button.closest('.square');
         const addIcon = square.querySelector('.add-icon');
         // Remove CSS styling when mouse leaves
-        const submitBtn = button.closest('.submit-btn');
-        submitBtn.style.color = ''
+        const singleProduct = button.closest('.single-product');
+        singleProduct.style.color = ''
         const productDescription = square.querySelector('.product-description');
         productDescription.style.color = ''
         addIcon.src = '/images/static/add-icon.png';
