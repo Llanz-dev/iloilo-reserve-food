@@ -61,7 +61,7 @@ header a {
     width: 30px;
 }
 
-button[type="submit"] {
+.single-product {
     background-color: #edf6f9 !important;
     text-align: start;
     border-left: none;

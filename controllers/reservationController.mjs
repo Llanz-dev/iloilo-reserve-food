@@ -8,14 +8,12 @@ const GETCreateReservation = async (req, res) => {
   try {
     const cartID = req.params.id;
     const cart = await Cart.findById(cartID).populate('restaurant');
-    const customer = res.locals.customer;
-    const vouchers = await Voucher.find({ customer: customer._id, restaurant: cart.restaurant, isUsed: false });
-    console.log('vouchers:', vouchers);
 
     if (!cart) return res.redirect(`/cart/${cartID}`);
-    
+      
     const restaurantID = cart.restaurant._id;
-    res.render('reservation/reservation', { pageTitle: 'Reservation', restaurantID, cart, vouchers });
+    const restaurant = cart.restaurant;
+    res.render('reservation/reservation', { pageTitle: 'Reservation', restaurantID, cart, restaurant });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -61,14 +59,16 @@ const GETUseVoucher = async (req, res) => {
     const voucher = await Voucher.findById(voucherId);
 
     // Minus the total amount of cart with voucher
-    const cart = await Cart.findById(cartId);
+    const cart = await Cart.findById(cartId).populate('restaurant');
     cart.totalAmount -= voucher.amount;
     await cart.save();
 
     voucher.isUsed = true;
     await voucher.save();
 
-    res.redirect(`/reservation/${cartId}`);
+    const restaurantID = cart.restaurant._id;
+
+    res.redirect(`/cart/${restaurantID}`);
   } catch (err) {
     res.status(500).json({ 'Error message': err });
   }

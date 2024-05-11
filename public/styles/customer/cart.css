@@ -12,6 +12,10 @@ article {
     background-color: white;
 }
 
+.order-summary, .reservation-btn {
+    font-size: 15px;
+}
+
 .order-summary {
     width: 30%;
     background-color: rgb(248, 248, 248);
@@ -30,7 +34,7 @@ article {
     width: 100px;
 }
 
-h3, .order-summary header {
+h3, .order-summary header, .total-cost {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -52,11 +56,106 @@ header {
     text-transform: uppercase;
 }
 
-.product-details, .product-quantity, .product-total {
+.product-details, .product-quantity-desktop, .product-total {
     display: flex;
     flex-direction: row;
 }
 
 .product-details div {
-    margin-left: 10px;
+    margin-left: 15px;
+}
+
+.row {
+    margin: 0 0;
+}
+
+.voucher-card {
+    padding: 2.5px !important;
+    margin: 5px 5px 5px 0;
+    font-size: 14px;
+    background-color: #EDF6F9;
+}
+
+.reservation-btn {
+    width: 100%;
+}
+
+.row > * {
+    padding: 0 0;
+}
+
+.product-quantity-mobile {
+    display: none;
+}
+
+@media (max-width: 900px) {
+    article {
+        display: flex;
+        flex-direction: column;
+    }
+    .shopping-cart {
+        width: 100%;
+        background-color: white;
+    }
+    .order-summary {
+        width: 100%;
+    }
+    .col-sm-6 {
+        width: 60%;
+    }
+    .col-sm-3 {
+        width: 20%;
+    }
+    .item-quantity {
+        padding: 0 6px;
+        margin: 0 5px;
+    }
+    .product-details div {
+        margin-left: 16px;
+    }
+    .product-image {
+        width: 70px;
+        object-fit: cover;
+    }
+}
+
+@media (max-width: 700px) {
+    article {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 575px) {
+    main {
+        margin: 0 0rem;
+    }
+}
+
+@media (max-width: 500px) {
+    .product-image {
+        width: 100px;
+        object-fit: cover;
+    }
+    .header-quantity, .product-quantity-desktop  {
+        display: none;
+    }
+    .col-sm-6 {
+        width: 75%;
+        margin-right: 10px;
+    }
+    .col-sm-3 {
+        width: 10%;
+    }
+}
+
+@media (max-width: 450px) {
+    .product-image {
+        width: 70px;
+    }
+    button[type="submit"] {
+        width: unset;
+    }
+    .col-sm-6 {
+        width: 85%;
+    }
 }

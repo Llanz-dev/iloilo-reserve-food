@@ -9,42 +9,71 @@
             <hr>
             <header class="text-secondary row">
                 <p class="col-sm-6">Product details</p>
-                <p class="col-sm-3">Quantity</p>
+                <p class="col-sm-3 header-quantity">Quantity</p>
                 <p class="col-sm-3">Total</p>
             </header>   
             <% cartItems.forEach(item => { %>       
-            <div class="row mb-3">
-                <div class="col-sm-6 product-details">
-                    <img src="/images/restaurant/<%= item.product.restaurant.lowername %>/products/<%= item.product.category.lowername %>/<%= item.product.image %>" class="product-image" alt="Product Image">
-                    <div>
-                        <p class="product-name"><%= item.product.name %></p>
-                        <p class="product-price">₱<span class="total-amount"><%= item.product.price %></span></p>
+                <div class="row mb-3">
+                    <div class="col-sm-6 product-details">
+                        <img src="/images/restaurant/<%= item.product.restaurant.lowername %>/products/<%= item.product.category.lowername %>/<%= item.product.image %>" class="product-image" alt="Product Image">
+                        <div>
+                            <p class="product-name fw-bold"><%= item.product.name %></p>
+                            <p class="product-price fw-bold">₱<span class="total-amount"><%= item.product.price %></span></p>
+                            <form action="/update-cart" method="post" class="product-quantity-mobile">
+                                <input type="hidden" name="productId" value="<%= item.product._id %>">
+                                <input type="hidden" name="restaurantId" value="<%= item.product.restaurant._id %>">
+                                <input type="hidden" name="customerId" value="<%= customer._id %>">
+                                <button type="submit" name="action" value="decrease" class="border-0 bg-transparent"><img src="/images/static/minus-icon.png" class="plus-minus-icon"  alt=""></button>
+                                <span class="item-quantity border border-2"><%= item.quantity %></span>
+                                <button type="submit" name="action" value="increase" class="border-0 bg-transparent"><img src="/images/static/plus-icon.png" class="plus-minus-icon" alt=""></button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 product-quantity-desktop">
+                        <form action="/update-cart" method="post" class="d-inline">
+                            <input type="hidden" name="productId" value="<%= item.product._id %>">
+                            <input type="hidden" name="restaurantId" value="<%= item.product.restaurant._id %>">
+                            <input type="hidden" name="customerId" value="<%= customer._id %>">
+                            <button type="submit" name="action" value="decrease" class="border-0 bg-transparent"><img src="/images/static/minus-icon.png" class="plus-minus-icon"  alt=""></button>
+                            <span class="item-quantity border border-2"><%= item.quantity %></span>
+                            <button type="submit" name="action" value="increase" class="border-0 bg-transparent"><img src="/images/static/plus-icon.png" class="plus-minus-icon" alt=""></button>
+                        </form>
+                    </div>
+                    <div class="col-sm-3 product-total">
+                        ₱<span class="total-amount fw-bold"><%= item.total %></span>
                     </div>
                 </div>
-                <div class="col-sm-3 product-quantity">
-                    <form action="/update-cart" method="post" class="d-inline">
-                        <input type="hidden" name="productId" value="<%= item.product._id %>">
-                        <input type="hidden" name="restaurantId" value="<%= item.product.restaurant._id %>">
-                        <input type="hidden" name="customerId" value="<%= customer._id %>">
-                        <button type="submit" name="action" value="decrease" class="border-0 bg-transparent"><img src="/images/static/minus-icon.png" class="plus-minus-icon"  alt=""></button>
-                        <span class="item-quantity border border-2"><%= item.quantity %></span>
-                        <button type="submit" name="action" value="increase" class="border-0 bg-transparent"><img src="/images/static/plus-icon.png" class="plus-minus-icon" alt=""></button>
-                    </form>
-                </div>
-                <div class="col-sm-3 product-total">
-                    ₱<span class="total-amount"><%= item.total %></span>
-                </div>
-            </div>
             <% }); %>
+            <div class="my-5"></div>
             <a href="/restaurant-products/<%= restaurant._id %>" class="continue-shopping"><img src="/images/static/left-arrow.png" alt="left arrow icon" class="left-arrow"> Continue Shopping</a>
         </section>
         <section class="order-summary">
-            <h3 class="fw-bold">Ordery Summary</h3>    
+            <h3 class="fw-bold">Order Summary</h3>    
             <hr>
             <header>                
                 <p class="fw-bold">items <%= numberOfItems %></p>
                 <p class="fw-bold">₱<span class="total-amount"><%= cartAmount %></span></p>
             </header> 
+            <div class="vouchers">
+                <p class="fw-bold text-uppercase">Vouchers</p>
+                <div class="row">
+                <% if (vouchers.length) { %>
+                    <% vouchers.forEach(voucher => { %>     
+                          <a href="/reservation/use-voucher/<%= cart._id %>/<%= voucher._id %>" class="text-decoration-none voucher-card col-3 border border-2">
+                            ₱<%= voucher.amount %>
+                          </a>
+                    <% }); %>
+                  <% } %>                              
+                </div>
+            </div>
+            <hr>
+            <div class="total-cost">
+                <p class="fw-bold text-uppercase">Total cost</p>
+                <p class="fw-bold">₱<span class="total-amount"><%= cartAmount %></span></p>
+            </div>
+            <% if (numberOfItems !== 0) { %>
+                <a href="/reservation/<%= cartID %>" class="btn primary-background-color text-white reservation-btn">Submit</a>          
+            <% } %>
         </section>
     </article>
 </main>

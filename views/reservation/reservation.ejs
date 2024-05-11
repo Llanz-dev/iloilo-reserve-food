@@ -1,18 +1,11 @@
-<%- include('.././header.ejs') %>
-<%- include('../customer/layout/navbar.ejs') %>
+<%- include('.././customer/layout/header.ejs') %>
+
+<%- include('./../navbar.ejs') %>
+
 <div class="container">
   <h1>Create Reservation</h1>
   <h2>Total Amount: ₱<span class="cart-amount"><%= cart.totalAmount %></span></h2>
-  <% if (vouchers.length) { %>
-    <% vouchers.forEach(voucher => { %>     
-        <div class="w-25" style="background-color: #006D77;">
-          <a href="/reservation/use-voucher/<%= cart._id %>/<%= voucher._id %>" class="text-decoration-none text-white">
-            <h6>Voucher</h6>
-            <p>₱<%= voucher.amount %></p>
-          </a>
-        </div>
-    <% }); %>
-  <% } %>
+
   <% if (typeof error !== 'undefined') { %>
     <div class="alert alert-danger">
       <%= error %>
@@ -42,7 +35,7 @@
       <textarea id="notes" name="notes" class="form-control" placeholder="optional"></textarea>
     </div>
     <a href="/cart/<%= restaurantID %>" class="btn btn-warning">Back</a>
-    <button type="submit" class="btn btn-primary" id="create-reservation-button">Submit</button>
+    <button type="submit" class="btn text-white primary-background-color" id="create-reservation-button">Submit</button>
   </form>
 </div>
 

@@ -18,7 +18,7 @@
           <% groupedProducts[category].forEach(product => { %>
               <div class="square">
                 <form action="/add-to-cart" method="post">
-                <button type="submit" class="submit-btn">
+                <button type="submit" class="single-product">
                   <img src="/images/restaurant/<%= product.restaurant.lowername %>/products/<%= product.category.lowername %>/<%= product.image %>" class="card-img-top product-image" alt="Product Image">
                   <p class="product-name h4"><%= product.name %></p>
                   <p class="product-description"><%= product.description %></p>

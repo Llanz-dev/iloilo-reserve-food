@@ -1,5 +1,5 @@
 // Get all the buttons with type "submit"
-const submitButtons = document.querySelectorAll('button[type="submit"]');
+const submitButtons = document.querySelectorAll('.single-product');
 
 // Add event listeners to each submit button
 submitButtons.forEach(button => {

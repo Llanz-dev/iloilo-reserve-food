@@ -155,6 +155,9 @@ May 8 2024:
 May 9 2024:
 	- 80% designed in cart.
 
+May 10 2024:
+	- The cart page design is complete and responsive.
+
 Problems:
 	- All the database and associates to restaurant must be deleted when that restaurant would be deleted.
 	- In the admin side it must be shown to it all the category, product and revenue of the restaurant.
