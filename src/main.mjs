@@ -10,12 +10,13 @@ import reservationRoutes from '../routes/reservationRoutes.mjs';
 import paymentRoutes from '../routes/paymentRoutes.mjs';
 import checkoutRoutes from '../routes/checkoutRoutes.mjs';
 import transactionRoutes from '../routes/transactionRoutes.mjs';
-
+import cartRoutes from '../routes/cartRoutes.mjs';
 import { requireAuthentication, checkCustomer, checkRestaurant } from '../middleware/authenticationMiddleware.mjs';
 import cookieParser from 'cookie-parser';
 import 'dotenv/config';
 const app = express();
 const PORT = process.env.PORT || 5000;
+
 // set JSON
 app.use(express.json());
 // set urlencoded
@@ -37,6 +38,7 @@ app.use('*', checkCustomer);
 // set routes
 app.use('/', homeRoutes);
 app.use(customerRoutes);
+app.use(cartRoutes);
 app.use('/reservation', requireAuthentication, reservationRoutes);
 app.use('/payment', requireAuthentication, paymentRoutes);
 app.use('/checkout', requireAuthentication, checkoutRoutes);

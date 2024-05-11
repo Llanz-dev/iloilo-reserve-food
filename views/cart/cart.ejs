@@ -5,7 +5,7 @@
 <main> 
     <article>   
         <section class="shopping-cart">
-            <h3 class="fw-bold"><span>Shopping Cart</span> <span><%= numberOfItems %> items</span></h3>    
+            <h3 class="title"><span>Shopping Cart</span> <span><%= numberOfItems %> items</span></h3>    
             <hr>
             <header class="text-secondary row">
                 <p class="col-sm-6">Product details</p>
@@ -48,15 +48,21 @@
             <a href="/restaurant-products/<%= restaurant._id %>" class="continue-shopping"><img src="/images/static/left-arrow.png" alt="left arrow icon" class="left-arrow"> Continue Shopping</a>
         </section>
         <section class="order-summary">
-            <h3 class="fw-bold">Order Summary</h3>    
+            <h3 class="title">Order Summary</h3>    
             <hr>
             <header>                
                 <p class="fw-bold">items <%= numberOfItems %></p>
-                <p class="fw-bold">₱<span class="total-amount"><%= cartAmount %></span></p>
+                <p class="fw-bold">₱<span class="total-amount"><%= subTotal %></span></p>
             </header> 
             <div class="vouchers">
                 <p class="fw-bold text-uppercase">Vouchers</p>
                 <div class="row">
+                    <a class="text-decoration-none loyalty-voucher-card col-3 border border-2">
+                        Loyalty ₱20 
+                    </a>
+                    <a class="text-decoration-none birthday-voucher-card col-3 border border-2">
+                        Birthday ₱20 
+                    </a>
                 <% if (vouchers.length) { %>
                     <% vouchers.forEach(voucher => { %>     
                           <a href="/reservation/use-voucher/<%= cart._id %>/<%= voucher._id %>" class="text-decoration-none voucher-card col-3 border border-2">
@@ -67,9 +73,10 @@
                 </div>
             </div>
             <hr>
-            <div class="total-cost">
-                <p class="fw-bold text-uppercase">Total cost</p>
-                <p class="fw-bold">₱<span class="total-amount"><%= cartAmount %></span></p>
+            <div class="total-cost">            
+                <p class="text-uppercase d-flex justify-content-between"><span>Sub total</span> <span>₱<span class="total-amount"><%= subTotal %></span></span></p>
+                <p class="text-uppercase d-flex justify-content-between"><span>Voucher</span> <span>-₱<span class="total-amount">10</span></span></p>
+                <p class="fw-bold text-uppercase d-flex justify-content-between"><span>Total cost</span> <span>₱<span class="total-amount"><%= totalAmount %></span></span></p>
             </div>
             <% if (numberOfItems !== 0) { %>
                 <a href="/reservation/<%= cartID %>" class="btn primary-background-color text-white reservation-btn">Submit</a>          

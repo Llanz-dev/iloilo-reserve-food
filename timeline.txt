@@ -157,6 +157,12 @@ May 9 2024:
 
 May 10 2024:
 	- The cart page design is complete and responsive.
+	- Fix the bug at restaurant-products.js
+
+May 11 2024:
+	- The reservation page design is complete and responsive.
+	- I separate the cart app from customer app.
+
 
 Problems:
 	- All the database and associates to restaurant must be deleted when that restaurant would be deleted.

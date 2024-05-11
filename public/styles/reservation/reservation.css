@@ -1,0 +1,36 @@
+main {
+    width: 50% !important;
+}
+
+.notes-div {
+    margin-bottom: 4px;
+}
+
+.back-button {
+    background-color: #e24b46;
+    color: white;
+}
+
+.back-button:hover {
+    background-color: #e24b46;
+    color: white;
+} 
+
+@media (max-width: 575px) {
+    main {
+        width: 90% !important;
+    }   
+}
+
+@media (max-width: 450px) {
+    main {
+        width: 86% !important;
+    }  
+    .notes-div {
+        margin-bottom: 1rem;
+    }
+    .back-button {
+        margin-top: .5rem;
+        width: 100% !important;
+    }
+}

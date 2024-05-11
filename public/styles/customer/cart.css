@@ -16,9 +16,13 @@ article {
     font-size: 15px;
 }
 
+.total-cost p {
+    margin-bottom: 5px;
+}
+
 .order-summary {
     width: 30%;
-    background-color: rgb(248, 248, 248);
+    background-color: #F8F9FA;
 }
 
 .plus-minus-icon {
@@ -34,7 +38,7 @@ article {
     width: 100px;
 }
 
-h3, .order-summary header, .total-cost {
+h3, .order-summary header {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -69,15 +73,23 @@ header {
     margin: 0 0;
 }
 
-.voucher-card {
+.loyalty-voucher-card, .birthday-voucher-card {
     padding: 2.5px !important;
     margin: 5px 5px 5px 0;
     font-size: 14px;
+}
+
+.loyalty-voucher-card {
     background-color: #EDF6F9;
+}
+
+.birthday-voucher-card {
+    background-color: #FFDDD2;
 }
 
 .reservation-btn {
     width: 100%;
+    margin-top: 1rem;
 }
 
 .row > * {

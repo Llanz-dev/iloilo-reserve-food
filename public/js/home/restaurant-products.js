@@ -7,8 +7,6 @@ submitButtons.forEach(button => {
     button.addEventListener('mouseenter', () => {
         // Get the parent square element
         const square = button.closest('.square');
-        const productName = square.querySelector('.product-name');
-        const productPrice = square.querySelector('.product-price');
         const addIcon = square.querySelector('.add-icon');
         // Add CSS styling to the product name when hovering
         const singleProduct = button.closest('.single-product');

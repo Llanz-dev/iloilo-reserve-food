@@ -1,12 +1,13 @@
 <%- include('.././header.ejs') %>
 <!-- I include the navbar from customer layout because they have the same navbar -->
-<%- include('../home/layout/navbar.ejs') %>
+<%- include('.././navbar.ejs') %>
 
-<h2>Transactions</h2>
 <div class="container">
     <% if (transactions.length) { %>      
-        <h2>Current time: <span id="current-date-and-time"></span></h2> 
+        <h2 class="title">Current time: <span id="current-date-and-time"></span></h2> 
         <p><i>Just so you know, if you cancel your reservation before the day before your planned visit, you'll get half of your money back.</i></p>
+    <% } else { %>
+        <h2 class="title">Transactions</h2>
     <% } %>
     <div class="row">
         <% transactions.forEach(transaction => { %>
