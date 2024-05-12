@@ -75,7 +75,7 @@ const POSTRegisterPage = async (req, res) => {
 }
 
 const GETProfilePage = (req, res) => {
-  const pageTitle = 'profile';
+  const pageTitle = 'Profile';
   const restaurant = undefined;
   res.render('customer/profile', { pageTitle, restaurant });
 }

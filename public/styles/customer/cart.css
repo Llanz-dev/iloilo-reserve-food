@@ -22,7 +22,7 @@ article {
 
 .order-summary {
     width: 30%;
-    background-color: #F8F9FA;
+    background-color: #f4f4f4;
 }
 
 .plus-minus-icon {
@@ -77,6 +77,7 @@ header {
     padding: 2.5px !important;
     margin: 5px 5px 5px 0;
     font-size: 14px;
+    width: 90px;
 }
 
 .loyalty-voucher-card {

@@ -2,8 +2,9 @@
 <%- include('./../navbar.ejs') %>
 
 <main>
-  <h1 class="title">Create Reservation</h1>
-  <h2 class="title">Total Amount: ₱<span class="total-amount"><%= cart.totalAmount %></span></h2>
+  <article>
+  <h1 class="title mb-3">Create Reservation</h1>
+  <h2 class="title d-none">Total Amount: ₱<span class="total-amount"><%= cart.totalAmount %></span></h2>
 
   <% if (typeof error !== 'undefined') { %>
     <div class="alert alert-danger">
@@ -14,6 +15,7 @@
   <form action="/reservation/<%= cart._id %>" method="POST">
     <input type="hidden" id="customer" name="customer" class="form-control" value="<%= cart.customer._id %>">
     <input type="hidden" id="restaurant" name="restaurant" class="form-control" value="<%= cart.restaurant._id %>">
+    <input type="hidden" id="amount" name="amount" class="form-control" value="">
     <div class="form-group">
       <label for="reservation_date">Reservation Date:</label>
       <input type="date" id="reservation_date" name="reservation_date" class="form-control" required>
@@ -37,6 +39,7 @@
     <button type="submit" class="btn text-white primary-background-color" id="create-reservation-button">Submit</button>
     <a href="/cart/<%= restaurantID %>" class="btn back-button">Back</a>
   </form>
+</article>
 </main>
 
 <script src="/js/reservation/reservation.js"></script> 

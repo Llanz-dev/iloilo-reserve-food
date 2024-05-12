@@ -1,15 +1,33 @@
 <%- include('.././customer/layout/header.ejs') %>
+<%- include('./../navbar.ejs') %>
 
+<main>
+    <article>
+        <h1 class="title">Checkout</h1>
+        <p><i>You can only pay a half amount of your total and pay the other half to restaurant.</i></p>
+        <ul class="list-group my-4">
+            <% cart.items.forEach(item => { %>
+                <li class="list-group-item"><span><%= item.product.name %> <%= item.quantity %>x</span> <span>₱<%= item.total %></span></li>
+            <% }); %>                        
+            <% if (cart.voucherAmount) { %>
+                <li class="list-group-item"><span>Reservation amount</span> <span>₱<%= cart.reservationAmount %></span></li>    
+                <li class="list-group-item"><span>Subtotal amount</span> <span>₱<%= cart.subTotal %></span></li>
+                <li class="list-group-item list-group-item-success"><span>Voucher amount</span> <span>-₱ <%= cart.voucherAmount %></span></li>               
+            <% } else { %>
+                <li class="list-group-item"><span>Subtotal amount</span> <span>₱<%= cart.subTotal %></span></li>
+                <li class="list-group-item"><span>Reservation amount</span> <span>₱<%= cart.reservationAmount %></span></li>    
+            <% } %>
+            <li class="list-group-item"><span>Total amount</span> <span id="cart-total-amount">₱<%= Number(cart.totalAmount) + Number(reservation.amount) %></span></li>            
+            <li class="list-group-item fw-bold"><span>Half amount</span> <span id="cart-half-amount">₱<%= (Number(cart.totalAmount) + Number(reservation.amount)) / 2 %></span></li>
+          </ul>
+        <!-- Add a hidden input field to store the cart JSON -->
+        <input type="hidden" id="cart-data" value='<%= JSON.stringify(cart) %>' />
+        <input type="hidden" id="reservation-data" value='<%= JSON.stringify(reservation) %>' />
+        <div id="paypal-button-container"></div>
+        <p id="result-message"></p>
+    </article>
+</main>
 
-<h2>Total: ₱ <span id="cart-total-amount"><%= cart.totalAmount %></span></h2>
-<p>You can only pay a half amount of your total</p>
-<p>And pay the other half to restaurant</p>
-<h2>Half amount: ₱ <span id="cart-half-amount"><%= cart.halfAmount %></span></h2>
-<!-- Add a hidden input field to store the cart JSON -->
-<input type="hidden" id="cart-data" value='<%= JSON.stringify(cart) %>' />
-<input type="hidden" id="reservation-data" value='<%= JSON.stringify(reservation) %>' />
-<div id="paypal-button-container"></div>
-<p id="result-message"></p>
 <!-- Replace the "test" client-id value with your client-id -->
 <script src="https://www.paypal.com/sdk/js?client-id=ARQ5lVhOidCkFvUQWhWtGcav4Oxws-CUTzu7uME6IzCtZpvhWUEXFzsXp5dntimzAxJp-znYpJsg_urs&currency=PHP"></script>
 <script src="/js/checkout/checkout.js"></script>          

@@ -2,6 +2,11 @@ main {
     width: 50% !important;
 }
 
+article {
+    background-color: white;
+    padding: 20px;
+}
+
 .notes-div {
     margin-bottom: 4px;
 }
@@ -32,5 +37,8 @@ main {
     .back-button {
         margin-top: .5rem;
         width: 100% !important;
+    }
+    article {
+        padding: 10px;
     }
 }

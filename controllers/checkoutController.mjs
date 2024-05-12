@@ -1,10 +1,9 @@
 import fetch from "node-fetch";
 import "dotenv/config";
-import path from "path";
 import Cart from '../models/cartModel.mjs';
 import Reservation from '../models/reservationModel.mjs';
 import Transaction from '../models/transactionModel.mjs';
-import Paypal from 'paypal-rest-sdk';
+import Restaurant from '../models/restaurantModel.mjs';
 const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
 const base = "https://api-m.sandbox.paypal.com";
 import moment from 'moment-timezone';
@@ -42,43 +41,44 @@ const generateAccessToken = async () => {
  */
 let transactionID = undefined;
 const createOrder = async (cart, reservation) => {
-  // use the cart information passed from the front-end to calculate the purchase unit details
-  console.log(
-    "shopping cart information passed from the frontend createOrder() callback:",
-    cart,
-  );
-  
-  const accessToken = await generateAccessToken();
-  const url = `${base}/v2/checkout/orders`;
-  const payload = {
-    intent: "CAPTURE",
-    purchase_units: [
-      {
-        amount: {
-          currency_code: "PHP",
-          value: cart.halfAmount.toFixed(2), // Use the actual cart amount
+    // use the cart information passed from the front-end to calculate the purchase unit details
+    console.log(
+      "shopping cart information passed from the frontend createOrder() callback:",
+      cart,
+    );
+    const halfPayment = (cart.reservationAmount + cart.totalAmount) / 2;
+    cart.halfAmount = halfPayment - cart.voucherAmount;
+    const accessToken = await generateAccessToken();
+    const url = `${base}/v2/checkout/orders`;
+    const payload = {
+      intent: "CAPTURE",
+      purchase_units: [
+        {
+          amount: {
+            currency_code: "PHP",
+            value: cart.halfAmount.toFixed(2), // Use the actual cart amount
+          },
         },
+      ],
+    };
+    
+    const response = await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
       },
-    ],
-  };
-  
-  const response = await fetch(url, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
-  
-  cart.isHalfPaymentSuccessful = true;
-  await cart.save();
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+    
+    cart.isHalfPaymentSuccessful = true;
+    await cart.save();
 
-  const reservationObject = await Reservation.create({ customer: reservation.customer, restaurant: reservation.restaurantID, cart: reservation.cartID, reservation_date: reservation.reservation_date, reservation_time: reservation.reservation_time, num_pax: reservation.num_pax, notes: reservation.notes });  
-  const transaction = await Transaction.create({ customer: cart.customer, restaurant: cart.restaurant, cart: cart, reservation: reservationObject });
-  transactionID = transaction._id;
+    const reservationObject = await Reservation.create({ customer: reservation.customer, restaurant: reservation.restaurantID, cart: reservation.cartID, reservation_date: reservation.reservation_date, reservation_time: reservation.reservation_time, num_pax: reservation.num_pax, amount: reservation.amount, notes: reservation.notes });  
+    const transaction = await Transaction.create({ customer: cart.customer, restaurant: cart.restaurant, cart: cart, reservation: reservationObject });
+    transactionID = transaction._id;
 
-  return handleResponse(response);
+    return handleResponse(response);
 };
 
 /**
@@ -108,6 +108,7 @@ const captureOrder = async (orderID, transactionObject, isCancellation) => {
       const responseData = await response.json();
       console.log('responseData:', responseData);
       console.log('response.ok:', response.ok);
+      console.log('response.status:', response.status);
 
       const httpStatusCode = response.status; // Assign the HTTP status code
 
@@ -151,12 +152,13 @@ const captureOrder = async (orderID, transactionObject, isCancellation) => {
         const captureId = jsonResponse.purchase_units[0].payments.captures[0].id; // Extract captureId from the response
         transactionObject.captureId = captureId; // Store captureId in transactionObject
         await transactionObject.save();
+      } else {
+        await Transaction.findByIdAndDelete();
       }
 
       return { jsonResponse, httpStatusCode };
   }
 };
-
  
 async function handleResponse(response) {
   try {
@@ -204,18 +206,26 @@ const captureOrderHandler = async (req, res) => {
 
 const serveCheckoutPage = async (req, res) => {
   try {
-    const customerID = res.locals.customer ? res.locals.customer._id : null;
-    const restaurantID = req.params.restaurantID;
-    console.log('customerID:', customerID);
-    console.log('restaurantID:', restaurantID);
-
-    const cartID = req.params.cartID;
-    const cart = await Cart.findById(cartID);
-    const reservation = req.query;
-    res.render('checkout/checkout', { pageTitle: 'Checkout with PayPal', cart, reservation });
+      // Get the customer ID
+      const customerID = res.locals.customer ? res.locals.customer._id : null;
+      // Get the restaurant ID
+      const restaurantID = req.params.restaurantID;
+      // Get the reservation data from the previous customer reservation input page
+      const reservation = req.query;
+      // Get the restaurant
+      const restaurant = await Restaurant.findById(restaurantID);
+      // Get the cart ID from URL
+      const cartID = req.params.cartID;
+      // Get the cart to display the items and fetch the amount information
+      const cart = await Cart.findById(cartID).populate('items.product');
+      cart.reservationAmount = Number(reservation.amount);
+      await cart.save();
+      cart.totalAmount + Number(reservation.amount);
+      console.log(cart);
+      res.render('checkout/checkout', { pageTitle: 'Checkout', cart, reservation, restaurant });
   } catch (err) {
-    console.error("Failed to serve checkout page:", err);
-    res.status(500).json({ error: "Failed to serve checkout page." });
+      console.error("Failed to serve checkout page:", err);
+      res.status(500).json({ error: "Failed to serve checkout page." });
   }
 };
   

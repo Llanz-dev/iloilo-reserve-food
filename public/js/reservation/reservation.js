@@ -119,14 +119,19 @@ const calculateCartAmount = (numPax) => {
     let amount = currentCartAmount;
     if (numPax <= 2) {
         amount += 15;
+        document.getElementById('amount').value = 15;
     } else if (numPax >= 3 && numPax <= 5) {
         amount += 50;
+        document.getElementById('amount').value = 50;
     } else if (numPax >= 6 && numPax <= 9) {
         amount += 80;
+        document.getElementById('amount').value = 80;
     } else if (numPax >= 10 && numPax <= 13) {
         amount += 110;
+        document.getElementById('amount').value = 110;
     } else {
         amount += 140;
+        document.getElementById('amount').value = 140;
     }
     return amount;
 };

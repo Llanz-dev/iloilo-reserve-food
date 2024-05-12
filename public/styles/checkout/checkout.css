@@ -7,9 +7,14 @@ article {
     padding: 20px;
 }
 
-@media (max-width: 575px) {
+.list-group-item {
+    display: flex;
+    justify-content: space-between;
+}
+
+@media (max-width: 600px) {
     main {
-        width: 90% !important;
+        width: 81% !important;
     }   
 }
 

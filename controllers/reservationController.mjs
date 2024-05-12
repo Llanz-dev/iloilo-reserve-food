@@ -25,7 +25,7 @@ const POSTCreateReservation = async (req, res) => {
   const restaurantID = cart.restaurant._id;
 
   try {
-    const { customer, restaurant, reservation_date, reservation_time, num_pax, notes } = req.body;
+    const { customer, restaurant, reservation_date, reservation_time, num_pax, amount, notes } = req.body;
   
     console.log('req.body:', req.body);
     console.log('num_pax:', num_pax);
@@ -38,10 +38,10 @@ const POSTCreateReservation = async (req, res) => {
 
     console.log('total:', cart.totalAmount);
     cart.halfAmount = cart.totalAmount / 2;
-    await cart.save();
+    // await cart.save();
 
     // Construct URL with reservation data parameters
-    const redirectURL = `/checkout/${restaurantID}/${cartID}/?restaurantID=${restaurantID}&cartID=${cartID}&customer=${customer}&reservation_date=${reservation_date}&reservation_time=${reservation_time}&num_pax=${num_pax}&notes=${notes}`;
+    const redirectURL = `/checkout/${restaurantID}/${cartID}/?restaurantID=${restaurantID}&cartID=${cartID}&customer=${customer}&reservation_date=${reservation_date}&reservation_time=${reservation_time}&num_pax=${num_pax}&amount=${amount}&notes=${notes}`;
     
     // Redirect to checkout page with reservation data parameters
     res.redirect(redirectURL);

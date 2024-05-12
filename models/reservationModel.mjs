@@ -30,6 +30,10 @@ const reservationSchema = new Schema({
       type: Number,
       required: true
     },
+    amount: {
+      type: Number,
+      required: true
+    },
     notes: String,
     created_at: {
       type: Date,

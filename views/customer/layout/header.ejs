@@ -8,6 +8,12 @@
     <% if (pageTitle === 'Register' || pageTitle === 'Login') { %>
       <link rel="stylesheet" href="/styles/customer/customer.css">
     <% } %>
+    <% if (pageTitle === 'Profile') { %>
+      <link rel="stylesheet" href="/styles/customer/profile.css">
+    <% } %>
+    <% if (pageTitle === 'Checkout') { %>
+      <link rel="stylesheet" href="/styles/checkout/checkout.css">
+    <% } %>
     <title><%= pageTitle %></title>
 </head>
 <body>
