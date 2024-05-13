@@ -18,3 +18,5 @@ if (reservationDate < currentDate) {
 } else {
     console.log('Reservation date is in the future');
 }
+
+const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];

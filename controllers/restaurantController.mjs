@@ -61,8 +61,28 @@ const GETRestaurantDashboard = async (req, res) => {
         const pageTitle = 'Dashboard';
         const restaurant = res.locals.restaurant;
         const transactions = await Transaction.find({ restaurant: restaurant._id })
-        .populate('customer cart reservation')
+        .populate({
+            path: 'restaurant',
+            model: 'Restaurant'
+        })
+        .populate({
+            path: 'cart',
+            model: 'Cart',
+            populate: {
+                path: 'items.product',
+                model: 'Product'
+            }
+        })
+        .populate({
+            path: 'reservation',
+            model: 'Reservation'
+        })
+        .populate({
+            path: 'customer',
+            model: 'Customer'
+        })
         .sort({ createdAt: -1 });
+        
         res.render('restaurant/dashboard', { pageTitle, transactions });
     } catch (err) {
         console.log('POSTRestaurantLogin:', err);
