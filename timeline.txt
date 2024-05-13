@@ -169,6 +169,7 @@ May 12 2024:
 
 May 13 2024:
 	- The bug in paypal when you cancel the payment has been fixed.
+	- The transaction page design is complete and responsive.
 
 Problems:
 	- All the database and associates to restaurant must be deleted when that restaurant would be deleted.

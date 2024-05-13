@@ -6,10 +6,26 @@ const GETtransaction = async (req, res) => {
     const customerID = res.locals.customer ? res.locals.customer._id : null;
     
     // Fetch transactions where isTransactionComplete is false for the customer
-    const transactions = await Transaction.find({ customer: customerID, isTransactionComplete: false, isCancelled: false }).populate('restaurant cart reservation');
+    const transactions = await Transaction.find({ customer: customerID, isTransactionComplete: false, isCancelled: false })
+    .populate({
+        path: 'restaurant',
+        model: 'Restaurant'
+    })
+    .populate({
+        path: 'cart',
+        model: 'Cart',
+        populate: {
+            path: 'items.product',
+            model: 'Product'
+        }
+    })
+    .populate({
+        path: 'reservation',
+        model: 'Reservation'
+    });
     
     // Get the current date and time in the 'Asia/Manila' timezone
-    res.render('transaction/transaction', { pageTitle: 'transactions', transactions, restaurant: undefined });
+    res.render('transaction/transaction', { pageTitle: 'Transactions', transactions, restaurant: undefined });
   } catch (err) {
     console.error(err);
     res.status(500).json('Server error');
