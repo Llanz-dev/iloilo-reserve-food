@@ -1,126 +1,168 @@
-<div class="col">
-  <div class="card">
-    <img src="/images/restaurant/<%= product.restaurant.lowername %>/products/<%= product.category.lowername %>/<%= product.image %>" class="card-img-top" alt="Product Image">
-    <div class="card-body">
-      <h5 class="card-title"><%= product.name %></h5>
-      <p class="card-text"><%= product.description %></p>
-      <p class="card-price">Price: ₱<%= product.price %></p>
-      <!-- Add more product details as needed -->
-      <form action="/add-to-cart" method="post">
-        <input type="hidden" name="productId" value="<%= product._id %>">
-        <input type="hidden" name="restaurantId" value="<%= product.restaurant._id %>">
-        <button type="submit" class="btn btn-primary">Add to Cart</button>
-      </form>
-    </div>
-  </div>
-</div>  
+March 6 to March 8 2024:
+	- Register and Login working in the backend with hash using bcrypt.
+	- Setting the static with bootstrap.
 
-  <form action="/remove-from-cart" method="post" class="d-inline">
-                        <input type="hidden" name="productId" value="<%= item.product._id %>">
-                        <input type="hidden" name="restaurantId" value="<%= item.product.restaurant %>">
-                        <button type="submit" class="btn btn-sm btn-danger">Remove</button>
-                    </form>
+March 10 2024:
+	- Setting JWT authentication.
+	- Restrict the users to specific page when it is not log in.
+	- Conditional rendering.
 
+March 11 2024:
+	- Profile editing working except password.
 
-                        <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">Product Details</th>
-                <th scope="col">Quantity</th>
-                <th scope="col">Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Loop through cart items and display each item -->
-            <% cartItems.forEach(item => { %>
-            <tr>
-                <td>
-                    <img src="/images/restaurant/<%= item.product.restaurant.lowername %>/products/<%= item.product.category.lowername %>/<%= item.product.image %>" class="product-image" alt="Product Image">
-                    product name: <%= item.product.name %>
-                </td>
-                <td>
-                    <!-- Display the current quantity -->
-                    <!-- Increase and decrease buttons -->
-                    <form action="/update-cart" method="post" class="d-inline">
-                        <input type="hidden" name="productId" value="<%= item.product._id %>">
-                        <input type="hidden" name="restaurantId" value="<%= item.product.restaurant %>">
-                        <input type="hidden" name="customerId" value="<%= customer._id %>">
-                        <button type="submit" name="action" value="decrease" class="border-0 bg-transparent"><img src="/images/static/minus-icon.png" class="plus-minus-icon"  alt=""></button>
-                        <span class="item-quantity border border-2"><%= item.quantity %></span>
-                        <button type="submit" name="action" value="increase" class="border-0 bg-transparent"><img src="/images/static/plus-icon.png" class="plus-minus-icon" alt=""></button>
-                    </form>
-                </td>
-                <td>
-                    ₱ <span class="total-amount"><%= item.total %></span>
-                </td>
-            </tr>
-            <% }); %>
-        </tbody>
-    </table>
+March 13 2024:
+	- Password can be update in profile page.
+	- Admin where it can add restaurants.
 
-    <% if (numberOfItems !== 0) { %>
-    <h2><a href="/reservation/<%= cartID %>">Reservation</a></h2> 
-<% } %>
+March 14 2024
+	- Stuck on "Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client".
+	- The problem is on "app.get('*', checkUser);".
 
+March 15 2024:
+	- Finally fixed it.
+	- The admin can now update and delete the restaurant.
+	- Show the list of restaurants on admin-side.
 
+March 16 2024:
+	- The restaurants from admin that was been create has account on its restaurant-side.
+	- The restaurant can log in.
 
+March 17 2024:
+	- The restaurant has banner image using multer.
+	- The restaurant can log out.
 
+March 18 2024:
+	- The restaurant banner image is automatically update when delete or update.
+	- Show the list of restaurants on client-side.
 
+March 20 2024:	
+	- The restaurant can add its own product without image.
 
-<%- include('./layout/header.ejs') %>
-<%- include('./../navbar.ejs') %>
+March 21 2024:	
+	- The restaurant model has a "lowername" field added to it to facilitate the dynamic creation of directories and accessing files within those directories.
+	- Displaying images dynamically involves accessing them based on dynamic parameters or conditions rather than fixed paths or names.
 
-<!-- Assuming you have a table to display the cart items -->
-<main> 
-    <article>   
-        <section class="shopping-cart">
-            <h3 class="fw-bold"><span>Shopping Cart</span> <span><%= numberOfItems %> items</span></h3>    
-            <hr>
-            <header class="text-secondary row">
-                <p class="col-sm-6">Product details</p>
-                <p class="col-sm-3">Quantity</p>
-                <p class="col-sm-3">Total</p>
-            </header>   
-            <% cartItems.forEach(item => { %>       
-            <div class="row mb-3">
-                <div class="col-sm-6 product-details">
-                    <p class="product-name"><%= item.product.name %></p>
-                </div>
-                <div class="col-sm-3 product-quantity">
-                    <form action="/update-cart" method="post" class="d-inline">
-                        <input type="hidden" name="productId" value="<%= item.product._id %>">
-                        <input type="hidden" name="restaurantId" value="<%= item.product.restaurant %>">
-                        <input type="hidden" name="customerId" value="<%= customer._id %>">
-                        <button type="submit" name="action" value="decrease" class="border-0 bg-transparent"><img src="/images/static/minus-icon.png" class="plus-minus-icon"  alt=""></button>
-                        <span class="item-quantity border border-2"><%= item.quantity %></span>
-                        <button type="submit" name="action" value="increase" class="border-0 bg-transparent"><img src="/images/static/plus-icon.png" class="plus-minus-icon" alt=""></button>
-                    </form>
-                </div>
-                <div class="col-sm-3 product-total">
-                    ₱ <%= item.total %>
-                </div>
-            </div>
-            <% }); %>
+March 22 2024:	
+	- When the administrator updates the restaurant name to a new one, the function I've created automatically deletes the parent directory of the old restaurant name and replaces it with the new restaurant name in the directory path. This ensures consistency throughout the project. For example, "public/images/restaurant/<oldRestaurantName>/banner/" will be replaced with "public/images/restaurant/<newRestaurantName>/banner/".
 
-            <a href="/restaurant-products/<%= restaurant._id %>"><img src="/images/static/left-arrow.png" alt="left arrow icon" class="left-arrow"> Continue Shopping</a>
-        </section>
-        <section class="order-summary">
-            <h3 class="fw-bold">Ordery Summary</h3>    
-            <hr>
-        </section>
-    </article>
-</main>
+March 23 2024:	
+	- Fixing the bugs caused by the creation of a new directory each time an admin updates the name and banner image of a restaurant.
 
-<script src="/js/amountFormatter.js"></script>             
-<%- include('.././footer.ejs') %>
+March 24 2024:	
+	- When a restaurant updates its name, the corresponding banner image directory is replaced with the new one, leading to space savings. For example, if the current path is '/burgerbarn/banner/burgersmash.jpg' and the administrator changes the restaurant's name and image to '/tokyoterrace/banner/tokyofood.png', this enhancement ensures a more upscale and space-efficient system..
+	- Admin can see the existing banner image and new updated image in update restaurant page.
 
+March 27 2024:
+	- "npm run node" added to my npm for manipulating files.
 
-  <div class="col-3 col-md-12">
-                    <a href="/restaurant-products/<%= restaurant._id %>" class="card mb-4 shadow-sm text-decoration-none">
-                        <img src="/images/restaurant/<%= restaurant.lowername %>/banner/<%= restaurant.image %>" class="card-img-top restaurant-banner-image" alt="<%= restaurant.name %>">
-                        <div class="card-body">
-                            <h5 class="card-title"><%= restaurant.name %></h5>
-                            <p class="card-text"><%= restaurant.address %></p>                         
-                        </div>
-                    </a>
-                </div>
+March 28 2024:
+	- Exploring methods to establish the directory for the restaurant.
+
+March 29 2024:
+	- Directories for restaurants have been established within Multer.
+	- Enhancing the code structure within the Multer configuration file through refactoring.
+
+April 1 2024:
+	- Create a category model and associate to both product and restaurant.
+	- Create a button for category page creation.
+	- In category you could update and delete.
+	- Fix the directories in product and category.
+
+April 2 2024:
+	- Converted the delete restaurant javascript client side file to delete object for more dynamic.
+
+April 5 2024:
+	- Created an update product page and display the information.
+
+April 6 2024:
+	- Update product page is functional. You can now update and delete.
+	- When you delete the restaurant it will also delete all the associates with it.
+	
+April 7 to 8 2024:
+	- Categorized display of the products.
+	- Fix the directories of updating the products. 
+	- All the products display on customer side by restaurant.
+
+April 9 2024:
+	- I create a cart page.
+	- The "add to cart" button is functioning.
+	- You can increase the quantity of the product if the customer click the same product.
+
+April 12 2024:
+ 	- The cart is automatically cleared when the customer removes all items from it.
+ 	- Each restaurant now maintains its dedicated cart, listing all items ordered at that specific establishment.
+ 	- The cart functionality has been enhanced to adapt dynamically.
+ 	- The cart model now includes a foreign key for the restaurant, facilitating seamless association between carts and their respective restaurants.
+	- When there is only one product remaining in the cart, if you choose to click either the decrease button or the delete button, the cart will be removed from the database.
+	- Cart amount was calculated.
+
+April 13 2024:
+	- The quantity of the product will decrease when the remove button is clicked on the cart page.
+	- I have created models, controllers, and routes for reservations.
+	- I have separated the payment and reservation functionalities into their own applications.
+
+April 14 to 17 2024:
+	- I was stuck to catching the errors to display to front-end.
+
+April 18 2924:
+	- Finally, display the errors to front-end.
+
+April 19 2024:
+	- The code modifies a boolean variable in response to dynamically determining if three particular form input fields in the front-end JavaScript environment of a web page have non-empty values.
+
+April 22 2024:
+	- Created routes and controller functions for handling checkout-related actions, including creating orders, capturing orders, and serving the checkout page.
+
+April 23 2024:
+	- Created a feature that, when the number of guests input goes outside of a given range, will disable the reservation button and display an out-of-range notice; when the input is within the range, both will be enabled.
+	- Reservation table will be deleted if the cart table is empty.
+
+April 24 2024:
+	- There is now a comma will be added if the amount goes to thousands.
+	- Successfully pay half amount using paypal.
+
+April 25 2024:
+	- Integrate Paypal payment successfully.
+
+April 26 2024:
+	- Stuck on refund of paypal.
+
+April 27 2024:
+	- Successfully implemented cancellation and refund functionality in your application, handling HTTP status codes, error responses, and ensuring proper communication with the PayPal API.
+	
+May 1 2024:
+	- I added an isCancelled field in Transaction Model.
+
+May 2 2024:
+	- Implemented a voucher, generating discount vouchers for customers based on their transaction amounts and providing functionality to calculate and apply the discount.
+
+May 3 2024:
+	- Change the age field of customer to date of birth.
+	- Register page design not yet responsive. 
+
+May 4 2024:
+	- Change the age field of customer to date of birth.
+
+May 5 2024:
+	- Register page design completed and responsive.
+
+May 6 2024:
+	- Placed a navbar in restaurant products.
+
+May 8 2024:
+	- Complete designed in restaurant products of customer side.
+
+May 9 2024:
+	- 80% designed in cart.
+
+May 10 2024:
+	- The cart page design is complete and responsive.
+	- Fix the bug at restaurant-products.js
+
+May 11 2024:
+	- The reservation page design is complete and responsive.
+	- I separate the cart app from customer app.
+
+May 12 2024:
+	- The checkout page design is complete and responsive.
+	- The cart total amount is finally do not save when the payment is not yet successful. It means when you are now in checkout page and you would go back to cart page or reservation the total amount will be the same according to the calculation of products.
