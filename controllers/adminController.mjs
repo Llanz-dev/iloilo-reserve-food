@@ -170,4 +170,44 @@ const DELETERestaurant = async (req, res) => {
   }
 };
 
-export { GETAdminPage, GETAddRestaurant, POSTAddRestaurant, GETUpdateRestaurant, POSTUpdateRestaurant, DELETERestaurant };
+const GETDeactivateRestaurant = async (req, res) => {
+  console.log('GETDeactivateRestaurant');
+  try {
+    const restaurantID = req.params.id;
+
+    const restaurant = await Restaurant.findById(restaurantID);
+
+    if (!restaurant) {
+      return res.status(404).json({ msg: 'Restaurant not found' });
+    }
+
+    restaurant.statusIsActive = false;
+    await restaurant.save();
+    
+    res.redirect('/adminux');
+  } catch (err) {
+    res.status(500).json({ msg: err });
+  }
+}
+
+const GETActivateRestaurant = async (req, res) => {
+  console.log('GETActivateRestaurant');
+  try {
+    const restaurantID = req.params.id;
+
+    const restaurant = await Restaurant.findById(restaurantID);
+
+    if (!restaurant) {
+      return res.status(404).json({ msg: 'Restaurant not found' });
+    }
+
+    restaurant.statusIsActive = true;
+    await restaurant.save();
+    
+    res.redirect('/adminux');
+  } catch (err) {
+    res.status(500).json({ msg: err });
+  }
+}
+
+export { GETAdminPage, GETAddRestaurant, POSTAddRestaurant, GETUpdateRestaurant, POSTUpdateRestaurant, DELETERestaurant, GETDeactivateRestaurant, GETActivateRestaurant };

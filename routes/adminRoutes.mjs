@@ -1,5 +1,5 @@
 import express from 'express';
-import { GETAdminPage, GETAddRestaurant, POSTAddRestaurant, GETUpdateRestaurant, POSTUpdateRestaurant, DELETERestaurant } from '../controllers/adminController.mjs'
+import { GETAdminPage, GETAddRestaurant, POSTAddRestaurant, GETUpdateRestaurant, POSTUpdateRestaurant, DELETERestaurant, GETDeactivateRestaurant, GETActivateRestaurant } from '../controllers/adminController.mjs'
 import { uploadRestaurantBanner, updateRestaurantBanner } from '../config/multerConfig.mjs';
 const router = express.Router();
 
@@ -9,6 +9,9 @@ router.post('/restaurant-registration', uploadRestaurantBanner, POSTAddRestauran
 // Update Restaurant
 router.get('/update-restaurant/:id', GETUpdateRestaurant);
 router.post('/update-restaurant/:id', updateRestaurantBanner, POSTUpdateRestaurant);
+// Deactivate or Activate Restaurant
+router.get('/deactivate-restaurant/:id', GETDeactivateRestaurant);
+router.get('/activate-restaurant/:id', GETActivateRestaurant);
 // Delete Restaurant
 router.delete('/delete-restaurant/:id', DELETERestaurant);
 

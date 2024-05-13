@@ -13,7 +13,7 @@
     <tr>
       <th>Name</th>
       <th>Address</th>
-      <th>Phone</th>
+      <th>status</th>
       <th>Actions</th>
       <!-- Add other properties of the Restaurant model as needed -->
     </tr>
@@ -23,10 +23,15 @@
       <tr>
         <td><%= restaurant.name %></td>
         <td><%= restaurant.address %></td>
-        <td><%= restaurant.phone %></td>
+        <td><%= restaurant.statusIsActive %></td>
         <td>
           <p class="d-none" id="route-path">/adminux/delete-restaurant</p>
           <a href="/adminux/update-restaurant/<%= restaurant._id %>" class="btn btn-sm btn-primary">Update</a>
+          <% if (restaurant.statusIsActive) { %>
+            <a href="/adminux/deactivate-restaurant/<%= restaurant._id %>" class="btn btn-sm btn-warning">Deactivate</a>           
+          <% } else { %>
+            <a href="/adminux/activate-restaurant/<%= restaurant._id %>" class="btn btn-sm btn-warning">Activate</a>           
+          <% } %>
           <button class="btn btn-sm btn-danger" onclick="deleteObject('<%= restaurant._id %>')">Delete</button>
         </td>
         <!-- Display other properties of the Restaurant model as needed -->

@@ -7,7 +7,7 @@ const restaurantSchema = new Schema({
         required: true,
         unique: true,
         minLength: 5,
-        maxLength: 20
+        maxLength: 40
     },
     name: {
         type: String,
@@ -36,7 +36,11 @@ const restaurantSchema = new Schema({
     image: {
         type: String,
         required: true
-    }
+    },
+    statusIsActive: {
+        type: Boolean,
+        default: true // Assuming payment is not successful by default
+      }
 });
 
 const Restaurant = mongoose.model('Restaurant', restaurantSchema);

@@ -4,15 +4,17 @@
     <main>
         <div class="row">
             <% restaurants.forEach(restaurant => { %>
-                <div class="square">
-                    <a href="/restaurant-products/<%= restaurant._id %>" class="card mb-4 shadow-sm text-decoration-none">
-                        <img src="/images/restaurant/<%= restaurant.lowername %>/banner/<%= restaurant.image %>" class="card-img-top restaurant-banner-image" alt="<%= restaurant.name %>">                        
-                        <div class="card-body">
-                            <h5 class="card-title"><%= restaurant.name %></h5>
-                            <p class="card-text"><%= restaurant.address %></p>                         
-                        </div>
-                    </a>
-                </div>
+                <% if (restaurant.statusIsActive) { %>                 
+                    <div class="square">
+                        <a href="/restaurant-products/<%= restaurant._id %>" class="card mb-4 shadow-sm text-decoration-none">
+                            <img src="/images/restaurant/<%= restaurant.lowername %>/banner/<%= restaurant.image %>" class="card-img-top restaurant-banner-image" alt="<%= restaurant.name %>">                        
+                            <div class="card-body">
+                                <h5 class="card-title"><%= restaurant.name %></h5>
+                                <p class="card-text"><%= restaurant.address %></p>                         
+                            </div>
+                        </a>
+                    </div>
+                <% } %>
             <% }) %>
         </div>
     </main>
