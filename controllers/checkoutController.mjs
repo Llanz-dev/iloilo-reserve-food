@@ -70,13 +70,6 @@ const createOrder = async (cart, reservation) => {
       method: "POST",
       body: JSON.stringify(payload),
     });
-    
-    cart.isHalfPaymentSuccessful = true;
-    await cart.save();
-
-    const reservationObject = await Reservation.create({ customer: reservation.customer, restaurant: reservation.restaurantID, cart: reservation.cartID, reservation_date: reservation.reservation_date, reservation_time: reservation.reservation_time, num_pax: reservation.num_pax, amount: reservation.amount, notes: reservation.notes });  
-    const transaction = await Transaction.create({ customer: cart.customer, restaurant: cart.restaurant, cart: cart, reservation: reservationObject });
-    transactionID = transaction._id;
 
     return handleResponse(response);
 };
@@ -190,11 +183,23 @@ const createOrderHandler = async (req, res) => {
   }
 };
 
+let reservationQuery = undefined;
+let getCartID = undefined;
+
 const captureOrderHandler = async (req, res) => {
     try {
-        console.log('captureOrderHandler');
-        const transactionObject = await Transaction.findById(transactionID).populate('cart reservation');
+        console.log('getCartID:', getCartID);
+        console.log('---------- captureOrderHandler Finish ----------');
+        const cartID = req.params.cartID;
+        const cart = await Cart.findById(getCartID).populate('customer restaurant');
+        console.log(cart);
+        console.log('reservationQuery:', reservationQuery);
+        const reservationObject = await Reservation.create({ customer: reservationQuery.customer, restaurant: reservationQuery.restaurantID, cart: reservationQuery.cartID, reservation_date: reservationQuery.reservation_date, reservation_time: reservationQuery.reservation_time, num_pax: reservationQuery.num_pax, amount: reservationQuery.amount, notes: reservationQuery.notes });  
+        const transaction = await Transaction.create({ customer: cart.customer, restaurant: cart.restaurant, cart: cart, reservation: reservationObject });    
+        const transactionObject = await Transaction.findById(transaction._id).populate('cart reservation');
         console.log('transactionObject:', transactionObject);
+        cart.isHalfPaymentSuccessful = true;
+        await cart.save();
         const { orderID } = req.params;
         const { jsonResponse, httpStatusCode } = await captureOrder(orderID, transactionObject, false);
         res.status(httpStatusCode).json(jsonResponse);
@@ -212,16 +217,17 @@ const serveCheckoutPage = async (req, res) => {
       const restaurantID = req.params.restaurantID;
       // Get the reservation data from the previous customer reservation input page
       const reservation = req.query;
+      reservationQuery = reservation;
       // Get the restaurant
       const restaurant = await Restaurant.findById(restaurantID);
       // Get the cart ID from URL
       const cartID = req.params.cartID;
+      getCartID = cartID;
       // Get the cart to display the items and fetch the amount information
       const cart = await Cart.findById(cartID).populate('items.product');
       cart.reservationAmount = Number(reservation.amount);
       await cart.save();
       cart.totalAmount + Number(reservation.amount);
-      console.log(cart);
       res.render('checkout/checkout', { pageTitle: 'Checkout', cart, reservation, restaurant });
   } catch (err) {
       console.error("Failed to serve checkout page:", err);

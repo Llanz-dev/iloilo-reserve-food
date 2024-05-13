@@ -167,6 +167,9 @@ May 12 2024:
 	- The checkout page design is complete and responsive.
 	- The cart total amount is finally do not save when the payment is not yet successful. It means when you are now in checkout page and you would go back to cart page or reservation the total amount will be the same according to the calculation of products.
 
+May 13 2024:
+	- The bug in paypal when you cancel the payment has been fixed.
+
 Problems:
 	- All the database and associates to restaurant must be deleted when that restaurant would be deleted.
 	- In the admin side it must be shown to it all the category, product and revenue of the restaurant.
