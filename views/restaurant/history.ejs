@@ -1,11 +1,12 @@
 <%- include('./layout/header.ejs') %>
 <%- include('./layout/navbar.ejs') %>
+
 <main>
-  <h2 class="title"><%= transactions.length %> Transactions</h2>
+  <h2 class="title"><%= transactions.length %> History</h2>
   
-  <a href="/restaurant/dashboard" class="btn primary-background-color text-white me-3" id="all-btn">All</a>
-  <a href="/restaurant/dashboard?isToday=true" class="btn today-bg-color" id="today-btn">Today</a>
-  <a href="/restaurant/dashboard?isPending=true" class="btn mx-3 pending-bg-color">Pending</a>
+  <a href="/restaurant/history" class="btn primary-background-color text-white me-3" id="all-btn">All</a>
+  <a href="/restaurant/history?isTransactionComplete=true" class="btn completed-bg-color">Completed</a>
+  <a href="/restaurant/history?isCancelled=true" class="btn ms-3" id="cancelled-btn">Cancelled</a>
 
   <div class="row">
       <% transactions.forEach(transaction => { %>    
@@ -15,8 +16,8 @@
         <% } else if (transaction.isCancelled === true && transaction.isRefunded === false) { %>
             <div class="border border-black col-lg-4 col-12 col-sm-6 transaction" style="background-color: #E29578;">
             <h5>Transaction Status: Unrefunded Cancelled</h5>
-        <% } else if (transaction.isToday === true && transaction.isTransactionComplete === false) { %>
-            <div class="border border-black col-lg-4 col-12 col-sm-6 transaction" style="background-color: #c6d350;">
+        <% } else if (transaction.isWithinAday === true && transaction.isTransactionComplete === false) { %>
+            <div class="border border-black col-lg-4 col-12 col-sm-6 transaction" style="background-color: #83C5BE;">
             <h5>Transaction Status: Today</h5>
         <% } else if (transaction.isTransactionComplete === true) { %>
             <div class="border border-black col-lg-4 col-12 col-sm-6 transaction" style="background-color: #83c589;">
@@ -92,12 +93,10 @@
               </div>
             </div>     
             <!-- <a href="/restaurant/delete-transaction/<%= transaction._id %>" class="btn btn-danger btn-sm delete-button">Delete</a> -->
-            <% if (transaction.isCancelled === true || transaction.isTransactionComplete === true) { %>
-                <!-- <a href="/restaurant/remove-transaction/<%= transaction._id %>" class="btn btn-danger btn-sm delete-button">Remove</a> -->
-            <% } %>       
+            <!-- <a href="/restaurant/remove-transaction/<%= transaction._id %>" class="btn btn-danger btn-sm delete-button">Remove</a> -->
             <% if (transaction.isCancelled === false && transaction.isTransactionComplete === false) { %>
                 <form action="/restaurant/transaction-complete/<%= transaction._id %>" method="post">
-                    <button type="submit" class="btn btn-primary btn-sm completed-bg-color border-black">Transaction completed</button>
+                    <button type="submit" class="btn btn-primary btn-sm completed-btn border-black">Transaction completed</button>
                 </form>
             <% } %>       
         </div>       

@@ -79,4 +79,8 @@ const hasProduct = async () => {
   return categories.length; 
 }
 
-export { hashPassword, comparePassword, handleErrors, toTitleCase, toSmallerCase, fourtyEightHours, createToken, lowerCase, hasProduct };
+const isQueryEmpty = (objectName) => {
+  return Object.keys(objectName).length === 0;
+}
+
+export { hashPassword, comparePassword, handleErrors, toTitleCase, toSmallerCase, fourtyEightHours, createToken, lowerCase, hasProduct, isQueryEmpty };

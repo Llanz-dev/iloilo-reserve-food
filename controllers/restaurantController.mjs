@@ -5,7 +5,7 @@ import Transaction from '../models/transactionModel.mjs';
 import Category from '../models/categoryModel.mjs';
 import Reservation from '../models/reservationModel.mjs';
 import voucherGenerator from '../utils/voucherUtils.mjs';
-import { comparePassword, handleErrors, createToken, fourtyEightHours, lowerCase, hasProduct } from '../utils/helpers.mjs';
+import { comparePassword, createToken, fourtyEightHours, lowerCase, hasProduct, isQueryEmpty } from '../utils/helpers.mjs';
 import { createDirectory, deleteDirectory, deleteFile, renameFolder, moveImageToNewDirectory } from '../utils/fileUtils.mjs';
 
 
@@ -58,9 +58,24 @@ const GETProducts = async (req, res) => {
 
 const GETRestaurantDashboard = async (req, res) => {
     try {
-        const pageTitle = 'Dashboard';
+        const { query } = req;
+        console.log('query:', query);
         const restaurant = res.locals.restaurant;
-        const transactions = await Transaction.find({ restaurant: restaurant._id })
+        let transactionQuery = { restaurant: restaurant._id };
+
+        if (query.isToday) {
+            transactionQuery = { restaurant: restaurant._id, $or: [{isTransactionComplete: false, isCancelled: false}], isToday: query.isToday };
+        } else if (query.isPending) {
+            transactionQuery = { restaurant: restaurant._id, $or: [{isTransactionComplete: false, isCancelled: false}], isPending: query.isPending };
+        } else if (query.isCancelled) {
+            transactionQuery = { restaurant: restaurant._id, $or: [{isTransactionComplete: false, isCancelled: false}], isCancelled: query.isCancelled };
+        } else if (query.isTransactionComplete) {
+            transactionQuery = { restaurant: restaurant._id, $or: [{isTransactionComplete: false, isCancelled: false}], isTransactionComplete: query.isTransactionComplete };
+        } else {
+            transactionQuery = { restaurant: restaurant._id, $or: [{isTransactionComplete: false, isCancelled: false}], };
+        }
+
+        const transactions = await Transaction.find(transactionQuery)
         .populate({
             path: 'restaurant',
             model: 'Restaurant'
@@ -83,7 +98,7 @@ const GETRestaurantDashboard = async (req, res) => {
         })
         .sort({ createdAt: -1 });
         
-        res.render('restaurant/dashboard', { pageTitle, transactions });
+        res.render('restaurant/dashboard', { pageTitle: 'Dashboard', transactions });
     } catch (err) {
         console.log('POSTRestaurantLogin:', err);
         // If there's an error, render the template with the error message
@@ -366,23 +381,6 @@ const GETRestaurantLogout = (req, res) => {
     res.redirect('/restaurant');
 };
 
-const DELETETransaction = async (req, res) => {
-    try {
-        console.log('DELETETransaction');
-        const transactionId = req.params.id;
-        const transaction = await Transaction.findById(transactionId);
-        await Cart.findByIdAndDelete(transaction.cart);
-        await Reservation.findByIdAndDelete(transaction.reservation);
-        
-        // Once cart and reservation are deleted, delete the transaction
-        await Transaction.findByIdAndDelete(transactionId);
-
-        res.redirect('/restaurant/dashboard');
-    } catch (err) {
-        res.status(500).json({ msg: err });
-    }
-}
-
 const POSTtransactionComplete = async (req, res) => {
     try {
         const transactionId = req.params.id;
@@ -394,4 +392,83 @@ const POSTtransactionComplete = async (req, res) => {
     }
 }
 
-export { GETrestaurantLogin, POSTRestaurantLogin, GETRestaurantDashboard, GETProfileDashboard, GETAddProduct, POSTAddProduct, POSTUpdateProduct, GETProducts, GETUpdateProduct, GETAddCategory, POSTAddCategory, DELETECategory, DELETEProduct, GETUpdateCategory, POSTUpdateCategory, GETRestaurantLogout, DELETETransaction, POSTtransactionComplete };
+const GETHistory = async (req, res) => {
+    try {
+        const { query } = req;
+        console.log('query:', query);
+        const restaurant = res.locals.restaurant;
+        let transactionQuery = { restaurant: restaurant._id };
+
+        if (query.isToday) {
+            transactionQuery = { restaurant: restaurant._id, isToday: query.isToday, $or: [{ isTransactionComplete: true },  { isCancelled: true }]};
+        } else if (query.isPending) {
+            transactionQuery = { restaurant: restaurant._id, isPending: query.isPending, $or: [{ isTransactionComplete: true },  { isCancelled: true }]};
+        } else if (query.isCancelled) {
+            transactionQuery = { restaurant: restaurant._id, isCancelled: query.isCancelled, $or: [{ isTransactionComplete: true },  { isCancelled: true }]};
+        } else if (query.isTransactionComplete) {
+            transactionQuery = { restaurant: restaurant._id, isTransactionComplete: query.isTransactionComplete, $or: [{ isTransactionComplete: true },  { isCancelled: true }]};
+        } else {
+            transactionQuery = { restaurant: restaurant._id, $or: [{ isTransactionComplete: true },  { isCancelled: true }]};
+        }
+        const transactions = await Transaction.find(transactionQuery)          
+        .populate({
+            path: 'restaurant',
+            model: 'Restaurant'
+        })
+        .populate({
+            path: 'cart',
+            model: 'Cart',
+            populate: {
+                path: 'items.product',
+                model: 'Product'
+            }
+        })
+        .populate({
+            path: 'reservation',
+            model: 'Reservation'
+        })
+        .populate({
+            path: 'customer',
+            model: 'Customer'
+        })
+        .sort({ createdAt: -1 });
+        res.render('restaurant/history', { pageTitle: 'History', transactions });
+    } catch (err) {
+        res.status(500).json({ msg: err });
+    }
+}
+
+const DELETETransaction = async (req, res) => {
+    try {
+        console.log('DELETETransaction');
+        const transactionId = req.params.id;
+        const transaction = await Transaction.findById(transactionId);
+        await Cart.findByIdAndDelete(transaction.cart);
+        await Reservation.findByIdAndDelete(transaction.reservation);
+        
+        // Once cart and reservation are deleted, delete the transaction
+        await Transaction.findByIdAndDelete(transactionId);
+
+        res.redirect('/restaurant/history');
+    } catch (err) {
+        res.status(500).json({ msg: err });
+    }
+}
+
+const GETRemoveTransaction = async (req, res) => {
+    try {
+        console.log('GETRemoveTransaction');
+        const transactionId = req.params.id;
+        const transaction = await Transaction.findById(transactionId);
+        await Cart.findByIdAndDelete(transaction.cart);
+        await Reservation.findByIdAndDelete(transaction.reservation);
+        
+        // Once cart and reservation are deleted, delete the transaction
+        await Transaction.findByIdAndDelete(transactionId);
+        res.redirect('/restaurant/history');
+    } catch (err) {
+        res.status(500).json({ msg: err });
+    }
+}
+
+export { GETrestaurantLogin, POSTRestaurantLogin, GETRestaurantDashboard, GETProfileDashboard, GETAddProduct, POSTAddProduct, POSTUpdateProduct, GETProducts, GETUpdateProduct, GETAddCategory, POSTAddCategory, DELETECategory, DELETEProduct, GETUpdateCategory, POSTUpdateCategory, GETRestaurantLogout, DELETETransaction, POSTtransactionComplete, GETHistory, GETRemoveTransaction };

@@ -29,15 +29,23 @@ const transactionSchema = new mongoose.Schema({
       type: String,
       required: false,
     },
+    isPending: {
+      type: Boolean,
+      default: true 
+    },
     isRefunded: {
       type: Boolean,
       default: false 
     },
-    isWithinAday: {
+    isToday: {
       type: Boolean,
       default: false
     },
     isCancelled: {
+      type: Boolean,
+      default: false
+    },
+    isRemoved: {
       type: Boolean,
       default: false
     },

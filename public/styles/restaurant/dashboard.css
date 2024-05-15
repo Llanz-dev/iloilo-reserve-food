@@ -1,0 +1,85 @@
+div.transaction {
+    padding: 15px;
+}
+
+.accordion-body {
+    padding: 15px 0;
+}
+
+.accordion ul {
+    margin-bottom: 0;
+}
+
+.row {
+    margin: 0 !important;
+}
+
+#all-btn:hover {
+    background-color: #008591 !important;
+}
+
+#cancelled-btn, #today-btn, #completed-btn {
+    font-weight: 500;
+    margin: 1rem 0;
+}
+
+#cancelled-btn, .delete-button {
+    background-color: #E29578;   
+}
+
+.btn {
+    color: black;
+    font-weight: 500;
+    border: 1px solid black;
+}
+
+.btn:hover {
+    color: black;
+    font-weight: 500;
+    border: 1px solid black;
+}
+
+.delete-button:hover, #cancelled-btn:hover {
+    background-color: #f1a386;   
+}
+
+.completed-bg-color {
+    background-color: #83c589;
+}
+
+.completed-bg-color:hover {
+    background-color: #91d497;
+}
+
+.today-bg-color {
+    background-color: #c6d350;
+}
+
+.today-bg-color:hover {
+    background-color: #e2f15b;
+}
+
+.pending-bg-color {
+    background-color: #83C5BE;   
+}
+
+.pending-bg-color:hover {
+    background-color: #96e0d9;   
+}
+
+#completed-btn {
+    background-color: #83c589;   
+}
+
+@media (max-width: 575px) {
+    button[type="submit"] {
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+}
+
+@media (max-width: 450px) {
+    .delete-button {
+        width: 100%;
+    }
+}

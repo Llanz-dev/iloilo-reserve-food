@@ -17,7 +17,7 @@
                 <div class="mb-3">
                     <p class="error-field" id="error-dateOfBirth"></p>
                     <label for="dateOfBirth" class="form-label">Date of Birth</label>
-                    <input type="date" class="form-control" id="dateOfBirth" value="<%= customer.dateOfBirth ? customer.dateOfBirth.toISOString().split('T')[0] : '' %>" name="dateOfBirth">
+                    <input type="date" class="form-control bg-white" id="dateOfBirth" value="<%= customer.dateOfBirth ? customer.dateOfBirth.toISOString().split('T')[0] : '' %>" name="dateOfBirth" disabled>
                 </div>
 
                 <div class="mb-3">

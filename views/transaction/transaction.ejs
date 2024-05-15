@@ -3,6 +3,7 @@
 <%- include('.././navbar.ejs') %>
 
 <main>
+    <article>
     <% if (transactions.length) { %>      
         <h2 class="title">Current time: <span id="current-date-and-time"></span></h2> 
         <p><i>Just so you know, if you cancel your reservation before the day before your planned visit, you'll get half of your money back.</i></p>
@@ -20,24 +21,25 @@
                         <p class="card-text">Reservation Date: <%= transaction.reservation.reservation_date.toDateString() %></p>
                         <p class="card-text">Reservation Time: <span class="reservation-time"><%= transaction.reservation.reservation_time %></span></p>
                         <p class="card-text">Half Amount: ₱ <span class="total-amount"><%= transaction.cart.halfAmount %></span></p>
-                        <div class="accordion" id="accordionExample">
+                        <div class="accordion accordion-flush" id="accordionFlushExample">
                             <div class="accordion-item">
-                              <h2 class="accordion-header">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                  See Item
-                                </button>
-                              </h2>
-                              <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
-                                <div class="accordion-body">
-                                    <ul>
-                                        <% transaction.cart.items.forEach(item => { %>
-                                            <li><%= item.product.name %></li>
-                                        <% }) %>
-                                    </ul>
-                                </div>
-                              </div>
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                                      See Order
+                                    </button>
+                                  </h2>
+                                  <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                                    <div class="accordion-body">
+                                        <ul>
+                                            <% transaction.cart.items.forEach(item => { %>
+                                                <li><%= item.product.name %></li>
+                                            <% }) %>
+                                        </ul>
+                                    </div>
+                                  </div>
                             </div>
-                            </div>                          
+                        </div>
+                                      
                             <div class="mt-3">
                                 <% if (transaction.isWithinAday) { %>
                                     <a href="/transaction/cancel-reservation-unrefundable/<%= transaction._id %>" class="btn btn-danger btn-sm">Unrefundable Cancel Reservation</a>
