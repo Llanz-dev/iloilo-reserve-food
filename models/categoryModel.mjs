@@ -6,9 +6,9 @@ const categorySchema = new Schema({
     type: String,
     required: true
   },
-  description: {
-    type: String,
-    required: true
+  isActivate: {
+    type: Boolean,
+    default: true
   },
   lowername: {
     type: String

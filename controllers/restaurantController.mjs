@@ -228,9 +228,8 @@ const GETAddCategory = async (req, res) => {
 }
 
 const POSTAddCategory = async (req, res) => {
-    console.log('---- POSTAddCategory ----');
     try {
-        const { name, description } = req.body;
+        const { name } = req.body;
         const restaurantID = req.restaurantID; // Assuming you have restaurant ID in req.restaurantID
 
         // Check if the category name is already registered on the specific restaurant
@@ -245,7 +244,7 @@ const POSTAddCategory = async (req, res) => {
         const destinationPath = `./public/images/restaurant/${restaurantName}/products/${categoryName}`;
         createDirectory(destinationPath);
 
-        const category = await Category.create({ name, description, lowername: lowerCase(name), restaurant: restaurantID });
+        const category = await Category.create({ name, lowername: lowerCase(name), restaurant: restaurantID });
         console.log('category:', category);
         res.redirect('add-category');
     } catch (err) {
@@ -341,6 +340,48 @@ const DELETECategory = async (req, res) => {
         await Category.findByIdAndDelete(categoryID); // Delete category from database
 
         res.json('Category and associated products successfully deleted');
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ msg: err });
+    }
+}
+
+const GETDeactivateCategory = async (req, res) => {
+    console.log('---- GETDeactivateCategory ----');
+    try {
+        const categoryID = req.params.id;
+
+        // Find the category to be deleted and populate the associated restaurant
+        const category = await Category.findById(categoryID).populate('restaurant');
+
+        if (!category) {
+            return res.status(404).json({ error: 'Category not found' });
+        }
+
+        await Category.findByIdAndUpdate(categoryID, { isActivate: false }); 
+
+        res.redirect('/restaurant/add-category');
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ msg: err });
+    }
+}
+
+const GETActivateCategory = async (req, res) => {
+    console.log('---- GETDeactivateCategory ----');
+    try {
+        const categoryID = req.params.id;
+
+        // Find the category to be deleted and populate the associated restaurant
+        const category = await Category.findById(categoryID).populate('restaurant');
+
+        if (!category) {
+            return res.status(404).json({ error: 'Category not found' });
+        }
+
+        await Category.findByIdAndUpdate(categoryID, { isActivate: true }); 
+
+        res.redirect('/restaurant/add-category');
     } catch (err) {
         console.error(err);
         res.status(500).json({ msg: err });
@@ -471,4 +512,4 @@ const GETRemoveTransaction = async (req, res) => {
     }
 }
 
-export { GETrestaurantLogin, POSTRestaurantLogin, GETRestaurantDashboard, GETProfileDashboard, GETAddProduct, POSTAddProduct, POSTUpdateProduct, GETProducts, GETUpdateProduct, GETAddCategory, POSTAddCategory, DELETECategory, DELETEProduct, GETUpdateCategory, POSTUpdateCategory, GETRestaurantLogout, DELETETransaction, POSTtransactionComplete, GETHistory, GETRemoveTransaction };
+export { GETrestaurantLogin, POSTRestaurantLogin, GETRestaurantDashboard, GETProfileDashboard, GETAddProduct, POSTAddProduct, POSTUpdateProduct, GETProducts, GETUpdateProduct, GETAddCategory, POSTAddCategory, DELETECategory, DELETEProduct, GETUpdateCategory, POSTUpdateCategory, GETRestaurantLogout, DELETETransaction, POSTtransactionComplete, GETHistory, GETRemoveTransaction, GETDeactivateCategory, GETActivateCategory };

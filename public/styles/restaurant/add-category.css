@@ -1,0 +1,15 @@
+@media (max-width: 575px) {
+    button[type="submit"] {
+        padding-bottom: 5px;
+    }
+}
+
+@media (max-width: 450px) {
+    tr {
+        display: flex;
+        flex-direction: column;
+    }
+    #actions {
+        display: none;
+    }
+}

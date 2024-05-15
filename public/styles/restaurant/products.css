@@ -1,0 +1,19 @@
+.single-product {
+    background-color: white !important;
+    border-bottom: 0;;
+    padding: 0;
+}
+
+.card-body {
+    padding: 5px;
+}
+
+.product-name {
+    margin-top: 2px;
+} 
+
+@media (max-width: 500px) {
+    .delete-btn, .update-btn {
+        width: 100%;
+    }
+}

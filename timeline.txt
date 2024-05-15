@@ -177,8 +177,11 @@ May 15 2024:
 	- Implemented the history page.
 	- The restaurant dashboard and history page design is complete and responsive.
 	- Remove the delete button in restaurant dashboard page.
-	- Create a sold out button to product and a category of product.
+	- Create a deactivate and activate button to product for restaurant side.
 	- Remove the description in a category of product.
+
+May 16 2024
+	- Create a sold out button to product.
 	- Create a registration form for restaurant.
 	- Create an accept or decline functionality in admin side for restaurant registration.
 

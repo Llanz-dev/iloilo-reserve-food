@@ -2,31 +2,47 @@
 <!-- Include the navbar from the layout -->
 <%- include('./layout/navbar.ejs') %>
 
-
-<div class="container">
+<main>
   <% if (products.length > 0) { %>
     <% const groupedProducts = {}; %>
     <% products.forEach(product => { %>
       <% const category = product.category.name; %>
+      <% const isActivate = product.category.isActivate; %>
       <% if (!groupedProducts[category]) { %>
-        <% groupedProducts[category] = []; %>
+        <% groupedProducts[category] = { products: [], isActivate: isActivate }; %>
       <% } %>
-      <% groupedProducts[category].push(product); %>
+      <% groupedProducts[category].products.push(product); %>
     <% }); %>
     <% Object.keys(groupedProducts).forEach(category => { %>
-      <h2><%= category %></h2>
-      <div class="row">
-        <% groupedProducts[category].forEach(product => { %>
-          <div class="col-md-4">
-            <div class="card mb-4">
+      <% if (groupedProducts[category].isActivate) { %>
+        <h2 class="title"><%= category %></h2>    
+      <% } else { %>
+        <h2 class="title"><%= category %> <small class="text-danger">is deactivate</small></h2>       
+      <% } %>      
+      <div class="row row-cols-1 row-cols-md-3">  
+        <% groupedProducts[category].products.forEach(product => { %>
+            <div class="square">           
+            <div class="single-product">
               <img src="/images/restaurant/<%= product.restaurant.lowername %>/products/<%= product.category.lowername %>/<%= product.image %>" class="card-img-top" alt="Product Image">
+            <% if (product.category.isActivate) { %>
               <div class="card-body">
-                <h5 class="card-title"><%= product.name %></h5>
-                <p class="card-text"><%= product.description %></p>
-                <p class="card-text">Price: ₱<%= product.price %></p>
-                <!-- Add more product details as needed -->
-                <button class="btn btn-sm btn-danger" onclick="deleteProduct('<%= product._id %>')">Delete</button>
-                <a href="/restaurant/update-product/<%= product._id %>" class="btn btn-warning">Update</a>
+            <% } else { %>
+              <div class="card-body bg-danger text-white">           
+            <% } %>
+              <h5 class="product-name h4"><%= product.name %></h5>
+            <% if (product.category.isActivate) { %>
+              <p class="product-description"><%= product.description %></p>
+            <% } else { %>
+              <p class="product-description text-white"><%= product.description %></p>
+            <% } %>    
+              <p class="card-text">Price: ₱<%= product.price %></p>
+              <!-- Add more product details as needed -->
+              <% if (product.category.isActivate) { %>
+                <button class="btn btn-danger btn-sm delete-btn" onclick="deleteProduct('<%= product._id %>')">Delete</button>
+              <% } else { %>
+                <button class="btn btn-danger btn-sm delete-btn border" onclick="deleteProduct('<%= product._id %>')">Delete</button>
+              <% } %>
+              <a href="/restaurant/update-product/<%= product._id %>" class="btn btn-warning btn-sm update-btn">Update</a>
               </div>
             </div>
           </div>
@@ -36,7 +52,8 @@
   <% } else { %>
     <p>No products available.</p>
   <% } %>
-</div>
+</main>
+
 
 
 <script src="/js/restaurant/products.js"></script>            

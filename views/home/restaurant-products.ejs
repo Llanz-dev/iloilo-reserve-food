@@ -7,17 +7,19 @@
       <% const groupedProducts = {}; %>
       <% products.forEach(product => { %>
         <% const category = product.category.name; %>
-        <% if (!groupedProducts[category]) { %>
-          <% groupedProducts[category] = []; %>
-        <% } %>
-        <% groupedProducts[category].push(product); %>
-      <% }); %>
-      <% Object.keys(groupedProducts).forEach(category => { %>
+      <% const isActivate = product.category.isActivate; %>
+      <% if (!groupedProducts[category]) { %>
+        <% groupedProducts[category] = { products: [], isActivate: isActivate }; %>
+      <% } %>
+      <% groupedProducts[category].products.push(product); %>
+    <% }); %>
+    <% Object.keys(groupedProducts).forEach(category => { %>
+      <% if (groupedProducts[category].isActivate) { %>
         <h2 class="category-name title"><%= category %></h2>
         <div class="row row-cols-1 row-cols-md-3 g-4">
-          <% groupedProducts[category].forEach(product => { %>
-              <div class="square">
-                <form action="/add-to-cart" method="post">
+          <% groupedProducts[category].products.forEach(product => { %>
+            <div class="square">
+              <form action="/add-to-cart" method="post">
                 <button type="submit" class="single-product">
                   <img src="/images/restaurant/<%= product.restaurant.lowername %>/products/<%= product.category.lowername %>/<%= product.image %>" class="card-img-top product-image" alt="Product Image">
                   <p class="product-name h4"><%= product.name %></p>
@@ -31,11 +33,13 @@
                     <input type="hidden" name="restaurantId" value="<%= product.restaurant._id %>">
                     <p class="product-price">₱<%= product.price %></p>
                   </div>
-              </button>
+                </button>
               </form>
-              </div>
+            </div>
           <% }); %>
         </div>
+      <% } %>  
+
       <% }); %>
     <% } else { %>
       <p>No products available.</p>
