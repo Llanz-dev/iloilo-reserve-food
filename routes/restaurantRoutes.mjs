@@ -1,6 +1,10 @@
 import express from 'express';
 const router = express.Router();
-import { GETrestaurantLogin,
+import { uploadRestaurantBanner, updateRestaurantBanner } from '../config/multerConfig.mjs';
+import {    POSTUpdateRestaurant,
+            GETrestaurantRegister, 
+            POSTrestaurantRegister,
+            GETrestaurantLogin,
             POSTRestaurantLogin,
             GETRestaurantDashboard,
             GETProfileDashboard,
@@ -16,10 +20,13 @@ import { GETrestaurantLogin,
 import { requireAuthenticationRestaurant } from '../middleware/authenticationMiddleware.mjs';
 import { uploadProductImage, updateProductImage } from '../config/multerConfig.mjs'
 
+router.get('/register', GETrestaurantRegister);
+router.post('/register', uploadRestaurantBanner, POSTrestaurantRegister);
 router.get('/', GETrestaurantLogin);
 router.post('/', POSTRestaurantLogin);
 router.get('/dashboard', requireAuthenticationRestaurant, GETRestaurantDashboard);
-router.get('/profile', requireAuthenticationRestaurant, GETProfileDashboard);
+router.get('/update-restaurant', requireAuthenticationRestaurant, GETProfileDashboard);
+router.post('/update-restaurant/:id', requireAuthenticationRestaurant, updateRestaurantBanner, POSTUpdateRestaurant);
 router.get('/products', requireAuthenticationRestaurant, GETProducts);
 // View history
 router.get('/history', requireAuthenticationRestaurant, GETHistory);

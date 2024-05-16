@@ -1,0 +1,56 @@
+<%- include('./layout/header.ejs') %>
+    <main class="authentication">
+        <h2 class="title">Restaurant Register</h2>
+        <% if (typeof error !== 'undefined') { %>
+            <div class="alert alert-danger">
+              <%= error %>
+            </div>
+          <% } %>
+        <form action="/restaurant/register" method="post" id="login-form" enctype="multipart/form-data">                
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" placeholder="Enter username" name="username" required>
+              </div>
+              <div class="mb-3">
+                <label for="name" class="form-label">Name</label>
+                <input type="text" class="form-control" id="text" placeholder="Enter name" name="name" required>
+                <input type="hidden" class="form-control hidden-text" id="lowerText" name="lowername" value="">
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" placeholder="Enter email" name="email" required>
+              </div>
+              <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" placeholder="Enter password" name="password" required>
+              </div>
+              <div class="mb-3">
+                <label for="reEnterPassword" class="form-label">Re-enter Password</label>
+                <input type="password" class="form-control" id="reEnterPassword" placeholder="Re-enter password" name="reEnterPassword" required>
+              </div>
+              <div class="mb-3">
+                <label for="phone" class="form-label">Phone</label>
+                <input type="tel" class="form-control" id="phone" placeholder="Enter phone" name="phone" required>
+              </div>
+              <div class="mb-3">
+                <label for="address" class="form-label">Address</label>
+                <input type="text" class="form-control" id="address" placeholder="Enter address" name="address" required>
+              </div>
+              <!-- Display existing image -->
+              <div class="mb-3" id="existingImageContainer">
+                <label>Existing Image</label>
+                <img src="" alt="" id="existingImage" class="w-25">
+              </div>
+              <!-- Option to upload a new image -->
+              <div class="mb-3">
+                <label for="image" class="form-label">Upload new banner image</label>
+                <input type="file" class="form-control" id="image" name="image" required>
+              </div>
+              <button type="submit" class="btn btn-primary">Register</button>
+              <p class="mt-3">Have already an account? <a href="/restaurant">Login</a></p>
+        </form>
+    </main>
+
+<script src="/js/showExistingImage.js"></script>            
+<script src="/js/textInputLowerCase.js"></script>            
+<%- include('.././footer.ejs') %>

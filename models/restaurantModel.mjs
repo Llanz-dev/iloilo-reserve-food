@@ -39,7 +39,7 @@ const restaurantSchema = new Schema({
     },
     statusIsActive: {
         type: Boolean,
-        default: true // Assuming payment is not successful by default
+        default: false // Assuming payment is not successful by default
       }
 });
 

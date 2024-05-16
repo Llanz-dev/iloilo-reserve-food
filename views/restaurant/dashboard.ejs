@@ -105,5 +105,7 @@
   </div>
 </main>    
 <script src="/js/restaurant/dashboard.js"></script> 
-<script src="/js/timeFormatting.js"></script> 
+<% if (transactions.length) { %>
+  <script src="/js/timeFormatting.js"></script>  
+<% } %>
 <%- include('.././footer.ejs') %>

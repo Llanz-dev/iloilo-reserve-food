@@ -9,8 +9,10 @@
     <% if (pageTitle === 'Products') { %>
       <link rel="stylesheet" href="/styles/restaurant/products.css">
       <link rel="stylesheet" href="/styles/restaurant/sold-out.css">
-    <% } else if (pageTitle === 'Restaurant Login') { %>
+    <% } else if (pageTitle === 'Restaurant Login' || pageTitle === 'Restaurant Register') { %>
       <link rel="stylesheet" href="/styles/restaurant/login.css">
+    <% } else if (pageTitle === 'Update Restaurant') { %>
+      <link rel="stylesheet" href="/styles/restaurant/update-restaurant.css">
     <% } else if (pageTitle === 'Add Category') { %>
       <link rel="stylesheet" href="/styles/restaurant/add-category.css">
     <% } else if (pageTitle === 'Transactions') { %>

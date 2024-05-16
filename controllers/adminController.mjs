@@ -86,7 +86,7 @@ const GETUpdateRestaurant = async (req, res) => {
 const POSTUpdateRestaurant = async (req, res) => {
   try {
     const restaurantID = req.params.id;
-    const updatedData = req.body;
+    const updatedData = { ...req.body }; // Spread the body to a new object
     const restaurant = await Restaurant.findById(restaurantID);
 
     // Check if a new image file exists, and if both the name and image have been updated
@@ -113,15 +113,25 @@ const POSTUpdateRestaurant = async (req, res) => {
         updatedData.image = req.body.old_restaurant_banner_image;
     }
 
-    if (updatedData.password !== updatedData.reEnterPassword) {
-      return res.status(400).json({ error: 'Passwords do not match' });
+    // Handle password only if provided
+    if (updatedData.password || updatedData.reEnterPassword) {
+      if (updatedData.password !== updatedData.reEnterPassword) {
+        return res.status(400).json({ error: 'Passwords do not match' });
+      }
+
+      // Hash password if provided
+      if (updatedData.password) {
+        const hashedPassword = await hashPassword(updatedData.password);
+        updatedData.password = hashedPassword;
+      } else {
+        delete updatedData.password; // Ensure password is not updated if not provided
+      }
+    } else {
+      delete updatedData.password; // Ensure password is not updated if not provided
     }
 
-    if (updatedData.password) {
-      // Hash password
-      const hashedPassword = await hashPassword(updatedData.password);
-      updatedData.password = hashedPassword;
-    }
+    // Remove unnecessary reEnterPassword field
+    delete updatedData.reEnterPassword;
 
     const updatedRestaurant = await Restaurant.findByIdAndUpdate(
       restaurantID,
@@ -139,6 +149,7 @@ const POSTUpdateRestaurant = async (req, res) => {
     res.status(500).json({ msg: err });
   }
 };
+
 
 // Delete Restaurant
 const DELETERestaurant = async (req, res) => {
