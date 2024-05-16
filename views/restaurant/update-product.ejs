@@ -7,6 +7,11 @@
       <div class="card">
         <div class="card-body">
           <h1 class="title text-center mb-4">Update Product</h1>
+          <a href="/restaurant/update-product/<%= product._id %>?isSoldOut=<%= !product.isSoldOut %>" class="btn btn-sm primary-background-color text-white mb-2">
+            <%= product.isSoldOut ? 'In Stock' : 'Sold Out' %>
+          </a>
+          <br>
+          <small>Status: <span class="<%= product.isSoldOut ? 'bg-danger' : 'bg-success' %> text-white py-1 px-3"><%= product.isSoldOut ? 'Sold Out' : 'In Stock' %> </span></small>   
           <form action="/restaurant/update-product/<%= product._id %>" method="post" enctype="multipart/form-data">
             <div class="form-group">
               <label for="name">Name</label>
@@ -45,7 +50,7 @@
             <!-- Set the restaurant -->
             <input type="hidden" class="form-control" id="restaurant" name="restaurant" value="<%= product.restaurant._id %>" required>
             <% if (hasProduct) { %>
-              <button type="submit" class="btn btn-primary w-100">Update Product</button>   
+              <button type="submit" class="btn btn-primary w-100 update-product-button">Update Product</button>   
             <% } else { %>
               <p>Make sure to add category first, before you can add a product</p>
               <button class="btn btn-primary disabled w-100">Add Product</button>   

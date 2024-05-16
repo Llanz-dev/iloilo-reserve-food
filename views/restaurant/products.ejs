@@ -21,9 +21,18 @@
       <% } %>      
       <div class="row row-cols-1 row-cols-md-3">  
         <% groupedProducts[category].products.forEach(product => { %>
-            <div class="square">           
+          <div class="square">           
             <div class="single-product">
-              <img src="/images/restaurant/<%= product.restaurant.lowername %>/products/<%= product.category.lowername %>/<%= product.image %>" class="card-img-top" alt="Product Image">
+              <% if (product.isSoldOut) { %>
+                <div style="position: relative;">
+                  <img src="/images/restaurant/<%= product.restaurant.lowername %>/products/<%= product.category.lowername %>/<%= product.image %>" class="card-img-top sold-out" alt="Product Image">
+                  <label for="" class="sold-out">
+                    Sold out
+                  </label>
+                </div>
+              <% } else { %>
+                <img src="/images/restaurant/<%= product.restaurant.lowername %>/products/<%= product.category.lowername %>/<%= product.image %>" class="card-img-top" alt="Product Image">               
+              <% } %>
             <% if (product.category.isActivate) { %>
               <div class="card-body">
             <% } else { %>

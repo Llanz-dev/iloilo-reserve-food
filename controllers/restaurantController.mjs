@@ -59,7 +59,6 @@ const GETProducts = async (req, res) => {
 const GETRestaurantDashboard = async (req, res) => {
     try {
         const { query } = req;
-        console.log('query:', query);
         const restaurant = res.locals.restaurant;
         let transactionQuery = { restaurant: restaurant._id };
 
@@ -161,6 +160,11 @@ const GETUpdateProduct = async (req, res) => {
 
         // Fetch categories to populate the dropdown
         const categories = await Category.find({ restaurant: product.restaurant }).populate('restaurant');
+        
+        if (req.query.isSoldOut) {
+            await Product.findByIdAndUpdate(req.params.id, { isSoldOut: req.query.isSoldOut });
+            res.redirect(`/restaurant/update-product/${product._id}`);
+        }
 
         res.render('restaurant/update-product', { pageTitle, product, categories, hasProduct });
     } catch (err) {

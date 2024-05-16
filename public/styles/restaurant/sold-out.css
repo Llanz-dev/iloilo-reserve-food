@@ -1,0 +1,13 @@
+label.sold-out {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 18px;
+    color: white;
+}
+
+img.sold-out {
+    filter: brightness(40%); 
+    opacity: 0.8;
+}

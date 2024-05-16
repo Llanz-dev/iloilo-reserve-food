@@ -20,8 +20,21 @@
           <% groupedProducts[category].products.forEach(product => { %>
             <div class="square">
               <form action="/add-to-cart" method="post">
-                <button type="submit" class="single-product">
-                  <img src="/images/restaurant/<%= product.restaurant.lowername %>/products/<%= product.category.lowername %>/<%= product.image %>" class="card-img-top product-image" alt="Product Image">
+                <% if (product.isSoldOut) { %>
+                  <div class="single-product">
+                <% } else { %>
+                  <button type="submit" class="single-product">
+                <% } %>
+                  <% if (product.isSoldOut) { %>
+                    <div style="position: relative;">
+                      <img src="/images/restaurant/<%= product.restaurant.lowername %>/products/<%= product.category.lowername %>/<%= product.image %>" class="card-img-top product-image sold-out" alt="Product Image">                   
+                      <label for="" class="sold-out">
+                        Sold out
+                      </label>
+                    </div>
+                  <% } else { %>
+                    <img src="/images/restaurant/<%= product.restaurant.lowername %>/products/<%= product.category.lowername %>/<%= product.image %>" class="card-img-top product-image" alt="Product Image">                   
+                  <% } %>
                   <p class="product-name h4"><%= product.name %></p>
                   <p class="product-description"><%= product.description %></p>
                   <!-- <p class="product-description text-secondary">
@@ -32,14 +45,17 @@
                     <input type="hidden" name="productId" value="<%= product._id %>">
                     <input type="hidden" name="restaurantId" value="<%= product.restaurant._id %>">
                     <p class="product-price">₱<%= product.price %></p>
-                  </div>
-                </button>
+                  </div>                  
+                  <% if (product.isSoldOut) { %>
+                    </div>                   
+                  <% } else { %>
+                    </button>
+                  <% } %>
               </form>
             </div>
           <% }); %>
         </div>
       <% } %>  
-
       <% }); %>
     <% } else { %>
       <p>No products available.</p>

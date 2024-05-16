@@ -17,6 +17,10 @@ const productSchema = new Schema({
     type: String,
     required: true
   },
+  isSoldOut: {
+    type: Boolean,
+    default: false 
+  },
   category: {
     type: Schema.Types.ObjectId,
     ref: 'Category', // Reference the Category model

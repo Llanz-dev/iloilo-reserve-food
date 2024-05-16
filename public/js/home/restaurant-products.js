@@ -10,7 +10,7 @@ submitButtons.forEach(button => {
         const addIcon = square.querySelector('.add-icon');
         // Add CSS styling to the product name when hovering
         const singleProduct = button.closest('.single-product');
-        singleProduct.style.color = '#006D77'
+        singleProduct.style.color = '#006D77';
         const productDescription = square.querySelector('.product-description');
         productDescription.style.color = '#006D77'
         addIcon.src = '/images/static/add-icon-green.png';
