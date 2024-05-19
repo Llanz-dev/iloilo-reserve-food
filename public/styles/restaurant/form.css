@@ -1,0 +1,11 @@
+section {
+    padding: 20px 30px;
+    background-color: white;
+    width: 600px;
+}
+
+@media (max-width: 715px) {
+    section {
+        width: 100%;
+    }   
+}

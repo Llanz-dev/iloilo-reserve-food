@@ -180,10 +180,16 @@ May 15 2024:
 	- Create a deactivate and activate button to product for restaurant side.
 	- Remove the description in a category of product.
 
-May 16 2024
+May 16 2024:
 	- Create a sold out button to product.
 	- Create a registration form for restaurant.
 	- Create an accept or decline functionality in admin side for restaurant registration.
+
+May 17 2024:
+	- Successfully set the voucher quota amount and percentage value. 
+
+May 17 2024:
+	- History created in customer side.
 
 Problems:
 	- All the database and associates to restaurant must be deleted when that restaurant would be deleted.

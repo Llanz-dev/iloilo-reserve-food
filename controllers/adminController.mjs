@@ -10,7 +10,7 @@ import path from 'path';
 const GETAdminPage = async (req, res) => {
   try {
     const pageTitle = 'Administrator';
-    const restaurants = await Restaurant.find({});
+    const restaurants = await Restaurant.find({}).sort({ _id: -1 });
     res.render('admin/home', { pageTitle, restaurants });
   } catch (err) {
     res.status(500).json({ msg: err });

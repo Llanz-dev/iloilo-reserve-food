@@ -1,4 +1,5 @@
 import Customer from '../models/customerModel.mjs';
+import Transaction from '../models/transactionModel.mjs';
 import { hashPassword, comparePassword, handleErrors, toTitleCase, toSmallerCase, createToken, fourtyEightHours } from '../utils/helpers.mjs';
 
 const GETLoginPage = (req, res) => {
@@ -77,7 +78,71 @@ const POSTRegisterPage = async (req, res) => {
 const GETProfilePage = (req, res) => {
   const pageTitle = 'Profile';
   const restaurant = undefined;
+
   res.render('customer/profile', { pageTitle, restaurant });
+}
+
+const GETHistoryPage = async (req, res) => {
+  try {
+      const customer = res.locals.customer;
+      const { query } = req;
+      console.log('query:', query);
+
+      let transactionQuery = { customer: customer._id, 
+        $and: [ 
+          { isPending: false },
+          { isToday: false },
+          {
+            $or: [
+                  { isTransactionComplete: true },
+                  { isCancelled: true },
+                ]
+          }
+        ]
+      };
+
+      const hasQuery = Object.keys(query).length > 0;
+      if (hasQuery) {
+        transactionQuery = { customer: customer._id, 
+          $and: [ 
+            { isPending: false },
+            { isToday: false },
+            {
+              $or: [
+                    { isTransactionComplete: query.isTransactionComplete === undefined ? false : true },
+                    { isCancelled: query.isCancelled === undefined ? false : true },
+                  ]
+            }
+          ]
+        };
+      }
+
+      const transactions = await Transaction.find(transactionQuery)
+      .populate({
+        path: 'restaurant',
+        model: 'Restaurant'
+    })
+    .populate({
+        path: 'cart',
+        model: 'Cart',
+        populate: {
+            path: 'items.product',
+            model: 'Product'
+        }
+    })
+    .populate({
+        path: 'reservation',
+        model: 'Reservation'
+    })
+    .populate({
+        path: 'customer',
+        model: 'Customer'
+    })
+    .sort({ createdAt: -1 });
+    res.render('customer/history', { pageTitle: 'History', restaurant: undefined, transactions });
+  } catch (err) {
+      res.status(500).json({ msg: err.message });
+  }
 }
 
 const POSTUpdateProfile = async (req, res) => {
@@ -114,4 +179,4 @@ const GETLogout = (req, res) => {
   res.redirect('/');
 }
 
-export { GETLoginPage, POSTLoginPage, GETRegisterPage, POSTRegisterPage, GETProfilePage, POSTUpdateProfile, GETLogout };
+export { GETLoginPage, POSTLoginPage, GETRegisterPage, POSTRegisterPage, GETProfilePage, POSTUpdateProfile, GETHistoryPage, GETLogout };

@@ -1,5 +1,9 @@
+import Voucher from '../models/voucherModel.mjs'
 import Transaction from '../models/transactionModel.mjs'
+import CustomerQuota from '../models/customerQuotaModel.mjs'; 
 import { captureOrder } from '../controllers/checkoutController.mjs';
+import voucherGenerator from '../utils/voucherUtils.mjs';
+
 
 const GETtransaction = async (req, res) => {
   try {
@@ -32,6 +36,31 @@ const GETtransaction = async (req, res) => {
   }
 }
 
+const POSTtransactionComplete = async (req, res) => {
+  try {
+      const transactionId = req.params.id;
+      // // voucherGenerator(transactionId);
+      const transaction = await Transaction.findById(transactionId).populate('customer cart restaurant');
+      console.log('transaction.cart.totalAmount:', transaction.cart.totalAmount);
+      const customerQuota = await CustomerQuota.findOne({ restaurant: transaction.restaurant, customer: transaction.customer });
+      const restaurantVoucherAmount = transaction.restaurant.calculatedVoucherThreshold;
+      console.log('restaurantVoucherAmount:', restaurantVoucherAmount);
+      if (customerQuota >= restaurantVoucherAmount) {
+        const voucher = await Voucher.create({ amount: discountAmount, customer: transaction.customer, restaurant: transaction.restaurant });
+        customerQuota.valueAmount -= restaurantVoucherAmount;
+        console.log('Voucher created:', voucher);
+        await customerQuota.save();
+      }
+      transaction.isPending = false;
+      transaction.isToday = false;
+      transaction.isTransactionComplete = true;
+      await transaction.save();
+      res.redirect('/restaurant/dashboard');
+  } catch (err) {
+      res.status(500).json({ msg: err });
+  }
+}
+
 const cancelReservationRefundable = async (req, res) => {
     try {
       const { id } = req.params;
@@ -58,6 +87,8 @@ const cancelReservationRefundable = async (req, res) => {
       // Update the transaction status
       transactionObject.isCancelled = true;
       transactionObject.isRefunded = true;
+      transactionObject.isToday = false;
+      transactionObject.isPending = false;
       await transactionObject.save();
   
       res.redirect('/transaction');
@@ -81,8 +112,9 @@ const cancelReservationUnrefundable = async (req, res) => {
       }
   
       // Update the transaction status
-      transactionObject.isTransactionComplete = true;
       transactionObject.isCancelled = true;
+      transactionObject.isPending = false;
+      transactionObject.isToday = false;
       await transactionObject.save();
   
       res.redirect('/transaction');
@@ -92,4 +124,4 @@ const cancelReservationUnrefundable = async (req, res) => {
     }
 };
 
-export { GETtransaction, cancelReservationRefundable, cancelReservationUnrefundable };
+export { GETtransaction, cancelReservationRefundable, cancelReservationUnrefundable, POSTtransactionComplete };

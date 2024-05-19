@@ -1,0 +1,36 @@
+<%- include('../layout/header.ejs') %>
+<%- include('../layout/navbar.ejs') %>
+
+<main>
+    <section>
+        <h2 class="title">Vouchers</h2>
+        <div class="mb-3">
+            <form action="/restaurant/vouchers/set-quota?restaurantID=<%= restaurant._id %>&percentageValue=<%= restaurant.percentageVoucher %>" method="post">
+                <br>
+                <label for="quota" class="form-label">Quota Amount</label>
+                <input type="number" class="form-control" name="quota" id="quota" aria-describedby="quotaHelp">
+                <div id="quotaHelp" class="form-text">
+                    Customers who spend ₱<span class="total-amount"><%= restaurant.quotaVoucher %></span> will receive a voucher.
+                </div>
+                <button type="submit" class="btn btn-sm primary-background-color text-white mt-2">Set Quota</button>
+            </form>
+        </div>
+        <div class="mb-3">
+            <form action="/restaurant/vouchers/set-percentage?restaurantID=<%= restaurant._id %>&quotaVoucher=<%= restaurant.quotaVoucher %>" method="post">
+                <label for="percentage" class="form-label">Percentage Value</label>
+                <input type="number" class="form-control" name="percentage" id="percentage" aria-describedby="percentageHelp">
+                <div id="percentageHelp" class="form-text">
+                    Calculation: ₱<span class="total-amount"><%= restaurant.quotaVoucher %></span> x <%= restaurant.percentageVoucher %>% = ₱<%= restaurant.calculatedVoucherThreshold %>
+                </div>
+                <div id="percentageHelp" class="form-text">
+                    Therefore, the loyalty voucher amount for a customer is ₱<span class="total-amount"><%= restaurant.calculatedVoucherThreshold %></span>.
+                </div>
+                <button type="submit" class="btn btn-sm primary-background-color text-white mt-2">Set Percentage</button>
+            </form>
+        </div>
+    </section>
+    
+</main>
+
+<script src="/js/amountFormatter.js"></script>            
+<%- include('../../footer.ejs') %>

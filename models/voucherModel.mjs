@@ -5,6 +5,10 @@ const voucherSchema = new mongoose.Schema({
         type: Number,
         required: true
     },    
+    voucherLabel: {
+        type: String,
+        default: 'Loyalty'
+    },
     isUsed: {
         type: Boolean,
         default: false,

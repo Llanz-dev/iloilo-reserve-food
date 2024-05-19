@@ -106,8 +106,8 @@ button[type="submit"]:hover {
     .product-price {
         font-size: 13px;
     }
-    button[type="submit"] {
-        padding-bottom: 20px;
+    .single-product { 
+        padding-bottom: 0px;
     }    
 }
 

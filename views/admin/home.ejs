@@ -1,6 +1,6 @@
 <%- include('./layout/header.ejs') %>
 <h1>Administrator</h1>
-<a href="/adminux/restaurant-registration" type="button" class="btn btn-primary text-decoration-none">Restaurant registration</a>
+<a href="/adminux/restaurant-registration" type="button" class="d-none btn btn-primary text-decoration-none">Restaurant registration</a>
 
 <% if (restaurants.length) { %>
   <h2>Restaurant List: <%= restaurants.length %></h2> 
@@ -23,7 +23,7 @@
       <tr>
         <td><%= restaurant.name %></td>
         <td><%= restaurant.address %></td>
-        <td><%= restaurant.statusIsActive %></td>
+        <td><%= restaurant.statusIsActive ? 'Active' : 'Inactive' %></td>
         <td>
           <p class="d-none" id="route-path">/adminux/delete-restaurant</p>
           <a href="/adminux/update-restaurant/<%= restaurant._id %>" class="btn btn-sm btn-primary">Update</a>

@@ -37,10 +37,22 @@ const restaurantSchema = new Schema({
         type: String,
         required: true
     },
+    quotaVoucher: {
+        type: Number,
+        default: 5000
+    },
+    percentageVoucher: {
+        type: Number,
+        default: 3,
+    },
+    calculatedVoucherThreshold: {
+        type: Number,
+        default: 150
+    },   
     statusIsActive: {
         type: Boolean,
         default: false // Assuming payment is not successful by default
-      }
+    }
 });
 
 const Restaurant = mongoose.model('Restaurant', restaurantSchema);

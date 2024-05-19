@@ -56,17 +56,17 @@
             </header> 
             <div class="vouchers">
                 <p class="fw-bold text-uppercase">Vouchers</p>
-                <div class="row">
+                <div class="row">        
                     <a class="text-decoration-none loyalty-voucher-card border border-2">
-                        Loyalty ₱20 
+                        Loyalty ₱70.34 
                     </a>
                     <a class="text-decoration-none birthday-voucher-card border border-2">
                         Birthday ₱20 
                     </a>
                 <% if (vouchers.length) { %>
                     <% vouchers.forEach(voucher => { %>     
-                          <a href="/reservation/use-voucher/<%= cart._id %>/<%= voucher._id %>" class="text-decoration-none voucher-card col-3 border border-2">
-                            ₱<%= voucher.amount %>
+                          <a href="/reservation/use-voucher/<%= cart._id %>/<%= voucher._id %>" class="text-decoration-none loyalty-voucher-card border border-2">
+                            <%= voucher.label %> ₱<%= voucher.amount %>
                           </a>
                     <% }); %>
                   <% } %>                              

@@ -8,7 +8,6 @@ import voucherGenerator from '../utils/voucherUtils.mjs';
 import { hashPassword, comparePassword, createToken, fourtyEightHours, lowerCase, hasProduct, isQueryEmpty } from '../utils/helpers.mjs';
 import { createDirectory, deleteDirectory, deleteFile, renameFolder, moveImageToNewDirectory } from '../utils/fileUtils.mjs';
 
-
 const GETrestaurantRegister = async (req, res) => {
     const pageTitle = 'Restaurant Register';
     res.render('restaurant/register', { pageTitle });
@@ -107,21 +106,19 @@ const GETRestaurantDashboard = async (req, res) => {
     try {
         const { query } = req;
         const restaurant = res.locals.restaurant;
-        let transactionQuery = { restaurant: restaurant._id };
+        let transactionQuery = { restaurant: restaurant._id, $or: [{ isToday: true }, { isPending: true }] }
 
-        if (query.isToday) {
-            transactionQuery = { restaurant: restaurant._id, $or: [{isTransactionComplete: false, isCancelled: false}], isToday: query.isToday };
-        } else if (query.isPending) {
-            transactionQuery = { restaurant: restaurant._id, $or: [{isTransactionComplete: false, isCancelled: false}], isPending: query.isPending };
-        } else if (query.isCancelled) {
-            transactionQuery = { restaurant: restaurant._id, $or: [{isTransactionComplete: false, isCancelled: false}], isCancelled: query.isCancelled };
-        } else if (query.isTransactionComplete) {
-            transactionQuery = { restaurant: restaurant._id, $or: [{isTransactionComplete: false, isCancelled: false}], isTransactionComplete: query.isTransactionComplete };
-        } else {
-            transactionQuery = { restaurant: restaurant._id, $or: [{isTransactionComplete: false, isCancelled: false}], };
+        const hasQuery = Object.keys(query).length > 0;
+        if (hasQuery) {
+            transactionQuery = { restaurant: restaurant._id, 
+                $and: [
+                    { isToday: query.isToday === undefined ? false : true }, 
+                    { isPending: query.isPending === undefined ? false : true }
+                ]
+            };
         }
-
-        const transactions = await Transaction.find(transactionQuery)
+        
+        const transactions = await Transaction.find(transactionQuery)        
         .populate({
             path: 'restaurant',
             model: 'Restaurant'
@@ -540,62 +537,58 @@ const GETRestaurantLogout = (req, res) => {
     res.redirect('/restaurant');
 };
 
-const POSTtransactionComplete = async (req, res) => {
-    try {
-        const transactionId = req.params.id;
-        console.log('POSTtransactionComplete:', transactionId);
-        voucherGenerator(transactionId);
-        res.redirect('/restaurant/dashboard');
-    } catch (err) {
-        res.status(500).json({ msg: err });
-    }
-}
-
 const GETHistory = async (req, res) => {
     try {
         const { query } = req;
         console.log('query:', query);
-        const restaurant = res.locals.restaurant;
-        let transactionQuery = { restaurant: restaurant._id };
 
-        if (query.isToday) {
-            transactionQuery = { restaurant: restaurant._id, isToday: query.isToday, $or: [{ isTransactionComplete: true },  { isCancelled: true }]};
-        } else if (query.isPending) {
-            transactionQuery = { restaurant: restaurant._id, isPending: query.isPending, $or: [{ isTransactionComplete: true },  { isCancelled: true }]};
-        } else if (query.isCancelled) {
-            transactionQuery = { restaurant: restaurant._id, isCancelled: query.isCancelled, $or: [{ isTransactionComplete: true },  { isCancelled: true }]};
-        } else if (query.isTransactionComplete) {
-            transactionQuery = { restaurant: restaurant._id, isTransactionComplete: query.isTransactionComplete, $or: [{ isTransactionComplete: true },  { isCancelled: true }]};
-        } else {
-            transactionQuery = { restaurant: restaurant._id, $or: [{ isTransactionComplete: true },  { isCancelled: true }]};
+        const restaurant = res.locals.restaurant;
+
+        let transactionQuery = { 
+            restaurant: restaurant._id, $or: [{ isCancelled: true }, { isTransactionComplete: true }]
+        };
+
+        const hasQuery = Object.keys(query).length > 0;
+        if (hasQuery) {
+            console.log(hasQuery);
+            transactionQuery = { 
+                restaurant: restaurant._id, $and: 
+                    [
+                        { isCancelled: query.isCancelled === undefined ? false : true }, 
+                        { isTransactionComplete: query.isTransactionComplete === undefined ? false : true }
+                    ]
+            };
         }
-        const transactions = await Transaction.find(transactionQuery)          
-        .populate({
-            path: 'restaurant',
-            model: 'Restaurant'
-        })
-        .populate({
-            path: 'cart',
-            model: 'Cart',
-            populate: {
-                path: 'items.product',
-                model: 'Product'
-            }
-        })
-        .populate({
-            path: 'reservation',
-            model: 'Reservation'
-        })
-        .populate({
-            path: 'customer',
-            model: 'Customer'
-        })
-        .sort({ createdAt: -1 });
+
+        const transactions = await Transaction.find(transactionQuery)
+            .populate({
+                path: 'restaurant',
+                model: 'Restaurant'
+            })
+            .populate({
+                path: 'cart',
+                model: 'Cart',
+                populate: {
+                    path: 'items.product',
+                    model: 'Product'
+                }
+            })
+            .populate({
+                path: 'reservation',
+                model: 'Reservation'
+            })
+            .populate({
+                path: 'customer',
+                model: 'Customer'
+            })
+            .sort({ createdAt: -1 });
+
         res.render('restaurant/history', { pageTitle: 'History', transactions });
     } catch (err) {
-        res.status(500).json({ msg: err });
+        res.status(500).json({ msg: err.message });
     }
 }
+
 
 const DELETETransaction = async (req, res) => {
     try {
@@ -630,4 +623,4 @@ const GETRemoveTransaction = async (req, res) => {
     }
 }
 
-export { GETrestaurantLogin, POSTRestaurantLogin, GETRestaurantDashboard, GETProfileDashboard, GETAddProduct, POSTAddProduct, POSTUpdateProduct, GETProducts, GETUpdateProduct, GETAddCategory, POSTAddCategory, DELETECategory, DELETEProduct, GETUpdateCategory, POSTUpdateCategory, GETRestaurantLogout, DELETETransaction, POSTtransactionComplete, GETHistory, GETRemoveTransaction, GETDeactivateCategory, GETActivateCategory, GETrestaurantRegister, POSTrestaurantRegister, POSTUpdateRestaurant };
+export { GETrestaurantLogin, POSTRestaurantLogin, GETRestaurantDashboard, GETProfileDashboard, GETAddProduct, POSTAddProduct, POSTUpdateProduct, GETProducts, GETUpdateProduct, GETAddCategory, POSTAddCategory, DELETECategory, DELETEProduct, GETUpdateCategory, POSTUpdateCategory, GETRestaurantLogout, DELETETransaction, GETHistory, GETRemoveTransaction, GETDeactivateCategory, GETActivateCategory, GETrestaurantRegister, POSTrestaurantRegister, POSTUpdateRestaurant };

@@ -1,4 +1,3 @@
-// Import necessary modules
 import mongoose from 'mongoose';
 
 // Define schema for cart item
@@ -11,12 +10,12 @@ const cartItemSchema = new mongoose.Schema({
   quantity: {
     type: Number,
     required: true,
-    default: 1 // Default quantity to 1
+    default: 1 
   },
   total: {
     type: Number,
     required: true,
-    default: 0 // Default quantity to 0
+    default: 0 
   }
 });
 

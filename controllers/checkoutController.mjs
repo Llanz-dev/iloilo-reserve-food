@@ -4,6 +4,7 @@ import Cart from '../models/cartModel.mjs';
 import Reservation from '../models/reservationModel.mjs';
 import Transaction from '../models/transactionModel.mjs';
 import Restaurant from '../models/restaurantModel.mjs';
+import CustomerQuota from '../models/customerQuotaModel.mjs';
 const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
 const base = "https://api-m.sandbox.paypal.com";
 import moment from 'moment-timezone';
@@ -46,8 +47,9 @@ const createOrder = async (cart, reservation) => {
       "shopping cart information passed from the frontend createOrder() callback:",
       cart,
     );
-    const halfPayment = (cart.reservationAmount + cart.totalAmount) / 2;
+    const halfPayment = cart.totalAmount / 2;
     cart.halfAmount = halfPayment - cart.voucherAmount;
+    console.log('cart.halfAmount:', cart.halfAmount);
     const accessToken = await generateAccessToken();
     const url = `${base}/v2/checkout/orders`;
     const payload = {
@@ -139,7 +141,7 @@ const captureOrder = async (orderID, transactionObject, isCancellation) => {
       const httpStatusCode = response.status; // Assign the HTTP status code
 
       calculateTimeDifference(transactionObject);
-      console.log('transactionObject.isWithinAday:', transactionObject.isWithinAday);
+      console.log('transactionObject.isToday:', transactionObject.isToday);
       console.log('calculateTimeDifference(transactionObject):', calculateTimeDifference(transactionObject));
       if (httpStatusCode === 201) {
         const captureId = jsonResponse.purchase_units[0].payments.captures[0].id; // Extract captureId from the response
@@ -166,12 +168,19 @@ async function handleResponse(response) {
   }
 }
   
+let reservationQuery = undefined;
+let getCartID = undefined;
 const createOrderHandler = async (req, res) => {
   try {
     console.log('createOrderHandler req.body:', req.body);
     const cartID = req.body.cart._id;
     const cart = await Cart.findById(cartID);
     const reservation = req.body.reservation;
+    cart.totalAmount += Number(reservation.amount);
+    const halfPayment = cart.totalAmount / 2;
+    cart.halfAmount = halfPayment - cart.voucherAmount;
+    cart.isHalfPaymentSuccessful = true;
+    await cart.save();
     if (!cart) {
       throw new Error("Cart not found");
     }
@@ -183,23 +192,23 @@ const createOrderHandler = async (req, res) => {
   }
 };
 
-let reservationQuery = undefined;
-let getCartID = undefined;
-
 const captureOrderHandler = async (req, res) => {
     try {
         console.log('getCartID:', getCartID);
         console.log('---------- captureOrderHandler Finish ----------');
         const cartID = req.params.cartID;
         const cart = await Cart.findById(getCartID).populate('customer restaurant');
-        console.log(cart);
-        console.log('reservationQuery:', reservationQuery);
         const reservationObject = await Reservation.create({ customer: reservationQuery.customer, restaurant: reservationQuery.restaurantID, cart: reservationQuery.cartID, reservation_date: reservationQuery.reservation_date, reservation_time: reservationQuery.reservation_time, num_pax: reservationQuery.num_pax, amount: reservationQuery.amount, notes: reservationQuery.notes });  
         const transaction = await Transaction.create({ customer: cart.customer, restaurant: cart.restaurant, cart: cart, reservation: reservationObject });    
         const transactionObject = await Transaction.findById(transaction._id).populate('cart reservation');
-        console.log('transactionObject:', transactionObject);
-        cart.isHalfPaymentSuccessful = true;
-        await cart.save();
+        const customerQuota = await CustomerQuota.find({ customer: cart.customer, restaurant: cart.restaurant });
+        console.log(customerQuota);        
+        if (customerQuota.length) {
+          customerQuota[0].valueAmount += cart.totalAmount;
+          customerQuota[0].save();
+        } else {
+          await CustomerQuota.create({ customer: cart.customer, restaurant: cart.restaurant, valueAmount: cart.totalAmount });
+        }
         const { orderID } = req.params;
         const { jsonResponse, httpStatusCode } = await captureOrder(orderID, transactionObject, false);
         res.status(httpStatusCode).json(jsonResponse);

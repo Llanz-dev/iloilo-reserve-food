@@ -3,6 +3,7 @@
 <%- include('./layout/navbar.ejs') %>
 
 <main>
+  <section>
     <h2 class="title">Profile Information</h2>
     <form action="/restaurant/update-restaurant/<%= restaurant._id %>" method="post" enctype="multipart/form-data">
       <div class="form-group">
@@ -45,18 +46,22 @@
   
       <!-- Display existing image -->
       <div class="form-group" id="existingImageContainer">
-        <label>Existing Image</label>
+        <label>Existing Image:</label>
+        <br>
         <img src="/images/restaurant/<%= restaurant.lowername %>/banner/<%= restaurant.image %>" id="existingImage" class="w-75">
       </div>
   
       <!-- Option to upload a new image -->
       <div class="form-group">
-        <label class="form-label">Upload new banner image</label>
+        <label class="form-label">Upload new banner image:</label>
         <input type="file" class="form-control" id="image" name="image">
       </div>
       <input type="hidden" name="old_restaurant_banner_image" id="old_restaurant_banner_image" value="<%= restaurant.image %>">
-      <button type="submit" class="btn btn-primary">Submit</button>
+      <button type="submit" class="btn primary-background-color text-white mt-2">Submit</button>
     </form>
+    </section>
 </main>
 
+<script src="/js/showExistingImage.js"></script>
+<script src="/js/textInputLowerCase.js"></script>   
 <%- include('.././footer.ejs') %>

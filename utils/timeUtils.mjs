@@ -20,8 +20,13 @@ const calculateTimeDifference = (transactionObject) => {
 
     console.log('daysCount:', daysCount);
 
-    transactionObject.isWithinAday = daysCount === 0 ? true : false;
-    console.log('transactionObject.isWithinAday:', transactionObject.isWithinAday);
+    transactionObject.isToday = daysCount === 0 ? true : false;
+    if (daysCount === 0) {
+        transactionObject.isToday = true;
+        transactionObject.isPending = false;
+    } else {
+        transactionObject.isToday = false;
+    }
 
     // Update transactionObject based on the calculated daysCount
     return daysCount;
