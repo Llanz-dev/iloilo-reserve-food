@@ -1,0 +1,1 @@
+const textInputField = document.querySelector('.text-input-field');

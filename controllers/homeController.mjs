@@ -1,13 +1,17 @@
 import Restaurant from '../models/restaurantModel.mjs';
 import Product from '../models/productModel.mjs';
+import CustomerQuota from '../models/customerQuotaModel.mjs';
 import Cart from '../models/cartModel.mjs';
 
 const GETHomePage = async (req, res) => {
     try {
-        const restaurants = await Restaurant.find();
+        let restaurants = await Restaurant.find();
+        const customer = res.locals.customer;
+        const customerQuota = await CustomerQuota.find({ customer: customer }).populate('restaurant');      
+    
         const restaurant = null;
         const pageTitle = 'Home';
-        res.render('home/home', { pageTitle, restaurants, restaurant });
+        res.render('home/home', { pageTitle, restaurants, restaurant, customerQuota });
     } catch (err) {
         res.json({ 'GET home page': err.message });
     }

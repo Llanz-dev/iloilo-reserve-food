@@ -1,51 +1,58 @@
-<%- include('.././header.ejs') %>
+<%- include('./layout/header.ejs') %>
 <%- include('./layout/navbar.ejs') %>
 
-<h1>Update Category</h1>
+<main>
+  <h1 class="title">Update Category</h1>
+  <form action="/restaurant/add-category" method="post">
 
-<form action="/restaurant/update-category/<%= getCategory._id %>" method="post">
+    <!-- Set the restaurant -->
+  </form>
+  <form action="/restaurant/update-category/<%= getCategory._id %>" method="post">
     <div class="form-group">
-        <label for="name">Name</label>
-        <input type="text" class="form-control" id="text" name="name" value="<%= getCategory.name %>" required>
-        <input type="hidden" class="form-control hidden-text" id="lowerText" name="lowername" value="">
-    </div>
-    <div class="form-group">
-        <label for="description">Description</label>
-        <input type="text" class="form-control" id="description" name="description" value="<%= getCategory.description %>" required>
+      <label for="name">Name</label>
+      <input type="text" pattern="[a-zA-Z0-9]+" class="form-control w-25" id="text" name="name" value="<%= getCategory.name %>" required>
+      <p class="form-text">Please avoid using special characters</p>
+      <input type="hidden" class="form-control hidden-text" id="lowerText" name="lowername" value="">
     </div>
     <a href="/restaurant/add-category" class="btn btn-primary">Add Product</a>
-    <button type="submit" class="btn btn-warning">Update Product</button>   
+    <button type="submit" class="btn primary-background-color text-white">Update Product</button>   
 </form>
-<% if (categories.length) { %>
-  <h2>Restaurant List: <%= categories.length %></h2> 
-<% } else { %>
-  <h2>No restaurant</h2> 
-<% } %>
-<table class="table table-striped table-bordered table-hover">
+
+  <% if (categories.length) { %>
+    <h3 class="title mt-2"><%= categories.length %> Category</h3> 
+  <% } else { %>
+    <h2 class="title">No restaurant</h2> 
+  <% } %>
+  <table class="table table-striped table-bordered table-hover">
     <thead class="table-dark">
       <tr>
         <th>Name</th>
-        <th>Actions</th>
+        <th id="actions">Actions</th>
         <!-- Add other properties of the Restaurant model as needed -->
       </tr>
     </thead>
     <tbody>
       <% categories.forEach(category => { %>
-        <% if (getCategory._id.toString() !== category._id.toString()) { %>
-            <tr>
-                <td><%= category.name %></td>
-                <td>
-                  <p class="d-none" id="route-path">/restaurant/delete-category</p>
-                  <a href="/restaurant/update-category/<%= category._id %>" class="btn btn-sm btn-warning">Update</a>
-                  <button class="btn btn-sm btn-danger" onclick="deleteObject('<%= category._id %>')">Delete</button>
-                </td>
-                <!-- Display other properties of the Restaurant model as needed -->
-              </tr>
-        <% } %>
+        <tr>
+          <td><%= category.name %></td>
+          <td>
+            <p class="d-none" id="route-path">/restaurant/delete-category</p>
+            <a href="/restaurant/update-category/<%= category._id %>" class="btn btn-sm primary-background-color text-white">Update</a>
+            <% if (category.isActivate) { %>
+              <a href="/restaurant/deactivate-category/<%= category._id %>" class="btn btn-sm btn-warning">Deactivate</a>             
+            <% } else { %>
+              <a href="/restaurant/activate-category/<%= category._id %>" class="btn btn-sm btn-warning">Activate</a>                   
+            <% } %>
+            <button class="btn btn-sm btn-danger" onclick="deleteObject('<%= category._id %>')">Delete</button>
+          </td>
+          <!-- Display other properties of the Restaurant model as needed -->
+        </tr>
       <% }) %>
     </tbody>
   </table>
+</main>
 
+<script src="/js/specialCharaterIsForbidden.js"></script>            
 <script src="/js/textInputLowerCase.js"></script>            
 <script src="/js/deleteObject.js"></script>                        
 <%- include('.././footer.ejs') %>

@@ -1,5 +1,7 @@
-const reservationTime = document.querySelector('.reservation-time');
-reservationTime.textContent = formatTime(reservationTime.textContent);
+const reservationTimes = document.querySelectorAll('.reservation-time');
+reservationTimes.forEach(reservationTime => {
+    reservationTime.textContent = formatTime(reservationTime.textContent);
+});
 
 // Define formatTime function
 function formatTime(time) {

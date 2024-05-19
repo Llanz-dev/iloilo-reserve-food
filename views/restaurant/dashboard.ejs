@@ -81,7 +81,7 @@
                               const formattedReservationDate = `${monthz[reservation.getMonth()]} ${reservation.getDate()} ${reservation.getFullYear()}`;
                           %>
                           <li>Reservation date: <%= formattedReservationDate %></li>
-                          <li>Reservation time: <span class="reservation-time"><%= transaction.reservation.reservation_time %></span></li>
+                          <li>Reservation Time: <span class="reservation-time"><%= transaction.reservation.reservation_time %></span></li>
                           <li>Number of Pax: <%= transaction.reservation.num_pax %></span></li>
                           <li>Notes: <%= transaction.reservation.notes %></span></li>
                           <li>Amount: ₱<%= transaction.reservation.amount %></span></li>

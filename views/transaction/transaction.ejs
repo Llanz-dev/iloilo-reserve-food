@@ -24,11 +24,11 @@
                         <div class="accordion accordion-flush" id="accordionFlushExample">
                             <div class="accordion-item">
                                 <h2 class="accordion-header">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne<%= transaction._id  %>" aria-expanded="false" aria-controls="flush-collapseOne<%= transaction._id  %>">
                                       See Order
                                     </button>
                                   </h2>
-                                  <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                                  <div id="flush-collapseOne<%= transaction._id  %>" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
                                     <div class="accordion-body">
                                         <ul>
                                             <% transaction.cart.items.forEach(item => { %>
@@ -38,20 +38,19 @@
                                     </div>
                                   </div>
                             </div>
+                        </div>                                      
+                        <div class="mt-3">
+                            <% if (transaction.isToday) { %>
+                                <a href="/transaction/cancel-reservation-unrefundable/<%= transaction._id %>" class="btn btn-danger btn-sm">Unrefundable Cancel Reservation</a>
+                            <% } else { %>
+                                <a href="/transaction/cancel-reservation-refundable/<%= transaction._id %>" class="btn btn-danger btn-sm">Refundable Cancel Reservation</a>
+                            <% } %>
                         </div>
-                                      
-                            <div class="mt-3">
-                                <% if (transaction.isToday) { %>
-                                    <a href="/transaction/cancel-reservation-unrefundable/<%= transaction._id %>" class="btn btn-danger btn-sm">Unrefundable Cancel Reservation</a>
-                                <% } else { %>
-                                    <a href="/transaction/cancel-reservation-refundable/<%= transaction._id %>" class="btn btn-danger btn-sm">Refundable Cancel Reservation</a>
-                                <% } %>
-                            </div>
-                        </div>
+                    </div>
                 </div>
-                </div>
-            </div>
+            </div>           
         <% }) %>
+    </div>
     </main>
 </div>
 

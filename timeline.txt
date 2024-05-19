@@ -188,8 +188,10 @@ May 16 2024:
 May 17 2024:
 	- Successfully set the voucher quota amount and percentage value. 
 
-May 17 2024:
+May 19 2024:
 	- History created in customer side.
+	- A customer wont see a restaurant that the customer would 5 times cancelled that specific restaurant.
+
 
 Problems:
 	- All the database and associates to restaurant must be deleted when that restaurant would be deleted.

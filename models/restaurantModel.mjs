@@ -51,7 +51,11 @@ const restaurantSchema = new Schema({
     },   
     statusIsActive: {
         type: Boolean,
-        default: false // Assuming payment is not successful by default
+        default: false 
+    },  
+    customerQuota: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'CustomerQuota'
     }
 });
 

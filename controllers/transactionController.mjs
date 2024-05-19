@@ -26,7 +26,8 @@ const GETtransaction = async (req, res) => {
     .populate({
         path: 'reservation',
         model: 'Reservation'
-    });
+    })
+    .sort({ createdAt: -1 });
     
     // Get the current date and time in the 'Asia/Manila' timezone
     res.render('transaction/transaction', { pageTitle: 'Transactions', transactions, restaurant: undefined });
@@ -83,6 +84,11 @@ const cancelReservationRefundable = async (req, res) => {
       if (httpStatusCode !== 201) {
         return res.status(httpStatusCode).json({ error: jsonResponse });
       }
+
+      const customer = res.locals.customer;
+      const customerQuota = await CustomerQuota.findOne({ restaurant: transactionObject.restaurant, customer: customer });
+      customerQuota.cancelledLimit -= 1;
+      await customerQuota.save();
   
       // Update the transaction status
       transactionObject.isCancelled = true;
@@ -101,7 +107,7 @@ const cancelReservationRefundable = async (req, res) => {
 const cancelReservationUnrefundable = async (req, res) => {
     try {
       const { id } = req.params;
-      const transactionObject = await Transaction.findById(id).populate('cart');
+      const transactionObject = await Transaction.findById(id).populate('cart restaurant');
   
       if (!transactionObject) {
         return res.status(404).json({ error: 'Transaction not found' });
@@ -110,6 +116,12 @@ const cancelReservationUnrefundable = async (req, res) => {
       if (transactionObject.isTransactionComplete) {
         return res.status(400).json({ error: 'Transaction is already completed' });
       }
+
+      const customer = res.locals.customer;
+      const customerQuota = await CustomerQuota.findOne({ restaurant: transactionObject.restaurant, customer: customer });
+      customerQuota.cancelledLimit -= 1;
+
+      await customerQuota.save();
   
       // Update the transaction status
       transactionObject.isCancelled = true;

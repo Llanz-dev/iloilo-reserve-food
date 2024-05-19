@@ -6,11 +6,12 @@
   <form action="/restaurant/add-category" method="post">
     <div class="form-group">
       <label for="name">Name</label>
-      <input type="text" class="form-control" id="text" name="name" required>
+      <input type="text" pattern="[a-zA-Z0-9]+" class="form-control w-25" id="text" name="name" required>
+      <p class="form-text">Please avoid using special characters</p>
       <input type="hidden" class="form-control hidden-text" id="lowerText" name="lowername" value="">
     </div>
     <!-- Set the restaurant -->
-    <button type="submit" class="btn btn-primary">Add Product</button>   
+    <button type="submit" class="btn primary-background-color text-white">Add Product</button>   
   </form>
   <% if (categories.length) { %>
     <h3 class="title mt-2"><%= categories.length %> Category</h3> 
@@ -31,7 +32,7 @@
           <td><%= category.name %></td>
           <td>
             <p class="d-none" id="route-path">/restaurant/delete-category</p>
-            <a href="/restaurant/update-category/<%= category._id %>" class="btn btn-sm btn-primary">Update</a>
+            <a href="/restaurant/update-category/<%= category._id %>" class="btn btn-sm primary-background-color text-white">Update</a>
             <% if (category.isActivate) { %>
               <a href="/restaurant/deactivate-category/<%= category._id %>" class="btn btn-sm btn-warning">Deactivate</a>             
             <% } else { %>
@@ -45,6 +46,8 @@
     </tbody>
   </table>
 </main>
+
+<script src="/js/specialCharaterIsForbidden.js"></script>            
 <script src="/js/textInputLowerCase.js"></script>            
 <script src="/js/deleteObject.js"></script>                        
 <%- include('.././footer.ejs') %>

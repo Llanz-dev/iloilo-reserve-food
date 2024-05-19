@@ -5,6 +5,10 @@ const customerQuotaSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    cancelledLimit: {
+        type: Number,
+        default: 5
+    },
     customer: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Customer',
