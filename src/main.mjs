@@ -42,7 +42,7 @@ app.use(cartRoutes);
 app.use('/reservation', requireAuthentication, reservationRoutes);
 app.use('/payment', requireAuthentication, paymentRoutes);
 app.use('/checkout', requireAuthentication, checkoutRoutes);
-app.use('/transaction', requireAuthentication, transactionRoutes);
+app.use('/transaction', transactionRoutes);
 app.get('*', checkRestaurant);
 app.use('/restaurant', restaurantRoutes);
 app.use('/adminux', adminRoutes);

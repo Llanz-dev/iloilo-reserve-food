@@ -16,43 +16,50 @@ import {    POSTUpdateRestaurant,
             GETAddCategory, 
             POSTAddCategory, 
             DELETEProduct,
-            GETRestaurantLogout, GETUpdateCategory, POSTUpdateCategory, DELETECategory, DELETETransaction, GETHistory, GETRemoveTransaction, GETDeactivateCategory, GETActivateCategory } from '../controllers/restaurantController.mjs';
+            GETRestaurantLogout, 
+            GETUpdateCategory, 
+            POSTUpdateCategory, DELETECategory, DELETETransaction, GETHistory, GETRemoveTransaction, GETDeactivateCategory, GETActivateCategory, POSTtransactionComplete } from '../controllers/restaurantController.mjs';
 import { requireAuthenticationRestaurant } from '../middleware/authenticationMiddleware.mjs';
 import { uploadProductImage, updateProductImage } from '../config/multerConfig.mjs'
 import voucherRoutes from './voucherRoutes.mjs';
 
+// Register and Login
 router.get('/register', GETrestaurantRegister);
 router.post('/register', uploadRestaurantBanner, POSTrestaurantRegister);
 router.get('/', GETrestaurantLogin);
 router.post('/', POSTRestaurantLogin);
-router.get('/dashboard', requireAuthenticationRestaurant, GETRestaurantDashboard);
-router.get('/update-restaurant', requireAuthenticationRestaurant, GETProfileDashboard);
-router.post('/update-restaurant/:id', requireAuthenticationRestaurant, updateRestaurantBanner, POSTUpdateRestaurant);
-router.get('/products', requireAuthenticationRestaurant, GETProducts);
-// Vouchers
-router.use('/vouchers', requireAuthenticationRestaurant, voucherRoutes)
-// View history
-router.get('/history', requireAuthenticationRestaurant, GETHistory);
-// Add product
-router.get('/add-product', requireAuthenticationRestaurant, GETAddProduct);
-router.post('/add-product', requireAuthenticationRestaurant, uploadProductImage, POSTAddProduct);
-// Categories
-router.get('/add-category', requireAuthenticationRestaurant, GETAddCategory);
-router.post('/add-category', requireAuthenticationRestaurant, POSTAddCategory);
-router.get('/update-category/:id', requireAuthenticationRestaurant, GETUpdateCategory);
-router.post('/update-category/:id', requireAuthenticationRestaurant, POSTUpdateCategory);
-router.get('/deactivate-category/:id', requireAuthenticationRestaurant, GETDeactivateCategory);
-router.get('/activate-category/:id', requireAuthenticationRestaurant, GETActivateCategory);
-router.delete('/delete-category/:id', requireAuthenticationRestaurant, DELETECategory);
-// Update products
-router.get('/update-product/:id', requireAuthenticationRestaurant, GETUpdateProduct);
-router.post('/update-product/:id', requireAuthenticationRestaurant, updateProductImage, POSTUpdateProduct);
-// Delete product
-router.delete('/delete-product/:id', requireAuthenticationRestaurant, DELETEProduct);
-// Transactions
-router.get('/remove-transaction/:id', requireAuthenticationRestaurant, GETRemoveTransaction);
-router.get('/delete-transaction/:id', requireAuthenticationRestaurant, DELETETransaction);
 // For logout
 router.get('/logout', GETRestaurantLogout);
+// Dashboard.
+router.use(requireAuthenticationRestaurant);
+router.get('/dashboard', GETRestaurantDashboard);
+router.get('/update-restaurant', GETProfileDashboard);
+router.post('/update-restaurant/:id', updateRestaurantBanner, POSTUpdateRestaurant);
+// Vouchers
+router.use('/vouchers', voucherRoutes)
+// View history
+router.get('/history', GETHistory);
+// Add product
+router.get('/add-product', GETAddProduct);
+router.post('/add-product', uploadProductImage, POSTAddProduct);
+// Categories
+router.get('/add-category', GETAddCategory);
+router.post('/add-category', POSTAddCategory);
+router.get('/update-category/:id', GETUpdateCategory);
+router.post('/update-category/:id', POSTUpdateCategory);
+router.get('/deactivate-category/:id', GETDeactivateCategory);
+router.get('/activate-category/:id', GETActivateCategory);
+router.delete('/delete-category/:id', DELETECategory);
+// View products
+router.get('/products', GETProducts);
+// Update products
+router.get('/update-product/:id', GETUpdateProduct);
+router.post('/update-product/:id', updateProductImage, POSTUpdateProduct);
+// Delete product
+router.delete('/delete-product/:id', DELETEProduct);
+// Transactions
+router.get('/remove-transaction/:id', GETRemoveTransaction);
+router.get('/delete-transaction/:id', DELETETransaction);
+router.post('/transaction-complete/:id', POSTtransactionComplete);
 
 export default router;

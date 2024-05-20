@@ -45,6 +45,11 @@ const cartSchema = new mongoose.Schema({
     default: 0,
     required: true
   },
+  voucherAmount: {
+    type: Number,
+    default: 0,
+    required: false
+  },
   subTotal: {
     type: Number,
     required: true,

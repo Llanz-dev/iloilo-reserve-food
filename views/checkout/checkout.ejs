@@ -17,8 +17,8 @@
                 <li class="list-group-item"><span>Subtotal amount</span> <span>₱<%= cart.subTotal %></span></li>
                 <li class="list-group-item"><span>Reservation amount</span> <span>₱<%= cart.reservationAmount %></span></li>    
             <% } %>
-            <li class="list-group-item"><span>Total amount</span> <span id="cart-total-amount">₱<%= Number(cart.totalAmount) + Number(reservation.amount) %></span></li>            
-            <li class="list-group-item fw-bold"><span>Half amount</span> <span id="cart-half-amount">₱<%= (Number(cart.totalAmount) + Number(reservation.amount)) / 2 %></span></li>
+            <li class="list-group-item"><span>Total amount</span> <span id="cart-total-amount">₱<%= Number(cart.totalAmount) %></span></li>            
+            <li class="list-group-item fw-bold"><span>Half amount</span> <span id="cart-half-amount">₱<%= Number(cart.totalAmount) / 2 %></span></li>
           </ul>
         <!-- Add a hidden input field to store the cart JSON -->
         <input type="hidden" id="cart-data" value='<%= JSON.stringify(cart) %>' />

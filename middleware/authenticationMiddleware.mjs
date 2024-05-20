@@ -4,7 +4,10 @@ import Restaurant from '../models/restaurantModel.mjs';
 
 const requireAuthentication = (req, res, next) => {
     const token = req.cookies.jwt;
-    if (!token) return res.redirect('/login');
+    if (!token) {
+        console.log('requireAuthentication(): You are not authenticated', token);
+        return res.redirect('/login')
+    };
 
     jwt.verify(token, 'token secret code', (err, decodedToken) => {
         if (err) return res.redirect('/login');

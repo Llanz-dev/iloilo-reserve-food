@@ -78,6 +78,9 @@ header {
     margin: 5px 5px 5px 0;
     font-size: 14px;
     width: 100px;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
 }
 
 .loyalty-voucher-card {

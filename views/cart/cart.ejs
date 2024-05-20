@@ -57,16 +57,10 @@
             <div class="vouchers">
                 <p class="fw-bold text-uppercase">Vouchers</p>
                 <div class="row">        
-                    <a class="text-decoration-none loyalty-voucher-card border border-2">
-                        Loyalty ₱70.34 
-                    </a>
-                    <a class="text-decoration-none birthday-voucher-card border border-2">
-                        Birthday ₱20 
-                    </a>
                 <% if (vouchers.length) { %>
                     <% vouchers.forEach(voucher => { %>     
-                          <a href="/reservation/use-voucher/<%= cart._id %>/<%= voucher._id %>" class="text-decoration-none loyalty-voucher-card border border-2">
-                            <%= voucher.label %> ₱<%= voucher.amount %>
+                          <a class="text-decoration-none loyalty-voucher-card border border-2">
+                            <%= voucher.voucherLabel %> ₱<%= voucher.amount %>
                           </a>
                     <% }); %>
                   <% } %>                              
@@ -75,7 +69,9 @@
             <hr>
             <div class="total-cost">            
                 <p class="text-uppercase d-flex justify-content-between"><span>Sub total</span> <span>₱<span class="total-amount"><%= subTotal %></span></span></p>
-                <p class="text-uppercase d-flex justify-content-between"><span>Voucher</span> <span>-₱<span class="total-amount">10</span></span></p>
+                <% if (voucherAmountTotal !== 0) { %>
+                    <p class="text-uppercase d-flex justify-content-between"><span>Voucher</span> <span>-₱<span class="total-amount"><%= voucherAmountTotal %></span></span></p>                 
+                <% } %>
                 <p class="fw-bold text-uppercase d-flex justify-content-between"><span>Total cost</span> <span>₱<span class="total-amount"><%= totalAmount %></span></span></p>
             </div>
             <% if (numberOfItems !== 0) { %>

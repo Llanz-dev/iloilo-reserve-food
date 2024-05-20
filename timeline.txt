@@ -192,6 +192,16 @@ May 19 2024:
 	- History created in customer side.
 	- A customer wont see a restaurant that the customer would 5 times cancelled that specific restaurant.
 
+May 20 2024:
+	- Finally remove the bug from the checkout. When you click the paypal button and cancel the calculation is added even though the payment is unsuccessful.
+	- Loyalty voucher is complete.
+
+May 21 2024:
+	- Transaction status change it to "Today" from status "Pending" if today date is the day of the reservation date.
+	- Have a receipt info in every transactions and history page.
+	- Birthday voucher is complete.
+	- Catch the errors and display to users.
+	- Fix the authenticated middlewares and designate to each app.
 
 Problems:
 	- All the database and associates to restaurant must be deleted when that restaurant would be deleted.

@@ -52,27 +52,5 @@ const POSTCreateReservation = async (req, res) => {
   }
 }
 
-const GETUseVoucher = async (req, res) => {
-  try {
-    const cartId = req.params.cartId;
-    const voucherId = req.params.voucherId;
-    const voucher = await Voucher.findById(voucherId);
 
-    // Minus the total amount of cart with voucher
-    const cart = await Cart.findById(cartId).populate('restaurant');
-    cart.totalAmount -= voucher.amount;
-    await cart.save();
-
-    voucher.isUsed = true;
-    await voucher.save();
-
-    const restaurantID = cart.restaurant._id;
-
-    res.redirect(`/cart/${restaurantID}`);
-  } catch (err) {
-    res.status(500).json({ 'Error message': err });
-  }
-}
-
-
-export { GETCreateReservation, POSTCreateReservation, GETUseVoucher };
+export { GETCreateReservation, POSTCreateReservation };

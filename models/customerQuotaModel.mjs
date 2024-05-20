@@ -3,7 +3,8 @@ import mongoose from 'mongoose';
 const customerQuotaSchema = new mongoose.Schema({
     valueAmount: {
         type: Number,
-        default: 0
+        default: 0,
+        required: false
     },
     cancelledLimit: {
         type: Number,

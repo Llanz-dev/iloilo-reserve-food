@@ -25,6 +25,7 @@ const GETCartPage = async (req, res) => {
       const numberOfItems = cart ? cart.items.length : 0;
       let subTotal = 0;
       let totalAmount = 0;
+      let voucherAmountTotal = 0;
   
       const customer = res.locals.customer;
   
@@ -33,16 +34,27 @@ const GETCartPage = async (req, res) => {
   
       // If cart is empty, render the cart page with an empty cart
       if (!cart) {
-        return res.render('cart/cart', { pageTitle: 'Cart', cartItems: [], cartID: 0, subTotal, numberOfItems, restaurant, vouchers: [], totalAmount });
+        return res.render('cart/cart', { pageTitle: 'Cart', cartItems: [], cartID: 0, subTotal, numberOfItems, restaurant, vouchers: [], totalAmount, voucherAmountTotal });
       }
       
       const cartID = cart._id;
   
       subTotal = cart.subTotal;
       totalAmount = cart.totalAmount;
+      if (vouchers.length) {
+        vouchers.forEach((voucher) => {
+          console.log('voucher.amount:', voucher.amount);
+          voucherAmountTotal += voucher.amount;
+        });        
+        cart.voucherAmount = voucherAmountTotal;
+        await cart.save();
+      }
+      totalAmount -= voucherAmountTotal; 
+      console.log('voucherAmountTotal:', voucherAmountTotal);
+      console.log('totalAmount:', totalAmount);
       
       // If cart has items, render the cart page with cart items
-      res.render('cart/cart', { pageTitle: 'Cart', cart: cart, cartItems: cart.items, cartID, subTotal, numberOfItems, restaurant, vouchers, totalAmount });
+      res.render('cart/cart', { pageTitle: 'Cart', cart: cart, cartItems: cart.items, cartID, subTotal, numberOfItems, restaurant, vouchers, totalAmount, voucherAmountTotal });
     } catch (err) {
       // Handle any errors that occur during fetching cart items
       res.status(500).json({ error: err.message });

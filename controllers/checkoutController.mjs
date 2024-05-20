@@ -5,6 +5,7 @@ import Reservation from '../models/reservationModel.mjs';
 import Transaction from '../models/transactionModel.mjs';
 import Restaurant from '../models/restaurantModel.mjs';
 import CustomerQuota from '../models/customerQuotaModel.mjs';
+import Voucher from '../models/voucherModel.mjs';
 const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
 const base = "https://api-m.sandbox.paypal.com";
 import moment from 'moment-timezone';
@@ -47,8 +48,7 @@ const createOrder = async (cart, reservation) => {
       "shopping cart information passed from the frontend createOrder() callback:",
       cart,
     );
-    const halfPayment = cart.totalAmount / 2;
-    cart.halfAmount = halfPayment - cart.voucherAmount;
+    
     console.log('cart.halfAmount:', cart.halfAmount);
     const accessToken = await generateAccessToken();
     const url = `${base}/v2/checkout/orders`;
@@ -141,11 +141,10 @@ const captureOrder = async (orderID, transactionObject, isCancellation) => {
       const httpStatusCode = response.status; // Assign the HTTP status code
 
       calculateTimeDifference(transactionObject);
-      console.log('transactionObject.isToday:', transactionObject.isToday);
-      console.log('calculateTimeDifference(transactionObject):', calculateTimeDifference(transactionObject));
       if (httpStatusCode === 201) {
         const captureId = jsonResponse.purchase_units[0].payments.captures[0].id; // Extract captureId from the response
         transactionObject.captureId = captureId; // Store captureId in transactionObject
+        await Voucher.findOneAndUpdate({$and: [{ customer: transactionObject.customer }, { restaurant: transactionObject.restaurant }]}, { isUsed: true });
         await transactionObject.save();
       } else {
         await Transaction.findByIdAndDelete();
@@ -176,11 +175,13 @@ const createOrderHandler = async (req, res) => {
     const cartID = req.body.cart._id;
     const cart = await Cart.findById(cartID);
     const reservation = req.body.reservation;
+    console.log('--------- Before ---------');
+    console.log(cart);
     cart.totalAmount += Number(reservation.amount);
-    const halfPayment = cart.totalAmount / 2;
-    cart.halfAmount = halfPayment - cart.voucherAmount;
-    cart.isHalfPaymentSuccessful = true;
-    await cart.save();
+    cart.halfAmount = (cart.totalAmount - cart.voucherAmount) / 2;
+    console.log('--------- After ---------');
+    console.log(cart);
+
     if (!cart) {
       throw new Error("Cart not found");
     }
@@ -199,15 +200,20 @@ const captureOrderHandler = async (req, res) => {
         const cartID = req.params.cartID;
         const cart = await Cart.findById(getCartID).populate('customer restaurant');
         const reservationObject = await Reservation.create({ customer: reservationQuery.customer, restaurant: reservationQuery.restaurantID, cart: reservationQuery.cartID, reservation_date: reservationQuery.reservation_date, reservation_time: reservationQuery.reservation_time, num_pax: reservationQuery.num_pax, amount: reservationQuery.amount, notes: reservationQuery.notes });  
+
+        cart.totalAmount += Number(reservationObject.amount);
+        cart.halfAmount = (cart.totalAmount - cart.voucherAmount) / 2;
+        cart.totalAmount -= cart.voucherAmount;
+        cart.isHalfPaymentSuccessful = true;
+        await cart.save();
+
         const transaction = await Transaction.create({ customer: cart.customer, restaurant: cart.restaurant, cart: cart, reservation: reservationObject });    
         const transactionObject = await Transaction.findById(transaction._id).populate('cart reservation');
         const customerQuota = await CustomerQuota.find({ customer: cart.customer, restaurant: cart.restaurant });
-        console.log(customerQuota);        
-        if (customerQuota.length) {
-          customerQuota[0].valueAmount += cart.totalAmount;
-          customerQuota[0].save();
-        } else {
-          await CustomerQuota.create({ customer: cart.customer, restaurant: cart.restaurant, valueAmount: cart.totalAmount });
+        console.log('customerQuota:', customerQuota);        
+        if (!customerQuota.length) {
+          const cq = await CustomerQuota.create({ customer: cart.customer, restaurant: cart.restaurant });
+          console.log('Customer Quota Created:', cq);
         }
         const { orderID } = req.params;
         const { jsonResponse, httpStatusCode } = await captureOrder(orderID, transactionObject, false);
@@ -222,21 +228,34 @@ const serveCheckoutPage = async (req, res) => {
   try {
       // Get the customer ID
       const customerID = res.locals.customer ? res.locals.customer._id : null;
+
       // Get the restaurant ID
       const restaurantID = req.params.restaurantID;
+
       // Get the reservation data from the previous customer reservation input page
       const reservation = req.query;
       reservationQuery = reservation;
+
       // Get the restaurant
       const restaurant = await Restaurant.findById(restaurantID);
+
       // Get the cart ID from URL
       const cartID = req.params.cartID;
       getCartID = cartID;
+
       // Get the cart to display the items and fetch the amount information
       const cart = await Cart.findById(cartID).populate('items.product');
       cart.reservationAmount = Number(reservation.amount);
+
       await cart.save();
-      cart.totalAmount + Number(reservation.amount);
+
+      if (cart.voucherAmount !== 0) {
+        cart.subTotal += Number(reservation.amount);  
+        cart.totalAmount = cart.subTotal - cart.voucherAmount;
+      } else {
+        cart.totalAmount += Number(reservation.amount);
+      }
+
       res.render('checkout/checkout', { pageTitle: 'Checkout', cart, reservation, restaurant });
   } catch (err) {
       console.error("Failed to serve checkout page:", err);

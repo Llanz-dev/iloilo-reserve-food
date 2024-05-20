@@ -4,6 +4,8 @@ import Cart from '../models/cartModel.mjs';
 import Transaction from '../models/transactionModel.mjs';
 import Category from '../models/categoryModel.mjs';
 import Reservation from '../models/reservationModel.mjs';
+import CustomerQuota from '../models/customerQuotaModel.mjs';
+import Voucher from '../models/voucherModel.mjs';
 import voucherGenerator from '../utils/voucherUtils.mjs';
 import { hashPassword, comparePassword, createToken, fourtyEightHours, lowerCase, hasProduct, isQueryEmpty } from '../utils/helpers.mjs';
 import { createDirectory, deleteDirectory, deleteFile, renameFolder, moveImageToNewDirectory } from '../utils/fileUtils.mjs';
@@ -589,6 +591,41 @@ const GETHistory = async (req, res) => {
     }
 }
 
+const POSTtransactionComplete = async (req, res) => {
+    try {
+        const transactionId = req.params.id;
+        const transaction = await Transaction.findById(transactionId).populate('customer cart restaurant');
+        const cartTotalAmount = transaction.cart.totalAmount;
+        console.log('cartTotalAmount:', cartTotalAmount);
+  
+        // Check if customer have already successful transaction
+        const customerQuota = await CustomerQuota.findOne({ restaurant: transaction.restaurant, customer: transaction.customer });
+        if (customerQuota) {            
+            customerQuota.valueAmount += cartTotalAmount;
+            console.log('customerQuota.valueAmount:', customerQuota.valueAmount);
+            await customerQuota.save();
+        } 
+        
+        const reachQuotaAmount = transaction.restaurant.quotaVoucher;
+        // If customer reach the quota of restaurant then customer can have a voucher
+        if (customerQuota.valueAmount >= reachQuotaAmount) {
+          const discountAmount = transaction.restaurant.calculatedVoucherThreshold;
+          const voucher = await Voucher.create({ amount: discountAmount, customer: transaction.customer, restaurant: transaction.restaurant });
+          customerQuota.valueAmount -= reachQuotaAmount;
+          console.log('Voucher created:', voucher);
+          await customerQuota.save();
+        }
+
+        transaction.isPending = false;
+        transaction.isToday = false;
+        transaction.isTransactionComplete = true;
+        await transaction.save();
+        res.redirect('/restaurant/dashboard');
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ msg: err });
+    }
+}
 
 const DELETETransaction = async (req, res) => {
     try {
@@ -623,4 +660,4 @@ const GETRemoveTransaction = async (req, res) => {
     }
 }
 
-export { GETrestaurantLogin, POSTRestaurantLogin, GETRestaurantDashboard, GETProfileDashboard, GETAddProduct, POSTAddProduct, POSTUpdateProduct, GETProducts, GETUpdateProduct, GETAddCategory, POSTAddCategory, DELETECategory, DELETEProduct, GETUpdateCategory, POSTUpdateCategory, GETRestaurantLogout, DELETETransaction, GETHistory, GETRemoveTransaction, GETDeactivateCategory, GETActivateCategory, GETrestaurantRegister, POSTrestaurantRegister, POSTUpdateRestaurant };
+export { GETrestaurantLogin, POSTRestaurantLogin, GETRestaurantDashboard, GETProfileDashboard, GETAddProduct, POSTAddProduct, POSTUpdateProduct, GETProducts, GETUpdateProduct, GETAddCategory, POSTAddCategory, DELETECategory, DELETEProduct, GETUpdateCategory, POSTUpdateCategory, GETRestaurantLogout, DELETETransaction, GETHistory, GETRemoveTransaction, GETDeactivateCategory, GETActivateCategory, GETrestaurantRegister, POSTrestaurantRegister, POSTUpdateRestaurant, POSTtransactionComplete };
