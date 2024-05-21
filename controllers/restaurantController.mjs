@@ -6,6 +6,7 @@ import Category from '../models/categoryModel.mjs';
 import Reservation from '../models/reservationModel.mjs';
 import CustomerQuota from '../models/customerQuotaModel.mjs';
 import Voucher from '../models/voucherModel.mjs';
+import { calculateTimeDifference } from '../utils/timeUtils.mjs';
 import voucherGenerator from '../utils/voucherUtils.mjs';
 import { hashPassword, comparePassword, createToken, fourtyEightHours, lowerCase, hasProduct, isQueryEmpty } from '../utils/helpers.mjs';
 import { createDirectory, deleteDirectory, deleteFile, renameFolder, moveImageToNewDirectory } from '../utils/fileUtils.mjs';
@@ -142,6 +143,17 @@ const GETRestaurantDashboard = async (req, res) => {
             model: 'Customer'
         })
         .sort({ createdAt: -1 });
+
+        transactions.forEach( async (transaction) => {
+            // Check if the reservation date is the same with current date then change the status of transaction to isToday to true
+            if (calculateTimeDifference(transaction) === 0) {
+                console.log('transaction.reservation.reservation_date:', calculateTimeDifference(transaction));
+                await transaction.save();
+            // Check if the reservation date is past from the current date then cancelled the transaction unrefunded.
+            } else if (calculateTimeDifference(transaction) < 0) {
+                res.redirect(`/transaction/cancel-reservation-unrefundable/${transaction._id}`);
+            }
+        });              
         
         res.render('restaurant/dashboard', { pageTitle: 'Dashboard', transactions });
     } catch (err) {
