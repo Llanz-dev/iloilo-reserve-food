@@ -71,6 +71,11 @@ div.transaction {
     background-color: #83c589;   
 }
 
+.list-group-item {
+    display: flex;
+    justify-content: space-between;
+}
+
 @media (max-width: 450px) {
     .delete-button {
         width: 100%;

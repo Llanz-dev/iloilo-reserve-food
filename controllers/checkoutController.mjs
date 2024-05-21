@@ -144,7 +144,8 @@ const captureOrder = async (orderID, transactionObject, isCancellation) => {
       if (httpStatusCode === 201) {
         const captureId = jsonResponse.purchase_units[0].payments.captures[0].id; // Extract captureId from the response
         transactionObject.captureId = captureId; // Store captureId in transactionObject
-        await Voucher.findOneAndUpdate({$and: [{ customer: transactionObject.customer }, { restaurant: transactionObject.restaurant }]}, { isUsed: true });
+        const voucher = await Voucher.findOneAndUpdate({$and: [{ customer: transactionObject.customer }, { restaurant: transactionObject.restaurant }]}, { isUsed: true });
+        console.log('voucher:', voucher);
         await transactionObject.save();
       } else {
         await Transaction.findByIdAndDelete();
@@ -209,9 +210,9 @@ const captureOrderHandler = async (req, res) => {
 
         const transaction = await Transaction.create({ customer: cart.customer, restaurant: cart.restaurant, cart: cart, reservation: reservationObject });    
         const transactionObject = await Transaction.findById(transaction._id).populate('cart reservation');
-        const customerQuota = await CustomerQuota.find({ customer: cart.customer, restaurant: cart.restaurant });
+        const customerQuota = await CustomerQuota.findOne({ customer: cart.customer, restaurant: cart.restaurant });
         console.log('customerQuota:', customerQuota);        
-        if (!customerQuota.length) {
+        if (!customerQuota) {
           const cq = await CustomerQuota.create({ customer: cart.customer, restaurant: cart.restaurant });
           console.log('Customer Quota Created:', cq);
         }

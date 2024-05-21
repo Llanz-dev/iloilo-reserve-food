@@ -2,6 +2,7 @@ import Voucher from '../models/voucherModel.mjs'
 import Transaction from '../models/transactionModel.mjs'
 import CustomerQuota from '../models/customerQuotaModel.mjs'; 
 import { captureOrder } from '../controllers/checkoutController.mjs';
+import { deleteUsedVouchers } from '../utils/restaurantUtils.mjs';
 import voucherGenerator from '../utils/voucherUtils.mjs';
 
 
@@ -29,6 +30,8 @@ const GETtransaction = async (req, res) => {
     })
     .sort({ createdAt: -1 });
     
+    await deleteUsedVouchers();
+
     // Get the current date and time in the 'Asia/Manila' timezone
     res.render('transaction/transaction', { pageTitle: 'Transactions', transactions, restaurant: undefined });
   } catch (err) {

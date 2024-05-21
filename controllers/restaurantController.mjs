@@ -7,7 +7,6 @@ import Reservation from '../models/reservationModel.mjs';
 import CustomerQuota from '../models/customerQuotaModel.mjs';
 import Voucher from '../models/voucherModel.mjs';
 import { calculateTimeDifference } from '../utils/timeUtils.mjs';
-import voucherGenerator from '../utils/voucherUtils.mjs';
 import { hashPassword, comparePassword, createToken, fourtyEightHours, lowerCase, hasProduct, isQueryEmpty } from '../utils/helpers.mjs';
 import { createDirectory, deleteDirectory, deleteFile, renameFolder, moveImageToNewDirectory } from '../utils/fileUtils.mjs';
 
@@ -614,7 +613,6 @@ const POSTtransactionComplete = async (req, res) => {
         const customerQuota = await CustomerQuota.findOne({ restaurant: transaction.restaurant, customer: transaction.customer });
         if (customerQuota) {            
             customerQuota.valueAmount += cartTotalAmount;
-            console.log('customerQuota.valueAmount:', customerQuota.valueAmount);
             await customerQuota.save();
         } 
         
@@ -632,6 +630,7 @@ const POSTtransactionComplete = async (req, res) => {
         transaction.isToday = false;
         transaction.isTransactionComplete = true;
         await transaction.save();
+                
         res.redirect('/restaurant/dashboard');
     } catch (err) {
         console.log(err);
