@@ -168,69 +168,71 @@ const GETProfileDashboard = async (req, res) => {
 }
 
 const POSTUpdateRestaurant = async (req, res) => {
+    console.log('POSTUpdateRestaurant');
+    const restaurantID = req.params.id;
+    const restaurant = await Restaurant.findById(restaurantID);
     try {
-      const restaurantID = req.params.id;
-      const updatedData = { ...req.body }; // Spread the body to a new object
-      const restaurant = await Restaurant.findById(restaurantID);
-  
-      // Check if a new image file exists, and if both the name and image have been updated
-      if (req.file && updatedData.name && updatedData.name !== restaurant.name) {
-        // Convert the updated restaurant name to lowercase
-        updatedData.lowername = lowerCase(req.body.name);
-        updatedData.image = req.file.filename;
-  
-      } else if (updatedData.name && restaurant.name && updatedData.name !== restaurant.name) {
-          console.log('Rename the folder with the new name of restaurant');
-  
-          // Convert the updated restaurant name to lowercase
-          updatedData.lowername = lowerCase(req.body.name);
-  
-          // Define the old and new paths for the restaurant directory
-          const oldPath = `./public/images/restaurant/${restaurant.lowername}`;
-          const newPath = `./public/images/restaurant/${updatedData.lowername}`;
-          
-          // Rename the restaurant directory
-          renameFolder(oldPath, newPath);
-      } else if (req.file) {
-          updatedData.image = req.file.filename;
-      } else {
-          updatedData.image = req.body.old_restaurant_banner_image;
-      }
-  
-      // Handle password only if provided
-      if (updatedData.password || updatedData.reEnterPassword) {
-        if (updatedData.password !== updatedData.reEnterPassword) {
-          return res.status(400).json({ error: 'Passwords do not match' });
-        }
-  
-        // Hash password if provided
-        if (updatedData.password) {
-          const hashedPassword = await hashPassword(updatedData.password);
-          updatedData.password = hashedPassword;
+        const updatedData = { ...req.body }; // Spread the body to a new object
+    
+        // Check if a new image file exists, and if both the name and image have been updated
+        if (req.file && updatedData.name && updatedData.name !== restaurant.name) {
+            // Convert the updated restaurant name to lowercase
+            updatedData.lowername = lowerCase(req.body.name);
+            updatedData.image = req.file.filename;
+    
+        } else if (updatedData.name && restaurant.name && updatedData.name !== restaurant.name) {
+            console.log('Rename the folder with the new name of restaurant');
+    
+            // Convert the updated restaurant name to lowercase
+            updatedData.lowername = lowerCase(req.body.name);
+    
+            // Define the old and new paths for the restaurant directory
+            const oldPath = `./public/images/restaurant/${restaurant.lowername}`;
+            const newPath = `./public/images/restaurant/${updatedData.lowername}`;
+            
+            // Rename the restaurant directory
+            renameFolder(oldPath, newPath);
+        } else if (req.file) {
+            updatedData.image = req.file.filename;
         } else {
-          delete updatedData.password; // Ensure password is not updated if not provided
+            updatedData.image = req.body.old_restaurant_banner_image;
         }
-      } else {
-        delete updatedData.password; // Ensure password is not updated if not provided
-      }
+    
+        // Handle password only if provided
+        if (updatedData.password || updatedData.reEnterPassword) {
+            if (updatedData.password !== updatedData.reEnterPassword) {
+                throw new Error('Passwords do not match');
+            }
+    
+            // Hash password if provided
+            if (updatedData.password) {
+            const hashedPassword = await hashPassword(updatedData.password);
+            updatedData.password = hashedPassword;
+            } else {
+            delete updatedData.password; // Ensure password is not updated if not provided
+            }
+        } else {
+            delete updatedData.password; // Ensure password is not updated if not provided
+        }
+    
+        // Remove unnecessary reEnterPassword field
+        delete updatedData.reEnterPassword;
+    
+        const updatedRestaurant = await Restaurant.findByIdAndUpdate(
+            restaurantID,
+            updatedData,
+            { new: true }
+        );
+    
+        if (!updatedRestaurant) {
+            return res.status(404).json({ msg: 'Restaurant not found' });
+        }
   
-      // Remove unnecessary reEnterPassword field
-      delete updatedData.reEnterPassword;
-  
-      const updatedRestaurant = await Restaurant.findByIdAndUpdate(
-        restaurantID,
-        updatedData,
-        { new: true }
-      );
-  
-      if (!updatedRestaurant) {
-        return res.status(404).json({ msg: 'Restaurant not found' });
-      }
-  
-      res.redirect('/restaurant/update-restaurant');
+        res.redirect('/restaurant/update-restaurant');
     } catch (err) {
-      console.log(err);
-      res.status(500).json({ msg: err });
+        console.log('POSTUpdateRestaurant:', err);
+        // If there's an error, render the template with the error message
+        res.status(500).render('restaurant/update-restaurant', { pageTitle: 'Update Restaurant', 'restaurant': restaurant, error: err.message });
     }
   };
 
@@ -350,71 +352,73 @@ const GETAddCategory = async (req, res) => {
         const pageTitle = 'Add Category';
         res.render('restaurant/add-category', { pageTitle, categories });
     } catch (err) {
-        console.error(err);
+        console.error('GETAddCategory:', err);
         res.status(500).send('Server Error');
     }
 }
 
 const POSTAddCategory = async (req, res) => {
+    const restaurantID = req.restaurantID; 
+    const restaurant = await Restaurant.findById(restaurantID);
+    const categories = await Category.find({ restaurant: restaurant });
+
     try {
         const { name } = req.body;
-        const restaurantID = req.restaurantID; // Assuming you have restaurant ID in req.restaurantID
 
         // Check if the category name is already registered on the specific restaurant
         const existingCategoryName = await Category.findOne({ name, restaurant: restaurantID });
         if (existingCategoryName) {
-            return res.status(400).json({ error: `${name} already registered` });
+            throw new Error(`"${name}" already registered`);
         }
 
-        const restaurant = await Restaurant.findById(restaurantID);
         const restaurantName = restaurant.lowername;
         const categoryName = lowerCase(name);   
         const destinationPath = `./public/images/restaurant/${restaurantName}/products/${categoryName}`;
         createDirectory(destinationPath);
 
         const category = await Category.create({ name, lowername: lowerCase(name), restaurant: restaurantID });
-        console.log('category:', category);
+        console.log('Successfully created new category:', category);
         res.redirect('add-category');
     } catch (err) {
-        console.error(err);
-        res.status(500).send('Server Error');
+        res.status(500).render('restaurant/add-category', { pageTitle: 'Add Category', 'categories': categories, 'restaurant': restaurant, error: err.message });
     }
 }
 
 const GETUpdateCategory = async (req, res) => {
     try {
         const categoryID = req.params.id;
-        const getCategory = await Category.findById(categoryID);
+        const category = await Category.findById(categoryID);
 
-        if (!getCategory) return res.status(404).json({ error: `Category was not found` });
+        if (!category) return res.status(404).json({ error: `Category was not found` });
 
         const restaurantID = req.restaurantID;
         const categories = await Category.find({ restaurant: restaurantID });
 
-        res.render('restaurant/update-category', { pageTitle: 'Update Category', getCategory, categories });
+        res.render('restaurant/update-category', { pageTitle: 'Update Category', category, categories });
     } catch(err) {
         console.error(err);
         res.status(500).send('Server Error');
+        
     }
 }
 
 const POSTUpdateCategory = async (req, res) => {
     console.log('---- POSTUpdateCategory ----');
+    const categoryID = req.params.id;
+    const category = await Category.findById(categoryID).populate('restaurant');
+    const restaurant = await Restaurant.findById(category.restaurant);
+    const categories = await Category.find({ restaurant: category.restaurant });
+
     try {
-        const categoryID = req.params.id;
-        console.log('categoryID:', categoryID);
-        const category = await Category.findById(categoryID).populate('restaurant');
-        console.log('category:', category);
 
         if (!category) return res.status(404).json({ error: `Category was not found` });
 
         const updatedData = req.body;
-        console.log('updatedData:', updatedData);
 
         const restaurantID = req.restaurantID;
         const existingCategoryName = await Category.findOne({ name: updatedData.name, restaurant: restaurantID });
         if (existingCategoryName) {
-            return res.status(400).json({ error: `${updatedData.name} category name already registered` });
+            throw new Error(`"${updatedData.name}" category name already registered`);
         }
 
         const oldCategoryName = category.lowername;
@@ -432,7 +436,7 @@ const POSTUpdateCategory = async (req, res) => {
         res.redirect('/restaurant/add-category');
     } catch(err) {
         console.error(err);
-        res.status(500).send('Server Error');
+        res.status(500).render('restaurant/update-category', { pageTitle: 'Update Category', 'categories': categories, 'category': category, 'restaurant': restaurant, error: err.message });
     }
 }
 

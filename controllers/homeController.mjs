@@ -5,7 +5,7 @@ import Cart from '../models/cartModel.mjs';
 
 const GETHomePage = async (req, res) => {
     try {
-        let restaurants = await Restaurant.find();
+        const restaurants = await Restaurant.find();
         const customer = res.locals.customer;
         const customerQuota = await CustomerQuota.find({ customer: customer }).populate('restaurant');      
     

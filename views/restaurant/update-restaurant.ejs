@@ -1,9 +1,13 @@
 <%- include('./layout/header.ejs') %>
-<!-- I include the navbar from customer layout because they have the same navbar -->
 <%- include('./layout/navbar.ejs') %>
 
 <main>
   <section>
+    <% if (typeof error !== 'undefined') { %>
+      <div class="alert alert-danger">
+        <%= error %>
+      </div>
+    <% } %>
     <h2 class="title">Profile Information</h2>
     <form action="/restaurant/update-restaurant/<%= restaurant._id %>" method="post" enctype="multipart/form-data">
       <div class="form-group">

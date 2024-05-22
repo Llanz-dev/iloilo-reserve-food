@@ -3,14 +3,18 @@
 
 <main>
   <h1 class="title">Update Category</h1>
+  <% if (typeof error !== 'undefined') { %>
+    <div class="alert alert-danger w-25">
+      <%= error %>
+    </div>
+  <% } %>
   <form action="/restaurant/add-category" method="post">
-
     <!-- Set the restaurant -->
   </form>
-  <form action="/restaurant/update-category/<%= getCategory._id %>" method="post">
+  <form action="/restaurant/update-category/<%= category._id %>" method="post">
     <div class="form-group">
       <label for="name">Name</label>
-      <input type="text" pattern="[a-zA-Z0-9]+" class="form-control w-25" id="text" name="name" value="<%= getCategory.name %>" required>
+      <input type="text" pattern="[a-zA-Z0-9 ]+" class="form-control w-25" id="text" name="name" value="<%= category.name %>" required>
       <p class="form-text">Please avoid using special characters</p>
       <input type="hidden" class="form-control hidden-text" id="lowerText" name="lowername" value="">
     </div>
