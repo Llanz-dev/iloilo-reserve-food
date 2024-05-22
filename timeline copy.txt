@@ -198,7 +198,6 @@ May 20 2024:
 
 May 21 2024:
 	- Transaction status change it to "Today" from status "Pending" if today date is the day of the reservation date.
-	- Have a receipt info in every transactions and history page.
-	- Birthday voucher is complete.
+	- Have a receipt info in every transactions and history page.	
 	- Catch the errors and display to users.
 	- Fix the authenticated middlewares and designate to each app.
