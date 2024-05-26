@@ -8,6 +8,12 @@ body {
     background-color:  #EDF6F9 ;
 }
 
+#user-icon {
+    width: 50px;
+    margin-right: 1rem;
+    font-weight: bold;
+}
+
 #logo {
     width: 150px;
 }
@@ -48,6 +54,10 @@ a {
     
     .right, main {
         margin: 0 1.5rem;        
+    }
+
+    #main-user {
+        margin: 0 1rem;
     }
 }
 

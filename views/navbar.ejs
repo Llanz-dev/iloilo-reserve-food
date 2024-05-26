@@ -42,3 +42,9 @@
     </div>
   </div>
 </nav>
+
+<% if (customer) { %>
+  <main class="mb-4" id="main-user">
+    <h2><img src="/images/static/user-icon.png" alt="" id="user-icon"><%= customer.username %></h2>
+  </main>
+<% } %>

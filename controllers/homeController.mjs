@@ -19,22 +19,29 @@ const GETHomePage = async (req, res) => {
 
 const GETRestaurantProductsPage = async (req, res) => {
     try {
-        const restaurantID = req.params.id;
-        const restaurant = await Restaurant.findById(restaurantID);
+        const restaurantLowerName = req.params.lowername;
+        console.log('restaurantLowerName:', restaurantLowerName);
+        const restaurant = await Restaurant.findOne({ lowername: restaurantLowerName });
+
+        if (!restaurant) {
+            return res.status(404).json({ message: 'Restaurant not found' });
+        }
+
+        const restaurantID = restaurant._id;
         const products = await Product.find({ restaurant: restaurantID }).populate('category restaurant');
         const customerID = res.locals.customer ? res.locals.customer._id : null;
-        
+
         // Find the cart for the customer and restaurant combination
         let cart = null;
         if (customerID) {
             cart = await Cart.findOne({ customer: customerID, restaurant: restaurantID, isHalfPaymentSuccessful: false });
         }
-        
+
         const numberOfItems = cart ? cart.items.length : 0;
         const pageTitle = restaurant.name;
         res.render('home/restaurant-products', { pageTitle, restaurant, products, cart, numberOfItems, restaurantID });
     } catch (err) {
-        res.json({ 'GET home page': err.message });
+        res.json({ 'GET restaurant products page': err.message });
     }
 }
 
