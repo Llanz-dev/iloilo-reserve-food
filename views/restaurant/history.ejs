@@ -84,9 +84,9 @@
                           <li>Reservation date: <%= formattedReservationDate %></li>
                           <li>Reservation time: <span class="reservation-time"><%= transaction.reservation.reservation_time %></span></li>
                           <li>Number of Pax: <%= transaction.reservation.num_pax %></span></li>
-                          <li>Notes: <%= transaction.reservation.notes %></span></li>
                           <li>Amount: ₱<%= transaction.reservation.amount %></span></li>
                           <li>Created at: <%= transaction.reservation.created_at.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: '2-digit', year: 'numeric' }) %></li>
+                          <li>Notes: <%= transaction.reservation.notes %></span></li>
                       </ul>
                   </div>                          
                 </div>                        
