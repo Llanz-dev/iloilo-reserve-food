@@ -4,8 +4,8 @@
   <h2 class="title"><%= transactions.length %> Transactions</h2>
   
   <a href="/restaurant/dashboard" class="btn primary-background-color text-white me-3" id="all-btn">All</a>
-  <a href="/restaurant/dashboard?isToday=true" class="btn today-bg-color" id="today-btn">Today</a>
-  <a href="/restaurant/dashboard?isPending=true" class="btn mx-3 pending-bg-color">Pending</a>
+  <a href="/restaurant/dashboard/today" class="btn today-bg-color" id="today-btn">Today</a>
+  <a href="/restaurant/dashboard/pending" class="btn mx-3 pending-bg-color">Pending</a>
 
   <div class="row">
       <% transactions.forEach(transaction => { %>    

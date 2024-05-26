@@ -5,8 +5,8 @@
   <h2 class="title"><%= transactions.length %> History</h2>
   
   <a href="/restaurant/history" class="btn primary-background-color text-white me-3" id="all-btn">All</a>
-  <a href="/restaurant/history?isTransactionComplete=true" class="btn completed-bg-color">Completed</a>
-  <a href="/restaurant/history?isCancelled=true" class="btn ms-3" id="cancelled-btn">Cancelled</a>
+  <a href="/restaurant/history/completed" class="btn completed-bg-color">Completed</a>
+  <a href="/restaurant/history/cancelled" class="btn ms-3" id="cancelled-btn">Cancelled</a>
 
   <div class="row">
       <% transactions.forEach(transaction => { %>    

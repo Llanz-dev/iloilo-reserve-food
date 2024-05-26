@@ -10,7 +10,7 @@ import { calculateTimeDifference } from '../utils/timeUtils.mjs';
 import { hashPassword, comparePassword, createToken, fourtyEightHours, lowerCase, hasProduct, isQueryEmpty } from '../utils/helpers.mjs';
 import { createDirectory, deleteDirectory, deleteFile, renameFolder, moveImageToNewDirectory } from '../utils/fileUtils.mjs';
 import { wss } from '../index.mjs';
-
+import processTransactions from '../utils/transactionUtils.mjs';
 
 const GETrestaurantRegister = async (req, res) => {
     const pageTitle = 'Restaurant Register';
@@ -145,16 +145,96 @@ const GETRestaurantDashboard = async (req, res) => {
         })
         .sort({ createdAt: -1 });
 
-        transactions.forEach( async (transaction) => {
-            // Check if the reservation date is the same with current date then change the status of transaction to isToday to true
-            if (calculateTimeDifference(transaction) === 0) {
-                console.log('transaction.reservation.reservation_date:', calculateTimeDifference(transaction));
-                await transaction.save();
-            // Check if the reservation date is past from the current date then cancelled the transaction unrefunded.
-            } else if (calculateTimeDifference(transaction) < 0) {
-                res.redirect(`/transaction/cancel-reservation-unrefundable/${transaction._id}`);
+        // Call processTransactions and pass the transactions as argument
+        processTransactions(transactions);
+        
+        res.render('restaurant/dashboard', { pageTitle: 'Dashboard', transactions });
+    } catch (err) {
+        console.log('POSTRestaurantLogin:', err);
+        // If there's an error, render the template with the error message
+        res.status(500).json({error: err.message });
+    }
+};
+
+// This today, pending, cancelled and completed need to just query not to create a function. 
+// I only did this because of my professor in capstone told me to do. #Disappoint
+const GETRestaurantDashboardToday = async (req, res) => {
+    try {
+        const restaurant = res.locals.restaurant;
+        
+        const transactions = await Transaction.find({ restaurant: restaurant._id, 
+            $and: [
+                { isToday: true }, 
+                { isPending: false }
+            ]
+        })
+        .populate({
+            path: 'restaurant',
+            model: 'Restaurant'
+        })
+        .populate({
+            path: 'cart',
+            model: 'Cart',
+            populate: {
+                path: 'items.product',
+                model: 'Product'
             }
-        });              
+        })
+        .populate({
+            path: 'reservation',
+            model: 'Reservation'
+        })
+        .populate({
+            path: 'customer',
+            model: 'Customer'
+        })
+        .sort({ createdAt: -1 });
+
+        // Call processTransactions and pass the transactions as argument
+        processTransactions(transactions);             
+        
+        res.render('restaurant/dashboard', { pageTitle: 'Dashboard', transactions });
+    } catch (err) {
+        console.log('POSTRestaurantLogin:', err);
+        // If there's an error, render the template with the error message
+        res.status(500).json({error: err.message });
+    }
+};
+
+const GETRestaurantDashboardPending = async (req, res) => {
+    try {
+        const restaurant = res.locals.restaurant;
+        
+        const transactions = await Transaction.find({ restaurant: restaurant._id, 
+            $and: [
+                { isToday: false }, 
+                { isPending: true }
+            ]
+        })
+        .populate({
+            path: 'restaurant',
+            model: 'Restaurant'
+        })
+        .populate({
+            path: 'cart',
+            model: 'Cart',
+            populate: {
+                path: 'items.product',
+                model: 'Product'
+            }
+        })
+        .populate({
+            path: 'reservation',
+            model: 'Reservation'
+        })
+        .populate({
+            path: 'customer',
+            model: 'Customer'
+        })
+        .sort({ createdAt: -1 });
+
+        // Call processTransactions and pass the transactions as argument
+        processTransactions(transactions);             
         
         res.render('restaurant/dashboard', { pageTitle: 'Dashboard', transactions });
     } catch (err) {
@@ -300,7 +380,7 @@ const GETUpdateProduct = async (req, res) => {
                 }
             });
 
-            return res.redirect(`/restaurant-products/${product.restaurant._id}`);
+            return res.redirect(`${product._id}`);
         }
 
         res.render('restaurant/update-product', { pageTitle, product, categories, hasProduct });
@@ -567,28 +647,75 @@ const GETRestaurantLogout = (req, res) => {
 
 const GETHistory = async (req, res) => {
     try {
-        const { query } = req;
-        console.log('query:', query);
-
         const restaurant = res.locals.restaurant;
 
-        let transactionQuery = { 
-            restaurant: restaurant._id, $or: [{ isCancelled: true }, { isTransactionComplete: true }]
-        };
+        const transactions = await Transaction.find({ restaurant: restaurant._id, $or: [{ isCancelled: true }, { isTransactionComplete: true }] })
+            .populate({
+                path: 'restaurant',
+                model: 'Restaurant'
+            })
+            .populate({
+                path: 'cart',
+                model: 'Cart',
+                populate: {
+                    path: 'items.product',
+                    model: 'Product'
+                }
+            })
+            .populate({
+                path: 'reservation',
+                model: 'Reservation'
+            })
+            .populate({
+                path: 'customer',
+                model: 'Customer'
+            })
+            .sort({ createdAt: -1 });
 
-        const hasQuery = Object.keys(query).length > 0;
-        if (hasQuery) {
-            console.log(hasQuery);
-            transactionQuery = { 
-                restaurant: restaurant._id, $and: 
-                    [
-                        { isCancelled: query.isCancelled === undefined ? false : true }, 
-                        { isTransactionComplete: query.isTransactionComplete === undefined ? false : true }
-                    ]
-            };
-        }
+        res.render('restaurant/history', { pageTitle: 'History', transactions });
+    } catch (err) {
+        res.status(500).json({ msg: err.message });
+    }
+}
 
-        const transactions = await Transaction.find(transactionQuery)
+const GETHistoryCompleted = async (req, res) => {
+    try {
+        const restaurant = res.locals.restaurant;
+
+        const transactions = await Transaction.find({ restaurant: restaurant._id, $and: [{ isCancelled: false }, { isTransactionComplete: true }] })
+            .populate({
+                path: 'restaurant',
+                model: 'Restaurant'
+            })
+            .populate({
+                path: 'cart',
+                model: 'Cart',
+                populate: {
+                    path: 'items.product',
+                    model: 'Product'
+                }
+            })
+            .populate({
+                path: 'reservation',
+                model: 'Reservation'
+            })
+            .populate({
+                path: 'customer',
+                model: 'Customer'
+            })
+            .sort({ createdAt: -1 });
+
+        res.render('restaurant/history', { pageTitle: 'History', transactions });
+    } catch (err) {
+        res.status(500).json({ msg: err.message });
+    }
+}
+
+const GETHistoryCancelled = async (req, res) => {
+    try {
+        const restaurant = res.locals.restaurant;
+
+        const transactions = await Transaction.find({ restaurant: restaurant._id, $and: [{ isCancelled: true }, { isTransactionComplete: false }] })
             .populate({
                 path: 'restaurant',
                 model: 'Restaurant'
@@ -686,4 +813,4 @@ const GETRemoveTransaction = async (req, res) => {
     }
 }
 
-export { GETrestaurantLogin, POSTRestaurantLogin, GETRestaurantDashboard, GETProfileDashboard, GETAddProduct, POSTAddProduct, POSTUpdateProduct, GETProducts, GETUpdateProduct, GETAddCategory, POSTAddCategory, DELETECategory, DELETEProduct, GETUpdateCategory, POSTUpdateCategory, GETRestaurantLogout, DELETETransaction, GETHistory, GETRemoveTransaction, GETDeactivateCategory, GETActivateCategory, GETrestaurantRegister, POSTrestaurantRegister, POSTUpdateRestaurant, POSTtransactionComplete };
+export { GETrestaurantLogin, POSTRestaurantLogin, GETRestaurantDashboard, GETProfileDashboard, GETAddProduct, POSTAddProduct, POSTUpdateProduct, GETProducts, GETUpdateProduct, GETAddCategory, POSTAddCategory, DELETECategory, DELETEProduct, GETUpdateCategory, POSTUpdateCategory, GETRestaurantLogout, DELETETransaction, GETHistory, GETRemoveTransaction, GETDeactivateCategory, GETActivateCategory, GETrestaurantRegister, POSTrestaurantRegister, POSTUpdateRestaurant, POSTtransactionComplete, GETRestaurantDashboardToday, GETRestaurantDashboardPending, GETHistoryCompleted, GETHistoryCancelled };

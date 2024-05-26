@@ -18,7 +18,8 @@ import {    POSTUpdateRestaurant,
             DELETEProduct,
             GETRestaurantLogout, 
             GETUpdateCategory, 
-            POSTUpdateCategory, DELETECategory, DELETETransaction, GETHistory, GETRemoveTransaction, GETDeactivateCategory, GETActivateCategory, POSTtransactionComplete } from '../controllers/restaurantController.mjs';
+            POSTUpdateCategory, DELETECategory, DELETETransaction, GETHistory,
+            GETRemoveTransaction, GETDeactivateCategory, GETActivateCategory, POSTtransactionComplete, GETRestaurantDashboardToday, GETRestaurantDashboardPending, GETHistoryCompleted, GETHistoryCancelled } from '../controllers/restaurantController.mjs';
 import { requireAuthenticationRestaurant } from '../middleware/authenticationMiddleware.mjs';
 import { uploadProductImage, updateProductImage } from '../config/multerConfig.mjs'
 import voucherRoutes from './voucherRoutes.mjs';
@@ -33,12 +34,16 @@ router.get('/logout', GETRestaurantLogout);
 // Dashboard.
 router.use(requireAuthenticationRestaurant);
 router.get('/dashboard', GETRestaurantDashboard);
+router.get('/dashboard/today', GETRestaurantDashboardToday);
+router.get('/dashboard/pending', GETRestaurantDashboardPending);
 router.get('/update-restaurant', GETProfileDashboard);
 router.post('/update-restaurant/:id', updateRestaurantBanner, POSTUpdateRestaurant);
 // Vouchers
 router.use('/vouchers', voucherRoutes)
 // View history
 router.get('/history', GETHistory);
+router.get('/history/completed', GETHistoryCompleted);
+router.get('/history/cancelled', GETHistoryCancelled);
 // Add product
 router.get('/add-product', GETAddProduct);
 router.post('/add-product', uploadProductImage, POSTAddProduct);
