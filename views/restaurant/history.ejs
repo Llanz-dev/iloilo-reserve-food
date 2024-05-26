@@ -51,21 +51,29 @@
               </div>
               <div class="accordion-item">
                 <h2 class="accordion-header">
-                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo<%= transaction._id %>" aria-expanded="false" aria-controls="flush-collapseTwo">
-                    Orders
-                  </button>
-                </h2>
-                <div id="flush-collapseTwo<%= transaction._id %>" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-                  <div class="accordion-body">
-                      <ul>
-                          <% transaction.cart.items.forEach(item => { %>
-                              <li><%= item.product.name %> <%= item.quantity %>x</li>
-                          <% }) %>
-                          <p class="mb-0 mt-2">Total amount: ₱<%= transaction.cart.totalAmount %></p>
-                          <p class="mb-0 fw-bold">Half amount: ₱<%= transaction.cart.halfAmount %></p>    
-                      </ul>
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne<%= transaction._id  %>" aria-expanded="false" aria-controls="flush-collapseOne<%= transaction._id  %>">
+                      Receipt
+                    </button>
+                  </h2>
+                  <div id="flush-collapseOne<%= transaction._id  %>" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                    <div class="accordion-body">
+                        <ul class="list-group">
+                            <% transaction.cart.items.forEach(item => { %>
+                                <li class="list-group-item"><span><%= item.product.name %> <%= item.quantity %>x</span> <span>₱<%= item.total %></span></li>
+                            <% }); %>                        
+                            <% if (transaction.cart.voucherAmount) { %>
+                                <li class="list-group-item"><span>Reservation amount</span> <span class="total-amount">₱<%= transaction.cart.reservationAmount %></span></li>    
+                                <li class="list-group-item"><span>Subtotal amount</span> <span class="total-amount">₱<%= transaction.cart.subTotal %></span></li>
+                                <li class="list-group-item list-group-item-success"><span class="total-amount">Voucher amount</span> <span>-₱<span class="total-amount"><%= transaction.cart.voucherAmount %></span></span></li>               
+                            <% } else { %>
+                                <li class="list-group-item"><span>Subtotal amount</span> <span class="total-amount">₱<%= transaction.cart.subTotal %></span></li>
+                                <li class="list-group-item"><span>Reservation amount</span> <span class="total-amount">₱<%= transaction.cart.reservationAmount %></span></li>    
+                            <% } %>
+                            <li class="list-group-item"><span>Total amount</span> <span class="total-amount">₱<%= transaction.cart.totalAmount %></span></li>            
+                            <li class="list-group-item fw-bold"><span>Half amount</span> <span class="total-amount">₱<%= transaction.cart.halfAmount %></span></li>
+                          </ul>
+                    </div>
                   </div>
-                </div>
               </div>
               <div class="accordion-item">
                 <h2 class="accordion-header">
