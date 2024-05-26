@@ -1,6 +1,6 @@
 // db.js
 import mongoose from 'mongoose';
-const DB_URI = 'mongodb+srv://luyllanzkenneth:kenjie321@cluster0.bkdwdn5.mongodb.net/iloilo-reserve-food?retryWrites=true&w=majority&appName=Cluster0'; // Change this to your MongoDB URI
+const DB_URI = process.env.MONGO_DB_URI; // Change this to your MongoDB URI
 const PORT = process.env.PORT || 5000;
 
 export const connectDB = async () => {

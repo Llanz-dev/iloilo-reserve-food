@@ -8,7 +8,7 @@ const GETHomePage = async (req, res) => {
         const restaurants = await Restaurant.find();
         const customer = res.locals.customer;
         const customerQuota = await CustomerQuota.find({ customer: customer }).populate('restaurant');      
-    
+        console.log(res.locals.restaurant);
         const restaurant = null;
         const pageTitle = 'Home';
         res.render('home/home', { pageTitle, restaurants, restaurant, customerQuota });
@@ -32,7 +32,7 @@ const GETRestaurantProductsPage = async (req, res) => {
         
         const numberOfItems = cart ? cart.items.length : 0;
         const pageTitle = restaurant.name;
-        res.render('home/restaurant-products', { pageTitle, restaurant, products, cart, numberOfItems });
+        res.render('home/restaurant-products', { pageTitle, restaurant, products, cart, numberOfItems, restaurantID });
     } catch (err) {
         res.json({ 'GET home page': err.message });
     }

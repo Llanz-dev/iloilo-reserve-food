@@ -61,6 +61,18 @@
       <p>No products available.</p>
     <% } %>
 </main>
+
+<script type="module">
+  const socket = new WebSocket('ws://localhost:3000');
+
+  socket.addEventListener('message', function (event) {
+      const data = JSON.parse(event.data);
+      
+      if (data.type === 'PRODUCT_UPDATE' && data.restaurantId === '<%= restaurantID %>') {
+          location.reload();
+      }
+  });
+</script>
 <script src="/js/home/restaurant-products.js"></script>            
 <%- include('.././footer.ejs') %>
  

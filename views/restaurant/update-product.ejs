@@ -7,6 +7,7 @@
       <div class="card">
         <div class="card-body">
           <h1 class="title text-center mb-4">Update Product</h1>
+          <small class="d-none" id="restaurant-id"><%= product.restaurant._id %></small>
           <a href="/restaurant/update-product/<%= product._id %>?isSoldOut=<%= !product.isSoldOut %>" class="btn btn-sm primary-background-color text-white mb-2">
             <%= product.isSoldOut ? 'In Stock' : 'Sold Out' %>
           </a>

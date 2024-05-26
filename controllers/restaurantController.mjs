@@ -9,6 +9,8 @@ import Voucher from '../models/voucherModel.mjs';
 import { calculateTimeDifference } from '../utils/timeUtils.mjs';
 import { hashPassword, comparePassword, createToken, fourtyEightHours, lowerCase, hasProduct, isQueryEmpty } from '../utils/helpers.mjs';
 import { createDirectory, deleteDirectory, deleteFile, renameFolder, moveImageToNewDirectory } from '../utils/fileUtils.mjs';
+import { wss } from '../index.mjs';
+
 
 const GETrestaurantRegister = async (req, res) => {
     const pageTitle = 'Restaurant Register';
@@ -289,7 +291,16 @@ const GETUpdateProduct = async (req, res) => {
         
         if (req.query.isSoldOut) {
             await Product.findByIdAndUpdate(req.params.id, { isSoldOut: req.query.isSoldOut });
-            res.redirect(`/restaurant/update-product/${product._id}`);
+            // Broadcast update to all connected clients
+            wss.clients.forEach(client => {
+                console.log('client.readyState:', client.readyState);
+                console.log('client.OPEN:', client.OPEN);
+                if (client.readyState === client.OPEN) { // Correctly check the state
+                    client.send(JSON.stringify({ type: 'PRODUCT_UPDATE', restaurantId: product.restaurant._id }));
+                }
+            });
+
+            return res.redirect(`/restaurant-products/${product.restaurant._id}`);
         }
 
         res.render('restaurant/update-product', { pageTitle, product, categories, hasProduct });
