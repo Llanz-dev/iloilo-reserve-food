@@ -51,11 +51,11 @@
               </div>
               <div class="accordion-item">
                 <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne<%= transaction._id  %>" aria-expanded="false" aria-controls="flush-collapseOne<%= transaction._id  %>">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo<%= transaction._id  %>" aria-expanded="false" aria-controls="flush-collapseTwo<%= transaction._id  %>">
                       Receipt
                     </button>
                   </h2>
-                  <div id="flush-collapseOne<%= transaction._id  %>" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                  <div id="flush-collapseTwo<%= transaction._id  %>" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
                     <div class="accordion-body">
                         <ul class="list-group">
                             <% transaction.cart.items.forEach(item => { %>
