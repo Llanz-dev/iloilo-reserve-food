@@ -63,7 +63,11 @@
 </main>
 
 <script type="module">
-  const socket = new WebSocket('ws://localhost:3000');
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const host = window.location.host; // This gives you the current domain and port
+  const socketUrl = `${protocol}//${host}/ws`;
+
+  const socket = new WebSocket(socketUrl);
 
   socket.addEventListener('message', function (event) {
       const data = JSON.parse(event.data);

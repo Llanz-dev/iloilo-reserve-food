@@ -92,7 +92,7 @@ button[type="submit"]:hover {
         width: 150px !important;
     }
     .category-name {
-        margin: 0 0 2.5rem 0;
+        margin: 1rem 0 2.5rem 0;
     }  
     .add-icon {
         width: 20px;
@@ -107,7 +107,7 @@ button[type="submit"]:hover {
         font-size: 13px;
     }
     .single-product { 
-        padding-bottom: 0px;
+        padding-bottom: 15px;
     }    
 }
 

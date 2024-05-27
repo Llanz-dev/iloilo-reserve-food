@@ -8,7 +8,6 @@ const GETHomePage = async (req, res) => {
         const restaurants = await Restaurant.find();
         const customer = res.locals.customer;
         const customerQuota = await CustomerQuota.find({ customer: customer }).populate('restaurant');      
-        console.log(res.locals.restaurant);
         const restaurant = null;
         const pageTitle = 'Home';
         res.render('home/home', { pageTitle, restaurants, restaurant, customerQuota });
