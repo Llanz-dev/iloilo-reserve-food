@@ -13,7 +13,9 @@ const GETCreateReservation = async (req, res) => {
       
     const restaurantID = cart.restaurant._id;
     const restaurant = cart.restaurant;
-    res.render('reservation/reservation', { pageTitle: 'Reservation', restaurantID, cart, restaurant });
+    const numberOfItems = cart ? cart.items.length : 0;
+    
+    res.render('reservation/reservation', { pageTitle: 'Reservation', restaurantID, cart, restaurant, numberOfItems });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

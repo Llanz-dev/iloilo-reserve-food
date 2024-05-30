@@ -37,9 +37,6 @@
                   <% } %>
                   <p class="product-name h4"><%= product.name %></p>
                   <p class="product-description"><%= product.description %></p>
-                  <!-- <p class="product-description text-secondary">
-                  //  <%= product.description.slice(0, 30) + (product.description.length > 20 ? '...' : '') %>
-                  </p> -->
                   <div class="flex-container">
                     <img src="/images/static/add-icon.png" alt="" class="add-icon">
                     <input type="hidden" name="productId" value="<%= product._id %>">

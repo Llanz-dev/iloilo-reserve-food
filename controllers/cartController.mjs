@@ -9,7 +9,7 @@ const GETCartPage = async (req, res) => {
     try {
       // Retrieve the customer's ID from the authenticated user object
       const customerID = res.locals.customer ? res.locals.customer._id : null;
-      const restaurantId = req.params.id;
+      const restaurantLowername = req.params.lowername;
   
       // If customer ID is not available, render the cart page with an empty cart
       if (!customerID) {
@@ -17,7 +17,8 @@ const GETCartPage = async (req, res) => {
       }
   
       // Fetch the restaurant
-      const restaurant = await Restaurant.findById(restaurantId);
+      const restaurant = await Restaurant.findOne({ lowername: restaurantLowername });
+      const restaurantId = restaurant._id;
   
       // Fetch cart items for the logged-in customer
       const cart = await Cart.findOne({ customer: customerID, restaurant: restaurantId, isHalfPaymentSuccessful: false }).populate({ path: 'items.product', populate: [{ path: 'category' }, { path: 'restaurant' }]});
@@ -70,7 +71,8 @@ const POSTAddToCart = async (req, res) => {
     // Check if customer ID is available
     if (!customerId) {
       // Handle case where customer ID is not available (e.g., customer not authenticated)
-      return res.status(401).json({ error: 'Customer not authenticated' });
+      console.log({ error: 'Customer not authenticated' });
+      return res.redirect('/login');
     }
 
     // Retrieve product ID from request body
@@ -80,6 +82,9 @@ const POSTAddToCart = async (req, res) => {
     const product = await Product.findById(productId);
     const productPrice = product.price;
     const halfAmount = productPrice / 2;
+
+    // Get restaurant 
+    const restaurant = await Restaurant.findById(restaurantId);
 
     // Find the cart for the customer or create a new one if it doesn't exist
     let cart = await Cart.findOne({ customer: customerId, restaurant: restaurantId, isHalfPaymentSuccessful: false });
@@ -124,7 +129,7 @@ const POSTAddToCart = async (req, res) => {
     await cart.save();
 
     // Redirect or send response as needed
-    res.redirect(`/cart/${restaurantId}`); // Redirect to the cart page
+    res.redirect(`/restaurant-products/${restaurant.lowername}`); // Redirect to the cart page
   } catch (err) {
     // Handle errors
     console.error('Error adding product to cart:', err);
@@ -149,7 +154,7 @@ const POSTRemoveFromCart = async (req, res) => {
     const restaurantId = req.body.restaurantId;
 
     // Find the cart for the customer
-    const cart = await Cart.findOne({ customer: customerId, restaurant: restaurantId, isHalfPaymentSuccessful: false });
+    const cart = await Cart.findOne({ customer: customerId, restaurant: restaurantId, isHalfPaymentSuccessful: false }).populate('restaurant');
 
     // If cart doesn't exist, return an error
     if (!cart) {
@@ -160,7 +165,8 @@ const POSTRemoveFromCart = async (req, res) => {
     const productIndex = cart.items.findIndex(item => item.product.toString() === productId);
 
     if (productIndex === -1) {
-      return res.status(404).json({ error: 'Product not found in cart' });
+      console.log({ error: 'Product not found in cart' });
+      return res.redirect('/');
     }
     
     const product = await Product.findById(productId);
@@ -187,8 +193,9 @@ const POSTRemoveFromCart = async (req, res) => {
       await Cart.deleteOne({ customer: customerId, restaurant: restaurantId, isHalfPaymentSuccessful: false });
     }
 
+    const restaurantLowername = cart.restaurant.lowername;
     // Redirect or send response as needed
-    res.redirect(`/cart/${restaurantId}`); // Redirect to the cart page
+    res.redirect(`/cart/${restaurantLowername}`); // Redirect to the cart page
   } catch (err) {
     // Handle errors
     console.error('Error removing product from cart:', err);
@@ -201,7 +208,7 @@ const POSTUpdateCart = async (req, res) => {
     const { customerId, restaurantId, productId, action } = req.body;
 
     // Find the cart for the customer and the specific restaurant
-    const cart = await Cart.findOne({ customer: customerId, restaurant: restaurantId, isHalfPaymentSuccessful: false });
+    const cart = await Cart.findOne({ customer: customerId, restaurant: restaurantId, isHalfPaymentSuccessful: false }).populate('restaurant');
     console.log('------------------ POSTUpdateCart:', cart);
     if (!cart) {
       return res.status(404).json({ error: 'Cart not found' });
@@ -248,8 +255,9 @@ const POSTUpdateCart = async (req, res) => {
     // Save the updated cart
     await cart.save();
 
+    const restaurantLowername = cart.restaurant.lowername;
     // Send success response
-    res.redirect(`/cart/${restaurantId}`); // Redirect to the cart page
+    res.redirect(`/cart/${restaurantLowername}`); // Redirect to the cart page
   } catch (err) {
     // Handle errors
     console.error('Error updating cart:', err);

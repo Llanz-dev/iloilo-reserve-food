@@ -61,6 +61,19 @@
         <input type="file" class="form-control" id="image" name="image">
       </div>
       <input type="hidden" name="old_restaurant_banner_image" id="old_restaurant_banner_image" value="<%= restaurant.image %>">
+      <% restaurant.openingHours.forEach(item => { %>
+          <div class="mb-2">
+              <label class="form-label"><%= item.day %></label>
+              <div class="row">
+                  <div class="col">
+                      <input type="time" class="form-control" name="openingHours[<%= item.day %>][open]" required value="<%= item.open %>">
+                  </div>
+                  <div class="col">
+                      <input type="time" class="form-control" name="openingHours[<%= item.day %>][close]" required value="<%= item.close %>">
+                  </div>
+              </div>
+          </div>
+      <% }); %>
       <button type="submit" class="btn primary-background-color text-white mt-2">Submit</button>
     </form>
     </section>

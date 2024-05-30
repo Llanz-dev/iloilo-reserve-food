@@ -257,7 +257,8 @@ const serveCheckoutPage = async (req, res) => {
         cart.totalAmount += Number(reservation.amount);
       }
 
-      res.render('checkout/checkout', { pageTitle: 'Checkout', cart, reservation, restaurant });
+      const numberOfItems = cart ? cart.items.length : 0;
+      res.render('checkout/checkout', { pageTitle: 'Checkout', cart, reservation, restaurant, numberOfItems });
   } catch (err) {
       console.error("Failed to serve checkout page:", err);
       res.status(500).json({ error: "Failed to serve checkout page." });

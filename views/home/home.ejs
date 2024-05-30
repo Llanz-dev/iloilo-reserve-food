@@ -12,13 +12,16 @@
 
                     <% } %>
                 <% }) %>
-
                 <div class="square<%= hideSquare ? ' d-none' : '' %>">
                     <a href="/restaurant-products/<%= restaurant.lowername %>" class="card mb-4 shadow-sm text-decoration-none">
                         <img src="/images/restaurant/<%= restaurant.lowername %>/banner/<%= restaurant.image %>" class="card-img-top restaurant-banner-image" alt="<%= restaurant.name %>">                        
                         <div class="card-body">
-                            <h5 class="card-title"><%= restaurant.name %></h5>
+                            <small class="bg-danger text-white py-1 px-2">CLOSED</small>
+                            <h5 class="card-title mt-2"><%= restaurant.name %></h5>
                             <p class="card-text"><%= restaurant.address %></p>
+                            <small>Open every Monday to Saturday</small>
+                            <br>
+                            <small>From 7am to 10pm</small>
                         </div>
                     </a>
                 </div>

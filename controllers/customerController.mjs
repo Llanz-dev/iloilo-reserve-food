@@ -47,8 +47,6 @@ const POSTRegisterPage = async (req, res) => {
     // Extract user input from the request body
     console.log('POSTRegisterPage');
     const { password, reEnterPassword } = req.body;
-    console.log('password:', password);
-    console.log('reEnterPassword:', reEnterPassword);
   
     // Check if passwords match
     if (password !== reEnterPassword) {
@@ -56,7 +54,7 @@ const POSTRegisterPage = async (req, res) => {
     }
 
     // Format the strings 
-    req.body.username = toSmallerCase(req.body.username);
+    // // req.body.username = toSmallerCase(req.body.username);
     req.body.fullname = toTitleCase(req.body.fullname);
 
     // Hash password

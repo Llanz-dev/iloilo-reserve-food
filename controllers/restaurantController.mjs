@@ -19,7 +19,7 @@ const GETrestaurantRegister = async (req, res) => {
 
 const POSTrestaurantRegister = async (req, res) => {
     try {
-        const { username, name, email, password, reEnterPassword, phone, address } = req.body;
+        const { username, name, email, password, reEnterPassword, phone, address, openingHours } = req.body;
         console.log('req.file:', req.file);
         const image = req.file.filename; // Get the filename of the uploaded image
         // Check if the restaurant name is already registered
@@ -43,14 +43,36 @@ const POSTrestaurantRegister = async (req, res) => {
         if (password !== reEnterPassword) {
           throw new Error('Passwords do not match');
         }
-    
+        
         // Hash password
         const hashedPassword = await hashPassword(password);
-    
-        // Create a new restaurant document  
-        const restaurant = await Restaurant.create({ username, name, lowername: lowerCase(req.body.name), email, password: hashedPassword, phone, address, image });
+
+        console.log('openingHours:', openingHours);
+        // Parse opening hours
+        const parsedOpeningHours = [];
+        for (const day in openingHours) {
+            parsedOpeningHours.push({
+                day,
+                open: openingHours[day].open,
+                close: openingHours[day].close
+            });
+        }
+
+        // Create a new restaurant document
+        const restaurant = await Restaurant.create({
+            username,
+            name,
+            lowername: lowerCase(req.body.name),
+            email,
+            password: hashedPassword,
+            phone,
+            address,
+            image,
+            openingHours: parsedOpeningHours
+        });
+
         console.log('Restaurant registered successfully', restaurant);
-        res.redirect('/restaurant/dashboard');
+        res.redirect('/restaurant');
       } catch (err) {
         console.log('POSTAddRestaurant:', err);
         // If there's an error, render the template with the error message
@@ -110,6 +132,7 @@ const GETRestaurantDashboard = async (req, res) => {
     try {
         const { query } = req;
         const restaurant = res.locals.restaurant;
+        console.log('restaurant:', restaurant);
         let transactionQuery = { restaurant: restaurant._id, $or: [{ isToday: true }, { isPending: true }] }
 
         const hasQuery = Object.keys(query).length > 0;
@@ -246,6 +269,8 @@ const GETRestaurantDashboardPending = async (req, res) => {
 
 const GETProfileDashboard = async (req, res) => {
     const pageTitle = 'Update Restaurant';
+    const restaurant = res.locals.restaurant;
+    console.log(restaurant);
     res.render('restaurant/update-restaurant', { pageTitle });
 }
 
@@ -299,6 +324,17 @@ const POSTUpdateRestaurant = async (req, res) => {
     
         // Remove unnecessary reEnterPassword field
         delete updatedData.reEnterPassword;
+
+        const parsedOpeningHours = [];
+        for (const day in updatedData.openingHours) {
+            parsedOpeningHours.push({
+                day,
+                open: updatedData.openingHours[day].open,
+                close: updatedData.openingHours[day].close
+            });
+        }
+
+        updatedData.openingHours = parsedOpeningHours;
     
         const updatedRestaurant = await Restaurant.findByIdAndUpdate(
             restaurantID,
@@ -368,7 +404,7 @@ const GETUpdateProduct = async (req, res) => {
 
         // Fetch categories to populate the dropdown
         const categories = await Category.find({ restaurant: product.restaurant }).populate('restaurant');
-        
+        console.log('req.query.isSoldOut:', req.query.isSoldOut);                    
         if (req.query.isSoldOut) {
             await Product.findByIdAndUpdate(req.params.id, { isSoldOut: req.query.isSoldOut });
             // Broadcast update to all connected clients

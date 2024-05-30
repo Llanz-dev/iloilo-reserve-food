@@ -1,6 +1,22 @@
 import mongoose from "mongoose";
 const { Schema } = mongoose;
 
+const openingHoursSchema = new Schema({
+    day: {
+        type: String,
+        enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+        required: true
+    },
+    open: {
+        type: String,
+        required: false
+    },
+    close: {
+        type: String,
+        required: false
+    }
+}, { _id: false });
+
 const restaurantSchema = new Schema({
     username: {
         type: String,
@@ -56,6 +72,10 @@ const restaurantSchema = new Schema({
     customerQuota: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'CustomerQuota'
+    },
+    openingHours: {
+        type: [openingHoursSchema],
+        required: false
     }
 });
 
