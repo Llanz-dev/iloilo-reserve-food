@@ -14,6 +14,10 @@ const openingHoursSchema = new Schema({
     close: {
         type: String,
         required: false
+    },
+    isOpen: {
+        type: Boolean,
+        default: true
     }
 }, { _id: false });
 

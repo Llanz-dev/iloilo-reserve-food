@@ -10,7 +10,8 @@ const GETHomePage = async (req, res) => {
         const customerQuota = await CustomerQuota.find({ customer: customer }).populate('restaurant');      
         const restaurant = null;
         const pageTitle = 'Home';
-        res.render('home/home', { pageTitle, restaurants, restaurant, customerQuota });
+        const currentTime = new Date();
+        res.render('home/home', { pageTitle, restaurants, restaurant, customerQuota, currentTime });
     } catch (err) {
         res.json({ 'GET home page': err.message });
     }

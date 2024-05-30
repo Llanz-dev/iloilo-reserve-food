@@ -1,5 +1,5 @@
 main {
-    width: 400px !important;
+    width: 500px !important;
     margin: 2rem auto 0 auto;
 }
 
@@ -18,7 +18,7 @@ main {
     }
 }
 
-@media (max-width: 450px) {
+@media (max-width: 530px) {
     main {
         margin: 4rem 1rem 0 1rem;
         width: auto !important;
