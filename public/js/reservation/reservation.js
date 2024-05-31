@@ -89,17 +89,7 @@ createReservationButton.disabled = true;
 numPaxInput.addEventListener('input', () => {
     const numPax = parseFloat(numPaxInput.value);
 
-    if (isInRange(numPax)) {
-        outOfRange.style.display = 'block';  
-        outOfRangeValue.textContent = numPax;  
-        createReservationButton.disabled = true;
-    } else {
-        outOfRange.style.display = 'none';    
-    }
-
-    console.log('numPax:', numPax);
-
-    if (isNaN(numPax) || isInRange(numPax)) return totalAmountCart;
+    if (isNaN(numPax)) return totalAmountCart;
     
     const cartAmount = calculateCartAmount(numPax);
 
@@ -110,29 +100,14 @@ const putCommas = (amount) => {
     return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-const isInRange = (num_pax) => {
-    return num_pax < 1 || num_pax > 17;
-};
-
 const calculateCartAmount = (numPax) => {
     const currentCartAmount = parseFloat(totalAmountCart);
-    let amount = currentCartAmount;
-    if (numPax <= 2) {
-        amount += 15;
-        document.getElementById('amount').value = 15;
-    } else if (numPax >= 3 && numPax <= 5) {
-        amount += 50;
-        document.getElementById('amount').value = 50;
-    } else if (numPax >= 6 && numPax <= 9) {
-        amount += 80;
-        document.getElementById('amount').value = 80;
-    } else if (numPax >= 10 && numPax <= 13) {
-        amount += 110;
-        document.getElementById('amount').value = 110;
-    } else {
-        amount += 140;
-        document.getElementById('amount').value = 140;
-    }
+    const increment = 15;
+    const totalAmountToAdd = Math.ceil(numPax / 2) * increment;
+    
+    let amount = currentCartAmount + totalAmountToAdd;
+    document.getElementById('amount').value = totalAmountToAdd;
+    
     return amount;
 };
 

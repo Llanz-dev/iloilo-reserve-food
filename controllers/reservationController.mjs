@@ -32,10 +32,6 @@ const POSTCreateReservation = async (req, res) => {
     console.log('req.body:', req.body);
     console.log('num_pax:', num_pax);
 
-    if (num_pax <= 0 || num_pax > 17) {
-      throw Error(`Number of pax "${num_pax}" is invalid!`);
-    }
-
     calculateTotalAmountByPax(num_pax, cart);
 
     console.log('total:', cart.totalAmount);
@@ -50,7 +46,7 @@ const POSTCreateReservation = async (req, res) => {
   } catch (err) {
     console.log('POSTCreateReservation:', err);
     // If there's an error, render the template with the error message
-    res.status(500).render('reservation/reservation', { pageTitle: 'Reservation', error: err.message, restaurantID, cart });
+    res.status(500).render('reservation/reservation', { pageTitle: 'Reservation', error: err.message, restaurantID, cart, restaurant: undefined });
   }
 }
 

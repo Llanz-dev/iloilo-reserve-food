@@ -27,7 +27,7 @@
     <div class="form-group">
       <label for="num_pax">Number of Pax:</label>
       <br>
-      <small><i>From 1 to 17</i></small>
+      <small><i>15 pesos per every 2 persons</i></small>
       <br>
       <small class="text-danger" id="out-of-range"><i>"<span id="out-of-range-value"></span>" is out of range!</i></small>
       <input type="number" id="num_pax" name="num_pax" class="form-control" required>
@@ -37,7 +37,7 @@
       <textarea id="notes" name="notes" class="form-control" placeholder="optional"></textarea>
     </div>
     <button type="submit" class="btn text-white primary-background-color" id="create-reservation-button">Submit</button>
-    <a href="/cart/<%= restaurantID %>" class="btn back-button">Back</a>
+    <a href="/cart/<%= cart.restaurant.lowername %>" class="btn back-button">Back</a>
   </form>
 </article>
 </main>
