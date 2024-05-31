@@ -11,7 +11,7 @@
   <form action="/restaurant/add-category" method="post">
     <div class="form-group">
       <label for="name">Name</label>
-      <input type="text" pattern="[a-zA-Z0-9 ]+" class="form-control w-25" id="text" name="name" required>
+      <input type="text" pattern="[a-zA-Z0-9 ]+" class="form-control name-category" id="text" name="name" required>
       <p class="form-text">Please avoid using special characters</p>
       <input type="hidden" class="form-control hidden-text" id="lowerText" name="lowername" value="">
     </div>
@@ -52,7 +52,6 @@
   </table>
 </main>
 
-<script src="/js/specialCharaterIsForbidden.js"></script>            
 <script src="/js/textInputLowerCase.js"></script>            
 <script src="/js/deleteObject.js"></script>                        
 <%- include('.././footer.ejs') %>

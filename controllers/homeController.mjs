@@ -8,14 +8,15 @@ const GETHomePage = async (req, res) => {
         const restaurants = await Restaurant.find();
         const customer = res.locals.customer;
         const customerQuota = await CustomerQuota.find({ customer: customer }).populate('restaurant');      
-        const restaurant = null;
+        const filteredCustomerQuota = customerQuota.filter(quota => quota.restaurant); // Filter out null restaurants
         const pageTitle = 'Home';
         const currentTime = new Date();
-        res.render('home/home', { pageTitle, restaurants, restaurant, customerQuota, currentTime });
+        res.render('home/home', { pageTitle, restaurant: undefined, restaurants, customerQuota: filteredCustomerQuota, currentTime });
     } catch (err) {
         res.json({ 'GET home page': err.message });
     }
 }
+
 
 const GETRestaurantProductsPage = async (req, res) => {
     try {
