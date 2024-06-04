@@ -63,6 +63,8 @@
                             <% } %>
                             <h5 class="card-title mt-2"><%= restaurant.name %></h5>
                             <p class="card-text"><%= restaurant.address %></p>
+                            <p>restaurant.openingHours[0].open: <%= restaurant.openingHours[0].open %></p>
+                            <p>restaurant.openingHours[0].close: <%= restaurant.openingHours[0].close %></p>
                             <% if (isOpen && restaurant.openingHours && restaurant.openingHours.length > 0 && restaurant.openingHours[0].open && restaurant.openingHours[0].close) { %>
                                 <small>
                                     From <%= convertTo12HourFormat(restaurant.openingHours[0].open) %> to <%= convertTo12HourFormat(restaurant.openingHours[0].close) %>
