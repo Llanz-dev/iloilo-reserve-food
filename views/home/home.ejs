@@ -14,9 +14,7 @@
 
 
         <% restaurants.forEach(restaurant => { %>            
-        <% 
-            const findDay = restaurant.openingHours.find(dayInfo => dayInfo.day === targetDay);
-        %>
+
 
             <% if (restaurant.statusIsActive) { %> 
                 <% let hideSquare = customerQuota.some(quota => quota.restaurant && quota.restaurant._id.toString() === restaurant._id.toString() && quota.cancelledLimit === 0); %>
@@ -35,7 +33,7 @@
                             <p class="card-text"><%= restaurant.address %></p>
                             <% if (restaurant.isRestaurantOpen) { %>                             
                                 <small>
-                                    From <%= convertTo12HourFormat(findDay.open) %> to <%= convertTo12HourFormat(findDay.close) %>
+                                    From....
                                 </small>                           
                             <% } %>
                         </div>
