@@ -2,7 +2,6 @@
 <%- include('./../navbar.ejs') %>
 <main>
     <div class="row">
-        <h3>Up to date</h3>
         <% 
             // Helper function to convert 24-hour time to 12-hour time with AM/PM
             const convertTo12HourFormat = (time) => {
@@ -63,6 +62,7 @@
                             <% } %>
                             <h5 class="card-title mt-2"><%= restaurant.name %></h5>
                             <p class="card-text"><%= restaurant.address %></p>
+                            <p>isOpen: <%= isOpen %></p>
                             <p>restaurant.openingHours[0].open: <%= restaurant.openingHours[0].open %></p>
                             <p>restaurant.openingHours[0].close: <%= restaurant.openingHours[0].close %></p>
                             <% if (isOpen && restaurant.openingHours && restaurant.openingHours.length > 0 && restaurant.openingHours[0].open && restaurant.openingHours[0].close) { %>
