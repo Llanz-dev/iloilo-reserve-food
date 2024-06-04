@@ -10,67 +10,34 @@
                 const adjustedHour = hour % 12 || 12; // Convert 0 to 12 for 12AM
                 return `${adjustedHour}:${minute.toString().padStart(2, '0')}${ampm}`;
             };
-
-            // Helper function to check if a restaurant is open
-            const isRestaurantOpen = (restaurant, currentTime) => {
-                const now = new Date(currentTime);
-                const currentDay = now.toLocaleString('en-US', { weekday: 'long' });
-                const currentHour = now.getHours();
-                const currentMinute = now.getMinutes();
-
-                return restaurant.openingHours.some(opening => {
-                    if (opening.day === currentDay && opening.isOpen) {
-                        const [openHour, openMinute] = opening.open.split(':').map(Number);
-                        const [closeHour, closeMinute] = opening.close.split(':').map(Number);
-
-                        const openTime = openHour * 60 + openMinute;
-                        const closeTime = closeHour * 60 + closeMinute;
-                        const currentTimeInMinutes = currentHour * 60 + currentMinute;
-
-                        return currentTimeInMinutes >= openTime && currentTimeInMinutes <= closeTime;
-                    }
-                    return false;
-                });
-            };
-
-            // Helper function to get the open days
-            const getOpenDays = (openingHours) => {
-                return openingHours
-                    .filter(opening => opening.isOpen)
-                    .map(opening => opening.day)
-                    .join(', ');
-            };
         %>
 
-        <% restaurants.forEach(restaurant => { %>
+
+        <% restaurants.forEach(restaurant => { %>            
+        <% 
+            const findDay = restaurant.openingHours.find(dayInfo => dayInfo.day === targetDay);
+        %>
+
             <% if (restaurant.statusIsActive) { %> 
+                <h3>isRestaurantOpen: <%= restaurant.isRestaurantOpen %></h3>
                 <% let hideSquare = customerQuota.some(quota => quota.restaurant && quota.restaurant._id.toString() === restaurant._id.toString() && quota.cancelledLimit === 0); %>
-
                 <div class="square<%= hideSquare ? ' d-none' : '' %>">
-                    <% let isOpen = isRestaurantOpen(restaurant, currentTime); %>
-
-                    <% if (!isOpen) { %>
-                        <a class="card mb-4 shadow-sm text-decoration-none">                     
+                    <% if (restaurant.isRestaurantOpen) { %>
+                        <a href="/restaurant-products/<%= restaurant.lowername %>" class="card mb-4 shadow-sm text-decoration-none">                                          
                     <% } else { %>
-                        <a href="/restaurant-products/<%= restaurant.lowername %>" class="card mb-4 shadow-sm text-decoration-none">                     
+                        <a class="card mb-4 shadow-sm text-decoration-none">  
                     <% } %>
-                        <img src="/images/restaurant/<%= restaurant.lowername %>/banner/<%= restaurant.image %>" class="card-img-top restaurant-banner-image" alt="<%= restaurant.name %>">
-
+                    <img src="/images/restaurant/<%= restaurant.lowername %>/banner/<%= restaurant.image %>" class="card-img-top restaurant-banner-image" alt="<%= restaurant.name %>">
                         <div class="card-body">
-                            <% if (!isOpen) { %>
+                            <% if (!restaurant.isRestaurantOpen) { %>
                                 <small class="bg-danger text-white py-1 px-2">CLOSED</small>
                             <% } %>
                             <h5 class="card-title mt-2"><%= restaurant.name %></h5>
                             <p class="card-text"><%= restaurant.address %></p>
-                            <p>isOpen: <%= isOpen %></p>
-                            <p>restaurant.openingHours[0].open: <%= restaurant.openingHours[0].open %></p>
-                            <p>restaurant.openingHours[0].close: <%= restaurant.openingHours[0].close %></p>
-                            <% if (isOpen && restaurant.openingHours && restaurant.openingHours.length > 0 && restaurant.openingHours[0].open && restaurant.openingHours[0].close) { %>
+                            <% if (restaurant.isRestaurantOpen) { %>                             
                                 <small>
-                                    From <%= convertTo12HourFormat(restaurant.openingHours[0].open) %> to <%= convertTo12HourFormat(restaurant.openingHours[0].close) %>
-                                </small>
-                            <% } else { %>
-                                <!-- <small class="text-muted">Opening hours not available</small> -->
+                                    From <%= convertTo12HourFormat(findDay.open) %> to <%= convertTo12HourFormat(findDay.close) %>
+                                </small>                           
                             <% } %>
                         </div>
                     </a>

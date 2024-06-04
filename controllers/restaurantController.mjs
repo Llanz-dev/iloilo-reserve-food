@@ -81,7 +81,6 @@ const POSTrestaurantRegister = async (req, res) => {
     }
 };
 
-
 const GETrestaurantLogin = async (req, res) => {
     const pageTitle = 'Restaurant Login';
     res.render('restaurant/login', { pageTitle });
@@ -350,7 +349,6 @@ const POSTUpdateRestaurant = async (req, res) => {
         res.status(500).render('restaurant/update-restaurant', { pageTitle: 'Update Restaurant', restaurant, error: err.message });
     }
 };
-
 
 const GETAddProduct = async (req, res) => {
     const pageTitle = 'Add Product';

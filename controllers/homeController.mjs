@@ -2,6 +2,7 @@ import Restaurant from '../models/restaurantModel.mjs';
 import Product from '../models/productModel.mjs';
 import CustomerQuota from '../models/customerQuotaModel.mjs';
 import Cart from '../models/cartModel.mjs';
+import { isRestaurantOpen } from '../utils/helpers.mjs';
 
 const GETHomePage = async (req, res) => {
     try {
@@ -10,8 +11,22 @@ const GETHomePage = async (req, res) => {
         const customerQuota = await CustomerQuota.find({ customer: customer }).populate('restaurant');      
         const filteredCustomerQuota = customerQuota.filter(quota => quota.restaurant); // Filter out null restaurants
         const pageTitle = 'Home';
-        const currentTime = new Date();
-        res.render('home/home', { pageTitle, restaurant: undefined, restaurants, customerQuota: filteredCustomerQuota, currentTime });
+
+        const currentDate = new Date();
+        const currentTime = currentDate.toLocaleTimeString('en-GB', {hour: '2-digit', minute:'2-digit'});
+        console.log("currentTime:", currentTime);
+        const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const currentDayIndex = currentDate.getDay(); // 0 (Sunday) to 6 (Saturday)
+        const targetDay = days[currentDayIndex];
+
+        restaurants.forEach( async (restaurant) => {
+            console.log('Name:', restaurant.name);
+            const foundDay = restaurant.openingHours.find(dayInfo => dayInfo.day === targetDay);
+            restaurant.isRestaurantOpen = isRestaurantOpen(foundDay, currentTime);
+            await restaurant.save();
+        });
+
+        res.render('home/home', { pageTitle, restaurant: undefined, restaurants, customerQuota: filteredCustomerQuota, currentTime, targetDay });
     } catch (err) {
         res.json({ 'GET home page': err.message });
     }

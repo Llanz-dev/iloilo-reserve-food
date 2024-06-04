@@ -73,6 +73,10 @@ const restaurantSchema = new Schema({
         type: Boolean,
         default: false 
     },  
+    isRestaurantOpen: {
+        type: Boolean,
+        default: false 
+    },  
     customerQuota: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'CustomerQuota'
@@ -80,7 +84,7 @@ const restaurantSchema = new Schema({
     openingHours: {
         type: [openingHoursSchema],
         required: false
-    }
+    },
 });
 
 const Restaurant = mongoose.model('Restaurant', restaurantSchema);

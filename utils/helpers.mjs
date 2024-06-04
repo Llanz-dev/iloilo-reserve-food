@@ -83,4 +83,17 @@ const isQueryEmpty = (objectName) => {
   return Object.keys(objectName).length === 0;
 }
 
-export { hashPassword, comparePassword, handleErrors, toTitleCase, toSmallerCase, fourtyEightHours, createToken, lowerCase, hasProduct, isQueryEmpty };
+const isRestaurantOpen = (foundDay, currentTime) => {
+  while (foundDay.open && foundDay.close) {
+      console.log('foundDay.close:', foundDay.close);
+      console.log('currentTime:', currentTime);
+      console.log('foundDay.close === currentTime:', foundDay.close === currentTime);
+      if (foundDay.open === currentTime || foundDay.close === currentTime) {
+          return true;
+      } 
+      return foundDay.open <= currentTime && foundDay.close >= currentTime;
+  }
+  return false;
+}
+
+export { hashPassword, comparePassword, handleErrors, toTitleCase, toSmallerCase, fourtyEightHours, createToken, lowerCase, hasProduct, isQueryEmpty, isRestaurantOpen };
