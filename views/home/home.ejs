@@ -42,39 +42,42 @@
             };
         %>
 
-<% restaurants.forEach(restaurant => { %>
-    <% if (restaurant.statusIsActive) { %> 
-        <% let hideSquare = customerQuota.some(quota => quota.restaurant && quota.restaurant._id.toString() === restaurant._id.toString() && quota.cancelledLimit === 0); %>
+        <% restaurants.forEach(restaurant => { %>
+            <% if (restaurant.statusIsActive) { %> 
+                <% let hideSquare = customerQuota.some(quota => quota.restaurant && quota.restaurant._id.toString() === restaurant._id.toString() && quota.cancelledLimit === 0); %>
 
-        <div class="square<%= hideSquare ? ' d-none' : '' %>">
-            <% let isOpen = isRestaurantOpen(restaurant, currentTime); %>
+                <div class="square<%= hideSquare ? ' d-none' : '' %>">
+                    <% let isOpen = isRestaurantOpen(restaurant, currentTime); %>
 
-            <% if (!isOpen) { %>
-                <a class="card mb-4 shadow-sm text-decoration-none">                     
-            <% } else { %>
-                <a href="/restaurant-products/<%= restaurant.lowername %>" class="card mb-4 shadow-sm text-decoration-none">                     
-            <% } %>
-                <img src="/images/restaurant/<%= restaurant.lowername %>/banner/<%= restaurant.image %>" class="card-img-top restaurant-banner-image" alt="<%= restaurant.name %>">
-
-                <div class="card-body">
                     <% if (!isOpen) { %>
-                        <small class="bg-danger text-white py-1 px-2">CLOSED</small>
+                        <a class="card mb-4 shadow-sm text-decoration-none">                     
+                    <% } else { %>
+                        <a href="/restaurant-products/<%= restaurant.lowername %>" class="card mb-4 shadow-sm text-decoration-none">                     
                     <% } %>
-                    <h5 class="card-title mt-2"><%= restaurant.name %></h5>
-                    <p class="card-text"><%= restaurant.address %></p>
-                    <% if (isOpen) { %>
-                        <small>
-                            From <%= convertTo12HourFormat(restaurant.openingHours[0].open) %> to <%= convertTo12HourFormat(restaurant.openingHours[0].close) %>
-                        </small>
-                    <% } %>
-                </div>
-            </a>
-        </div>
-    <% } %>
-<% }) %>
+                        <img src="/images/restaurant/<%= restaurant.lowername %>/banner/<%= restaurant.image %>" class="card-img-top restaurant-banner-image" alt="<%= restaurant.name %>">
 
+                        <div class="card-body">
+                            <% if (!isOpen) { %>
+                                <small class="bg-danger text-white py-1 px-2">CLOSED</small>
+                            <% } %>
+                            <h5 class="card-title mt-2"><%= restaurant.name %></h5>
+                            <p class="card-text"><%= restaurant.address %></p>
+                            <% if (isOpen && restaurant.openingHours && restaurant.openingHours.length > 0 && restaurant.openingHours[0].open && restaurant.openingHours[0].close) { %>
+                                <small>
+                                    From <%= convertTo12HourFormat(restaurant.openingHours[0].open) %> to <%= convertTo12HourFormat(restaurant.openingHours[0].close) %>
+                                </small>
+                            <% } else { %>
+                                <!-- <small class="text-muted">Opening hours not available</small> -->
+                            <% } %>
+                        </div>
+                    </a>
+                </div>
+            <% } %>
+        <% }) %>
     </div>
 </main>
+
+
 
 
 <script src="/js/customer/home.js"></script>            
