@@ -12,8 +12,7 @@ const GETHomePage = async (req, res) => {
         const pageTitle = 'Home';
 
         const currentDate = new Date();
-        const currentTime = currentDate.toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Manila' });
-
+        const currentTime = currentDate.toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' });
 
         const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         const currentDayIndex = currentDate.getDay(); // 0 (Sunday) to 6 (Saturday)
