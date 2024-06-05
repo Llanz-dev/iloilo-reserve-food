@@ -22,11 +22,6 @@ const openingHoursSchema = new Schema({
 }, { _id: false });
 
 const restaurantSchema = new Schema({
-    isRestaurantOpen: {
-        type: Boolean,
-        required: false,
-        default: false 
-    },
     username: {
         type: String,
         required: true,

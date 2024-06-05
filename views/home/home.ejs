@@ -12,40 +12,52 @@
             };
         %>
 
+        <% 
+            function isRestaurantOpen(dayInfo, currentTime) {
+                if (!dayInfo || !dayInfo.isOpen) return false;
+                const [currentHours, currentMinutes] = currentTime.split(':').map(Number);
+                const [openHours, openMinutes] = dayInfo.open.split(':').map(Number);
+                const [closeHours, closeMinutes] = dayInfo.close.split(':').map(Number);
+
+                const currentTimeInMinutes = currentHours * 60 + currentMinutes;
+                const openTimeInMinutes = openHours * 60 + openMinutes;
+                const closeTimeInMinutes = closeHours * 60 + closeMinutes;
+
+                return currentTimeInMinutes >= openTimeInMinutes && currentTimeInMinutes <= closeTimeInMinutes;
+            }
+        %>
+
 <% restaurants.forEach(restaurant => { %>
     <% if (restaurant.statusIsActive) { %>
       <% let hideSquare = customerQuota.some(quota => quota.restaurant && quota.restaurant._id.toString() === restaurant._id.toString() && quota.cancelledLimit === 0); %>
-      <div class="square<%= hideSquare ? ' d-none' : '' %>">
-        <!-- Debugging output to ensure restaurant data is correct -->
-        <pre><%= JSON.stringify(restaurant, null, 2) %></pre>
-        
-        <h3>isRestaurantOpen: <%= restaurant.isRestaurantOpen %></h3>
-        
-        <% if (restaurant.isRestaurantOpen) { %>
-          <a href="/restaurant-products/<%= restaurant.lowername %>" class="card mb-4 shadow-sm text-decoration-none">
-        <% } else { %>
-          <a class="card mb-4 shadow-sm text-decoration-none">
-        <% } %>
-        
-        <img src="/images/restaurant/<%= restaurant.lowername %>/banner/<%= restaurant.image %>" class="card-img-top restaurant-banner-image" alt="<%= restaurant.name %>">
-        
-        <div class="card-body">
-          <% if (!restaurant.isRestaurantOpen) { %>
-            <small class="bg-danger text-white py-1 px-2">CLOSED</small>
-          <% } %>
-          <h5 class="card-title mt-2"><%= restaurant.name %></h5>
-          <p class="card-text"><%= restaurant.address %></p>
-          <% if (restaurant.isRestaurantOpen) { %>
-            <small>
-              From....
-            </small>
-          <% } %>
+        <div class="square<%= hideSquare ? ' d-none' : '' %>">
+            <pre><% const dayInfo = restaurant.openingHours.find(dayInfo => dayInfo.day === targetDay) %></pre>
+            <% if (isRestaurantOpen(dayInfo, currentTime)) { %>
+                <a href="/restaurant-products/<%= restaurant.lowername %>" class="card mb-4 shadow-sm text-decoration-none">
+            <% } else { %>
+                <a class="card mb-4 shadow-sm text-decoration-none">
+            <% } %>
+            
+            <img src="/images/restaurant/<%= restaurant.lowername %>/banner/<%= restaurant.image %>" class="card-img-top restaurant-banner-image" alt="<%= restaurant.name %>">
+            
+            <div class="card-body">
+                <% if (!isRestaurantOpen(dayInfo, currentTime)) { %>
+                    <small class="bg-danger text-white py-1 px-2">CLOSED</small>
+                <% } %>
+
+                <h5 class="card-title mt-2"><%= restaurant.name %></h5>
+                <p class="card-text"><%= restaurant.address %></p>
+
+                <% if (restaurant.isRestaurantOpen) { %>
+                    <small class="text-secondary">
+                        From <%= convertTo12HourFormat(dayInfo.open) %> to <%= convertTo12HourFormat(dayInfo.close) %>
+                    </small>
+                <% } %>
+            </div>
+          </a>
         </div>
-        </a>
-      </div>
-    <% } %>
-  <% }) %>
-  
+        <% } %>
+    <% }) %>  
     </div>
 </main>
 
