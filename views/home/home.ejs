@@ -20,9 +20,6 @@
 
             <% if (restaurant.statusIsActive) { %> 
                 <% let hideSquare = customerQuota.some(quota => quota.restaurant && quota.restaurant._id.toString() === restaurant._id.toString() && quota.cancelledLimit === 0); %>
-                <h4>findDay.open: <%= findDay.open %></h4>
-                <h4>findDay.close: <%= findDay.close %></h4>
-                <h4>currentTime: <%= currentTime %></h4>
                 <div class="square<%= hideSquare ? ' d-none' : '' %>">
                     <% if (restaurant.isRestaurantOpen) { %>
                         <a href="/restaurant-products/<%= restaurant.lowername %>" class="card mb-4 shadow-sm text-decoration-none">                                          
