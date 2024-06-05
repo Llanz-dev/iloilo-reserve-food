@@ -29,7 +29,6 @@
 
 <% restaurants.forEach(restaurant => { %>
     <% if (restaurant.statusIsActive) { %>
-        <h4>update</h4>
       <% let hideSquare = customerQuota.some(quota => quota.restaurant && quota.restaurant._id.toString() === restaurant._id.toString() && quota.cancelledLimit === 0); %>
         <div class="square<%= hideSquare ? ' d-none' : '' %>">
             <% const dayInfo = restaurant.openingHours.find(dayInfo => dayInfo.day === targetDay) %>
