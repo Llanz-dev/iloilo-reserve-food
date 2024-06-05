@@ -2,6 +2,7 @@ import Restaurant from '../models/restaurantModel.mjs';
 import Product from '../models/productModel.mjs';
 import CustomerQuota from '../models/customerQuotaModel.mjs';
 import Cart from '../models/cartModel.mjs';
+import moment from 'moment-timezone';
 
 const isRestaurantOpen = (foundDay, currentTime) => {
     while (foundDay.open && foundDay.close) {
@@ -25,7 +26,8 @@ const GETHomePage = async (req, res) => {
         const pageTitle = 'Home';
 
         const currentDate = new Date();
-        const currentTime = currentDate.toLocaleTimeString('en-PH', {hour: '2-digit', minute:'2-digit', hour12: false, timeZone: "Asia/Manila"});
+        // Use Moment Timezone to get the current time in the Asia/Manila timezone
+        const currentTime = moment().tz('Asia/Manila').format('HH:mm'); // 24-hour format
         console.log("currentTime:", currentTime);
         const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         const currentDayIndex = currentDate.getDay(); // 0 (Sunday) to 6 (Saturday)
