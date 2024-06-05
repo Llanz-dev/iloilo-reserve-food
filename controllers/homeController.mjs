@@ -3,27 +3,46 @@ import Product from '../models/productModel.mjs';
 import CustomerQuota from '../models/customerQuotaModel.mjs';
 import Cart from '../models/cartModel.mjs';
 
+const isRestaurantOpen = (foundDay, currentTime) => {
+    while (foundDay.open && foundDay.close) {
+        console.log('foundDay.close:', foundDay.close);
+        console.log('currentTime:', currentTime);
+        console.log('foundDay.close === currentTime:', foundDay.close === currentTime);
+        if (foundDay.open === currentTime || foundDay.close === currentTime) {
+            return true;
+        } 
+        return foundDay.open <= currentTime && foundDay.close >= currentTime;
+    }
+    return false;
+}
+
 const GETHomePage = async (req, res) => {
     try {
         const restaurants = await Restaurant.find();
         const customer = res.locals.customer;
-        const customerQuota = await CustomerQuota.find({ customer: customer }).populate('restaurant');
+        const customerQuota = await CustomerQuota.find({ customer: customer }).populate('restaurant');      
         const filteredCustomerQuota = customerQuota.filter(quota => quota.restaurant); // Filter out null restaurants
         const pageTitle = 'Home';
 
         const currentDate = new Date();
-        const currentTime = currentDate.toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' });
-
+        const currentTime = currentDate.toLocaleTimeString('en-GB', {hour: '2-digit', minute:'2-digit'});
+        console.log("currentTime:", currentTime);
         const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         const currentDayIndex = currentDate.getDay(); // 0 (Sunday) to 6 (Saturday)
         const targetDay = days[currentDayIndex];
 
-        res.render('home/home', { pageTitle, restaurants, customerQuota: filteredCustomerQuota, currentTime, targetDay, restaurant: undefined });
+        restaurants.forEach( async (restaurant) => {
+            console.log('Name:', restaurant.name);
+            const foundDay = restaurant.openingHours.find(dayInfo => dayInfo.day === targetDay);
+            restaurant.isRestaurantOpen = isRestaurantOpen(foundDay, currentTime);
+            await restaurant.save();
+        });
+
+        res.render('home/home', { pageTitle, restaurant: undefined, restaurants, customerQuota: filteredCustomerQuota, currentTime, targetDay });
     } catch (err) {
         res.json({ 'GET home page': err.message });
     }
 }
-
 const GETRestaurantProductsPage = async (req, res) => {
     try {
         const restaurantLowerName = req.params.lowername;
