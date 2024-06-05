@@ -16,7 +16,7 @@ const GETHomePage = async (req, res) => {
         console.log("currentTime:", currentTime);
         const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         const currentDayIndex = currentDate.getDay(); // 0 (Sunday) to 6 (Saturday)
-        const targetDay = days[currentDayIndex];
+        const targetDay = 'Hello Llanz target day';
 
         res.render('home/home', { pageTitle, restaurants, customerQuota: filteredCustomerQuota, currentTime, targetDay });
     } catch (err) {
