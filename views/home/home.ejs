@@ -32,6 +32,9 @@
       <% let hideSquare = customerQuota.some(quota => quota.restaurant && quota.restaurant._id.toString() === restaurant._id.toString() && quota.cancelledLimit === 0); %>
         <div class="square<%= hideSquare ? ' d-none' : '' %>">
             <% const dayInfo = restaurant.openingHours.find(dayInfo => dayInfo.day === targetDay) %>
+            <h4>isRestaurantOpen(dayInfo, currentTime): <%= isRestaurantOpen(dayInfo, currentTime) %></h4>
+            <h4>currentTime: <%= currentTime %></h4>
+            <h4>dayInfo: <%= dayInfo %></h4>
             <% if (isRestaurantOpen(dayInfo, currentTime)) { %>
                 <a href="/restaurant-products/<%= restaurant.lowername %>" class="card mb-4 shadow-sm text-decoration-none">
             <% } else { %>
