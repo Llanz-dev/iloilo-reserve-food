@@ -31,9 +31,7 @@
     <% if (restaurant.statusIsActive) { %>
       <% let hideSquare = customerQuota.some(quota => quota.restaurant && quota.restaurant._id.toString() === restaurant._id.toString() && quota.cancelledLimit === 0); %>
         <div class="square<%= hideSquare ? ' d-none' : '' %>">
-            <h3>targetDay: <%= targetDay %></h3>
           
-          </a>
         </div>
         <% } %>
     <% }) %>  
