@@ -7,6 +7,11 @@
         </aside>
         <section class="right">
             <h2 class="title">Register</h2>
+            <label for="">Type of registration</label>
+            <select id="type-of-registration" onchange="navigateToLink()">
+                <option value="https://app.iresfood.com/register">Customer</option>
+                <option value="https://app.iresfood.com/restaurant/register">Restaurant</option>
+            </select>
             <form action="/register" id="register-form" method="POST">
                 <div class="mb-3">
                     <p class="error-field" id="error-username"></p>
@@ -37,5 +42,15 @@
             <p class="mt-3">Have already an account? <a href="/login">Login</a></p>
         </section>
     </main>      
+
+    <script>
+        function navigateToLink() {
+            var select = document.getElementById("type-of-registration");
+            var selectedValue = select.value;
+            if (selectedValue) {
+                window.location.href = selectedValue;
+            }
+        }
+    </script>
     <script src="/js/customer/register.js"></script>            
 <%- include('.././footer.ejs') %>

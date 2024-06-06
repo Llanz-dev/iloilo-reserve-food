@@ -1,4 +1,3 @@
-console.log('Register page');
 const registerForm = document.getElementById('register-form');
 const errorUsername = document.getElementById('error-username');
 const errorFullname = document.getElementById('error-fullname');

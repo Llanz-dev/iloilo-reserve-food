@@ -1,6 +1,11 @@
 <%- include('./layout/header.ejs') %>
     <main class="authentication">
         <h2 class="title">Restaurant Register</h2>
+        <label for="">Type of registration</label>
+        <select id="type-of-registration" onchange="navigateToLink()">
+          <option value="https://app.iresfood.com/restaurant/register">Restaurant</option>
+          <option value="https://app.iresfood.com/register">Customer</option>
+        </select>
         <% if (typeof error !== 'undefined') { %>
             <div class="alert alert-danger">
               <%= error %>
@@ -72,7 +77,15 @@
           <p class="mt-3">Have already an account? <a href="/restaurant">Login</a></p>
         </form>
     </main>
-
+    <script>
+      function navigateToLink() {
+          var select = document.getElementById("type-of-registration");
+          var selectedValue = select.value;
+          if (selectedValue) {
+              window.location.href = selectedValue;
+          }
+      }
+  </script>
 <script src="/js/showExistingImage.js"></script>            
 <script src="/js/textInputLowerCase.js"></script>            
 <%- include('.././footer.ejs') %>
