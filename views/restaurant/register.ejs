@@ -85,7 +85,46 @@
               window.location.href = selectedValue;
           }
       }
+      function toggleDay(day) {
+            const isOpenInput = document.getElementById(`isOpen-${day}`);
+            const openInput = document.getElementById(`open-${day}`);
+            const closeInput = document.getElementById(`close-${day}`);
+            const button = document.querySelector(`button[onclick="toggleDay('${day}')"]`);
+            
+            if (isOpenInput.value === "true") {
+                isOpenInput.value = "false";
+                openInput.disabled = true;
+                closeInput.disabled = true;
+                button.textContent = "Closed";
+                button.classList.remove("btn-secondary");
+                button.classList.add("btn-danger");
+            } else {
+                isOpenInput.value = "true";
+                openInput.disabled = false;
+                closeInput.disabled = false;
+                button.textContent = "Open";
+                button.classList.remove("btn-danger");
+                button.classList.add("btn-secondary");
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']; ;
+
+            days.forEach(day => {
+                const isOpenInput = document.getElementById(`isOpen-${day}`);
+                if (isOpenInput.value === "false") {
+                    document.getElementById(`open-${day}`).disabled = true;
+                    document.getElementById(`close-${day}`).disabled = true;
+                    const button = document.querySelector(`button[onclick="toggleDay('${day}')"]`);
+                    button.textContent = "Closed";
+                    button.classList.remove("btn-secondary");
+                    button.classList.add("btn-danger");
+                }
+            });
+        });
   </script>
+  
 <script src="/js/showExistingImage.js"></script>            
 <script src="/js/textInputLowerCase.js"></script>            
 <%- include('.././footer.ejs') %>
