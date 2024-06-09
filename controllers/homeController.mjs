@@ -3,19 +3,7 @@ import Product from '../models/productModel.mjs';
 import CustomerQuota from '../models/customerQuotaModel.mjs';
 import Cart from '../models/cartModel.mjs';
 import moment from 'moment-timezone';
-
-const isRestaurantOpen = (foundDay, currentTime) => {
-    while (foundDay.open && foundDay.close) {
-        console.log('foundDay.close:', foundDay.close);
-        console.log('currentTime:', currentTime);
-        console.log('foundDay.close === currentTime:', foundDay.close === currentTime);
-        if (foundDay.open === currentTime || foundDay.close === currentTime) {
-            return true;
-        } 
-        return foundDay.open <= currentTime && foundDay.close >= currentTime;
-    }
-    return false;
-}
+import { isRestaurantOpen } from '../utils/restaurantUtils.mjs';
 
 const GETHomePage = async (req, res) => {
     try {
@@ -28,13 +16,11 @@ const GETHomePage = async (req, res) => {
         const currentDate = new Date();
         // Use Moment Timezone to get the current time in the Asia/Manila timezone
         const currentTime = moment().tz('Asia/Manila').format('HH:mm'); // 24-hour format
-        console.log("currentTime:", currentTime);
         const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         const currentDayIndex = currentDate.getDay(); // 0 (Sunday) to 6 (Saturday)
         const targetDay = days[currentDayIndex];
 
         restaurants.forEach( async (restaurant) => {
-            console.log('Name:', restaurant.name);
             const foundDay = restaurant.openingHours.find(dayInfo => dayInfo.day === targetDay);
             restaurant.isRestaurantOpen = isRestaurantOpen(foundDay, currentTime);
             await restaurant.save();

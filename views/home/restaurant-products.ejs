@@ -62,13 +62,14 @@
 <script type="module">
   const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
   const host = window.location.host; // This gives you the current domain and port
+  console.log('host:', host);
   const socketUrl = `${protocol}//${host}/ws`;
 
   const socket = new WebSocket(socketUrl);
 
   socket.addEventListener('message', function (event) {
       const data = JSON.parse(event.data);
-      
+
       if (data.type === 'PRODUCT_UPDATE' && data.restaurantId === '<%= restaurantID %>') {
           location.reload();
       }

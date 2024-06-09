@@ -133,7 +133,6 @@ const GETRestaurantDashboard = async (req, res) => {
     try {
         const { query } = req;
         const restaurant = res.locals.restaurant;
-        console.log('restaurant:', restaurant);
         let transactionQuery = { restaurant: restaurant._id, $or: [{ isToday: true }, { isPending: true }] }
 
         const hasQuery = Object.keys(query).length > 0;
@@ -171,6 +170,10 @@ const GETRestaurantDashboard = async (req, res) => {
 
         // Call processTransactions and pass the transactions as argument
         processTransactions(transactions);
+        
+        transactions.forEach(async (transaction) => {
+            console.log('transaction:', transaction);
+        });
         
         res.render('restaurant/dashboard', { pageTitle: 'Dashboard', transactions });
     } catch (err) {

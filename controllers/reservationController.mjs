@@ -3,6 +3,10 @@ import Cart from '../models/cartModel.mjs';
 import { calculateTimeDifference } from '../utils/timeUtils.mjs';
 import calculateTotalAmountByPax from '../utils/paxUtils.mjs';
 import Voucher from '../models/voucherModel.mjs';
+import moment from 'moment-timezone';
+import Restaurant from '../models/restaurantModel.mjs';
+import { formatTimeTo12Hour, timeToMinutes, convertToMinutes, checkReservationDateAndTime } from '../utils/reservationUtils.mjs';
+
 
 const GETCreateReservation = async (req, res) => {
   try {
@@ -28,19 +32,17 @@ const POSTCreateReservation = async (req, res) => {
 
   try {
     const { customer, restaurant, reservation_date, reservation_time, num_pax, amount, notes } = req.body;
-  
-    console.log('req.body:', req.body);
-    console.log('num_pax:', num_pax);
-
     calculateTotalAmountByPax(num_pax, cart);
-
-    console.log('total:', cart.totalAmount);
     cart.halfAmount = cart.totalAmount / 2;
     // await cart.save();
+    
+    const restaurantObject = await Restaurant.findById(restaurantID);
+ 
+    await checkReservationDateAndTime(restaurantObject, reservation_date, reservation_time);
 
     // Construct URL with reservation data parameters
     const redirectURL = `/checkout/${restaurantID}/${cartID}/?restaurantID=${restaurantID}&cartID=${cartID}&customer=${customer}&reservation_date=${reservation_date}&reservation_time=${reservation_time}&num_pax=${num_pax}&amount=${amount}&notes=${notes}`;
-    
+
     // Redirect to checkout page with reservation data parameters
     res.redirect(redirectURL);
   } catch (err) {

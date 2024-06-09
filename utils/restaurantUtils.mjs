@@ -11,5 +11,18 @@ async function deleteUsedVouchers() {
     }
 }
 
+const isRestaurantOpen = (foundDay, currentTime) => {
+    while (foundDay.open && foundDay.close) {
+        if (foundDay.open === currentTime || foundDay.close === currentTime) {
+            return true;
+        } 
+        return foundDay.open <= currentTime && foundDay.close >= currentTime;
+    }
+    return false;
+}
 
-export { deleteUsedVouchers };
+const isTransactionCancelled = (reservationDateAndTime, currentDateAndTime) => {
+    return `reservationDateAndTime: ${reservationDateAndTime} currentDateAndTime: ${currentDateAndTime}`;
+}
+
+export { deleteUsedVouchers, isRestaurantOpen, isTransactionCancelled };
