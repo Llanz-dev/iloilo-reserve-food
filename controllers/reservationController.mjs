@@ -38,6 +38,8 @@ const POSTCreateReservation = async (req, res) => {
     
     const restaurantObject = await Restaurant.findById(restaurantID);
  
+    // This will throw an error if the reservation date day or time is close.
+    // It will prevent the user to reserve on that day and time if resto is close.
     await checkReservationDateAndTime(restaurantObject, reservation_date, reservation_time);
 
     // Construct URL with reservation data parameters
