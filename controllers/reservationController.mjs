@@ -5,7 +5,7 @@ import calculateTotalAmountByPax from '../utils/paxUtils.mjs';
 import Voucher from '../models/voucherModel.mjs';
 import moment from 'moment-timezone';
 import Restaurant from '../models/restaurantModel.mjs';
-import { formatTimeTo12Hour, timeToMinutes, convertToMinutes, checkReservationDateAndTime } from '../utils/reservationUtils.mjs';
+import { checkReservationDateAndTime } from '../utils/reservationUtils.mjs';
 
 
 const GETCreateReservation = async (req, res) => {

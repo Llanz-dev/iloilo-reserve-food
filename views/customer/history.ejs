@@ -25,6 +25,7 @@
               <div class="border border-black col-lg-4 col-12 col-sm-6 transaction" style="background-color: #83C5BE; color: black;">
               <h5>Transaction Status: Pending</h5>
           <% } %>
+              <h6>Restaurant: <%= transaction.restaurant.name %></h6>
               <h6 class="card-title">Transaction ID: <%= transaction._id %></h6>
               <div class="accordion accordion-flush my-2" id="accordionFlushExample">
                 <div class="accordion-item">

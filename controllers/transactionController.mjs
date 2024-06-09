@@ -4,7 +4,8 @@ import CustomerQuota from '../models/customerQuotaModel.mjs';
 import { captureOrder } from '../controllers/checkoutController.mjs';
 import { deleteUsedVouchers } from '../utils/restaurantUtils.mjs';
 import voucherGenerator from '../utils/voucherUtils.mjs';
-
+import countCustomerCancelled from '../utils/countCustomerCancelled.mjs';
+import processAndCancelExpiredReservations from '../utils/transactionUtils.mjs';
 
 const GETtransaction = async (req, res) => {
   try {
@@ -31,6 +32,12 @@ const GETtransaction = async (req, res) => {
       .sort({ createdAt: -1 });
 
     await deleteUsedVouchers();
+    // Call processAndCancelExpiredReservations and pass the transactions as argument
+    // This will turn the transaction status turns into isToday equals to true if this day is the day that customer reserve.
+    // It will also cancel the reservation if it is passed from the time that given.
+    // Example: customer reservation date is today date and the reservation time is 1:00pm and the current time is 12:50pm
+    // If the current time will exceed from that 1:00pm reservation time then it will automatically cancelled.
+    processAndCancelExpiredReservations(transactions);
 
     // Get the current date and time in the 'Asia/Manila' timezone
     res.render('transaction/transaction', { pageTitle: 'Transactions', transactions, restaurant: undefined });
@@ -97,10 +104,7 @@ const cancelReservationUnrefundable = async (req, res) => {
       }
 
       const customer = res.locals.customer;
-      const customerQuota = await CustomerQuota.findOne({ restaurant: transactionObject.restaurant, customer: customer });
-      customerQuota.cancelledLimit -= 1;
-
-      await customerQuota.save();
+      countCustomerCancelled(transactionObject.restaurant, customer);
   
       // Update the transaction status
       transactionObject.isCancelled = true;

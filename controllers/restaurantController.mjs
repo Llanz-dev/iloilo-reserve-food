@@ -10,7 +10,7 @@ import { calculateTimeDifference } from '../utils/timeUtils.mjs';
 import { hashPassword, comparePassword, createToken, fourtyEightHours, lowerCase, hasProduct, isQueryEmpty } from '../utils/helpers.mjs';
 import { createDirectory, deleteDirectory, deleteFile, renameFolder, moveImageToNewDirectory } from '../utils/fileUtils.mjs';
 import { wss } from '../index.mjs';
-import processTransactions from '../utils/transactionUtils.mjs';
+import processAndCancelExpiredReservations from '../utils/transactionUtils.mjs';
 
 const GETrestaurantRegister = async (req, res) => {
     const pageTitle = 'Restaurant Register';
@@ -168,12 +168,12 @@ const GETRestaurantDashboard = async (req, res) => {
         })
         .sort({ createdAt: -1 });
 
-        // Call processTransactions and pass the transactions as argument
-        processTransactions(transactions);
-        
-        transactions.forEach(async (transaction) => {
-            console.log('transaction:', transaction);
-        });
+        // Call processAndCancelExpiredReservations and pass the transactions as argument
+        // This will turn the transaction status turns into isToday equals to true if this day is the day that customer reserve.
+        // It will also cancel the reservation if it is passed from the time that given.
+        // Example: customer reservation date is today date and the reservation time is 1:00pm and the current time is 12:50pm
+        // If the current time will exceed from that 1:00pm reservation time then it will automatically cancelled.
+        processAndCancelExpiredReservations(transactions);                
         
         res.render('restaurant/dashboard', { pageTitle: 'Dashboard', transactions });
     } catch (err) {
@@ -217,8 +217,8 @@ const GETRestaurantDashboardToday = async (req, res) => {
         })
         .sort({ createdAt: -1 });
 
-        // Call processTransactions and pass the transactions as argument
-        processTransactions(transactions);             
+        // Call processAndCancelExpiredReservations and pass the transactions as argument
+        processAndCancelExpiredReservations(transactions);             
         
         res.render('restaurant/dashboard', { pageTitle: 'Dashboard', transactions });
     } catch (err) {
@@ -260,8 +260,8 @@ const GETRestaurantDashboardPending = async (req, res) => {
         })
         .sort({ createdAt: -1 });
 
-        // Call processTransactions and pass the transactions as argument
-        processTransactions(transactions);             
+        // Call processAndCancelExpiredReservations and pass the transactions as argument
+        processAndCancelExpiredReservations(transactions);             
         
         res.render('restaurant/dashboard', { pageTitle: 'Dashboard', transactions });
     } catch (err) {

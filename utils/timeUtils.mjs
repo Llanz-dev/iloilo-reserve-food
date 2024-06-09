@@ -18,8 +18,6 @@ const calculateTimeDifference = (transactionObject) => {
         daysCount += 1;
     }
 
-    console.log('daysCount:', daysCount);
-
     transactionObject.isToday = daysCount === 0 ? true : false;
     if (daysCount === 0) {
         transactionObject.isToday = true;
@@ -32,4 +30,31 @@ const calculateTimeDifference = (transactionObject) => {
     return daysCount;
 }
 
-export { calculateTimeDifference };
+function timeToMinutes(time) {
+    const [hours, minutes] = time.split(':').map(Number);
+    return hours * 60 + minutes;
+}
+
+function formatTimeTo12Hour(time) {
+    const [hours, minutes] = time.split(':').map(Number);
+    let period = 'AM';
+    let formattedHours = hours;
+    
+    if (hours >= 12) {
+        period = 'PM';
+        if (hours > 12) {
+            formattedHours = hours - 12;
+        }
+    } else if (hours === 0) {
+        formattedHours = 12;
+    }
+
+    return `${formattedHours}:${minutes.toString().padStart(2, '0')} ${period}`;
+}
+
+function convertToMinutes(time) {
+    const [hours, minutes] = time.split(':').map(Number);
+    return hours * 60 + minutes;
+}
+
+export { calculateTimeDifference, timeToMinutes, formatTimeTo12Hour, convertToMinutes };

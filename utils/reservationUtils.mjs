@@ -1,29 +1,4 @@
-function timeToMinutes(time) {
-    const [hours, minutes] = time.split(':').map(Number);
-    return hours * 60 + minutes;
-}
-
-function formatTimeTo12Hour(time) {
-    const [hours, minutes] = time.split(':').map(Number);
-    let period = 'AM';
-    let formattedHours = hours;
-    
-    if (hours >= 12) {
-        period = 'PM';
-        if (hours > 12) {
-            formattedHours = hours - 12;
-        }
-    } else if (hours === 0) {
-        formattedHours = 12;
-    }
-
-    return `${formattedHours}:${minutes.toString().padStart(2, '0')} ${period}`;
-}
-
-function convertToMinutes(time) {
-    const [hours, minutes] = time.split(':').map(Number);
-    return hours * 60 + minutes;
-}
+import moment from "moment-timezone";
 
 const checkReservationDateAndTime = async (restaurantObject, reservation_date, reservation_time) => {    
     const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -48,4 +23,4 @@ const checkReservationDateAndTime = async (restaurantObject, reservation_date, r
     }
 };
 
-export { timeToMinutes, formatTimeTo12Hour, convertToMinutes, checkReservationDateAndTime };
+export { checkReservationDateAndTime };

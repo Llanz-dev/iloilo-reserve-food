@@ -20,6 +20,7 @@ const GETHomePage = async (req, res) => {
         const currentDayIndex = currentDate.getDay(); // 0 (Sunday) to 6 (Saturday)
         const targetDay = days[currentDayIndex];
 
+        // This will check if restaurant is open or not.
         restaurants.forEach( async (restaurant) => {
             const foundDay = restaurant.openingHours.find(dayInfo => dayInfo.day === targetDay);
             restaurant.isRestaurantOpen = isRestaurantOpen(foundDay, currentTime);
