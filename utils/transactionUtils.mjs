@@ -18,12 +18,15 @@ const processAndCancelExpiredReservations = async (transactions) => {
 
             // Compare the current time with the reservation time 
             if (currentTime > reservationTime) {
-                countCustomerCancelled(transaction.restaurant._id, transaction.customer._id);
-                // Update the transaction status
-                transaction.isCancelled = true;
-                transaction.isPending = false;
-                transaction.isToday = false;
-                await transaction.save();      
+                // Set a timer for 1 hour (3600000 milliseconds)
+                setTimeout(async () => {
+                    countCustomerCancelled(transaction.restaurant._id, transaction.customer._id);
+                    // Update the transaction status
+                    transaction.isCancelled = true;
+                    transaction.isPending = false;
+                    transaction.isToday = false;
+                    await transaction.save();      
+                }, 120000);
             } else {
                 // Handle the case where the reservation time is in the future
                 console.log('future');
