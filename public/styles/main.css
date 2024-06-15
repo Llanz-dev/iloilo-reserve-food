@@ -47,6 +47,10 @@ a {
     color: #006D77;
 }
 
+.form-group {
+    margin: .5rem 0;
+}
+
 @media (max-width: 575px) {
     nav .container-fluid {
         --bs-gutter-x: 2.5rem !important;

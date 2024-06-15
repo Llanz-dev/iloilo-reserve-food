@@ -41,12 +41,12 @@
                                   <li class="list-group-item"><span><%= item.product.name %> <%= item.quantity %>x</span> <span>₱<%= item.total %></span></li>
                               <% }); %>                        
                               <% if (transaction.cart.voucherAmount) { %>
-                                  <li class="list-group-item"><span>Reservation amount</span> <span>₱<span class="total-amount"><%= transaction.cart.reservationAmount %></span></span></li>    
+                                  <li class="list-group-item"><span>Reservation fee</span> <span>₱<span class="total-amount"><%= transaction.cart.reservationAmount %></span></span></li>    
                                   <li class="list-group-item"><span>Subtotal amount</span> <span>₱<span class="total-amount"><%= transaction.cart.subTotal %></span></span></li>
                                   <li class="list-group-item list-group-item-success"><span class="total-amount">Voucher amount</span> <span>-₱<span class="total-amount"><%= transaction.cart.voucherAmount %></span></span></span></li>               
                               <% } else { %>
                                   <li class="list-group-item"><span>Subtotal amount</span> <span>₱<span class="total-amount"><%= transaction.cart.subTotal %></span></span></li>
-                                  <li class="list-group-item"><span>Reservation amount</span> <span>₱<span class="total-amount"><%= transaction.cart.reservationAmount %></span></span></li>    
+                                  <li class="list-group-item"><span>Reservation fee</span> <span>₱<span class="total-amount"><%= transaction.cart.reservationAmount %></span></span></li>    
                               <% } %>
                               <li class="list-group-item"><span>Total amount</span> <span>₱<span class="total-amount"><%= transaction.cart.totalAmount %></span></span></li>            
                               <li class="list-group-item fw-bold"><span>Half amount</span> <span>₱<span class="total-amount"><%= transaction.cart.halfAmount %></span></span></li>

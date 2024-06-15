@@ -56,6 +56,7 @@ disableInputsIfDateNotSelected();
 document.getElementById('reservation_date').addEventListener('input', () => {
     checkFormCompletion();
     disableInputsIfDateNotSelected();
+
     if (isCurrentSelectedDate()) {
       // Set the minimum value for the time input field
       document.getElementById('reservation_time').min = formattedCurrentTime;
@@ -69,10 +70,6 @@ document.getElementById('reservation_time').addEventListener('input', () => {
     checkFormCompletion();
 });
 
-numPaxInput.addEventListener('input', () => {
-    checkFormCompletion();
-});
-  
 // -----------------------------------------------------------------------------------------------------------
 
 const cartAmountSpan = document.querySelector('.total-amount');
@@ -87,7 +84,18 @@ outOfRange.style.display = 'none';
 createReservationButton.disabled = true;
 
 numPaxInput.addEventListener('input', () => {
+    checkFormCompletion();
     const numPax = parseFloat(numPaxInput.value);
+
+    if (numPax <= 0) {
+      outOfRange.style.display = 'block';
+      outOfRangeValue.textContent = numPax;
+      createReservationButton.disabled = true;
+    } else {
+      outOfRange.style.display = 'none';
+      outOfRangeValue.textContent = '';
+      createReservationButton.disabled = false;
+    }
 
     if (isNaN(numPax)) return totalAmountCart;
     
@@ -95,10 +103,6 @@ numPaxInput.addEventListener('input', () => {
 
     cartAmountSpan.textContent = putCommas(cartAmount);
 });
-
-const putCommas = (amount) => {
-    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
 
 const calculateCartAmount = (numPax) => {
     const currentCartAmount = parseFloat(totalAmountCart);
@@ -129,3 +133,7 @@ const isCurrentSelectedDate = () => {
     // Compare year, month, and day
     return currentYear === selectedYear && currentMonth === selectedMonth && currentDay === selectedDay;
 };
+
+const putCommas = (amount) => {
+  return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}

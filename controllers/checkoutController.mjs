@@ -194,28 +194,34 @@ const createOrderHandler = async (req, res) => {
   }
 };
 
+// This function is where I do save all the data and finalized things.
 const captureOrderHandler = async (req, res) => {
     try {
         console.log('getCartID:', getCartID);
         console.log('---------- captureOrderHandler Finish ----------');
         const cartID = req.params.cartID;
         const cart = await Cart.findById(getCartID).populate('customer restaurant');
+
+        // Create reservation model.
         const reservationObject = await Reservation.create({ customer: reservationQuery.customer, restaurant: reservationQuery.restaurantID, cart: reservationQuery.cartID, reservation_date: reservationQuery.reservation_date, reservation_time: reservationQuery.reservation_time, num_pax: reservationQuery.num_pax, amount: reservationQuery.amount, notes: reservationQuery.notes });  
 
+        // Save the cart and its calculation.
         cart.totalAmount += Number(reservationObject.amount);
         cart.halfAmount = (cart.totalAmount - cart.voucherAmount) / 2;
         cart.totalAmount -= cart.voucherAmount;
         cart.isHalfPaymentSuccessful = true;
         await cart.save();
 
+        // Create transaction model.
         const transaction = await Transaction.create({ customer: cart.customer, restaurant: cart.restaurant, cart: cart, reservation: reservationObject });    
         const transactionObject = await Transaction.findById(transaction._id).populate('cart reservation');
         const customerQuota = await CustomerQuota.findOne({ customer: cart.customer, restaurant: cart.restaurant });
         console.log('customerQuota:', customerQuota);        
         if (!customerQuota) {
-          const cq = await CustomerQuota.create({ customer: cart.customer, restaurant: cart.restaurant });
-          console.log('Customer Quota Created:', cq);
+          const customerQuotaCreated = await CustomerQuota.create({ customer: cart.customer, restaurant: cart.restaurant });
+          console.log('Customer Quota Created:', customerQuotaCreated);
         }
+
         const { orderID } = req.params;
         const { jsonResponse, httpStatusCode } = await captureOrder(orderID, transactionObject, false);
         res.status(httpStatusCode).json(jsonResponse);

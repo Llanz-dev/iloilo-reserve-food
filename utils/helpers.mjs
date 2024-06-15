@@ -1,6 +1,8 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
+import moment from "moment-timezone";
+
 const hashPassword = async (password) => {
   const saltRounds = 10;
   try {

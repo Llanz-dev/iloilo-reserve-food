@@ -211,7 +211,6 @@ const GETHistoryPageCancelled = async (req, res) => {
   }
 }
 
-
 const POSTUpdateProfile = async (req, res) => {
   try {
     const customerID = req.params.id;
@@ -222,8 +221,8 @@ const POSTUpdateProfile = async (req, res) => {
     }
 
     // Format the strings 
-    username = toSmallerCase(username);
-    fullname = toTitleCase(fullname);
+    // username = toSmallerCase(username);
+    // fullname = toTitleCase(fullname);
   
     const updates = { username, fullname, dateOfBirth };
     

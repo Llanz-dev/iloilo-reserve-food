@@ -127,7 +127,7 @@ const GETProducts = async (req, res) => {
         console.error(err);
         res.status(500).send('Server Error');
     }
-}
+};
 
 const GETRestaurantDashboard = async (req, res) => {
     try {
