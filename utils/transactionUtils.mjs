@@ -26,7 +26,7 @@ const processAndCancelExpiredReservations = async (transactions) => {
                     transaction.isPending = false;
                     transaction.isToday = false;
                     await transaction.save();      
-                }, 120000);
+                }, 3540000);
             } else {
                 // Handle the case where the reservation time is in the future
                 console.log('future');
