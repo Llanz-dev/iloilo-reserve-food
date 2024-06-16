@@ -1,0 +1,50 @@
+<%- include('./layout/header.ejs') %>
+  <div class="container">
+    <div class="row justify-content-center mt-5">
+      <div class="col-md-8">
+        <div class="card bg-black text-white">
+          <div class="card-body">
+            <h1 class="card-title text-center mb-4">Update Customer</h1>
+            <% if (typeof error !== 'undefined') { %>
+              <div class="alert alert-danger">
+                <%= error %>
+              </div>
+            <% } %>
+            <form action="/adminux/update-customer/<%= customer._id %>" method="post" id="profile-form">
+              <div class="mb-3">
+                  <p class="error-field" id="error-username"></p>
+                  <label for="username" class="form-label">Username</label>
+                  <input type="text" class="form-control" id="username" value="<%= customer.username %>" name="username">
+              </div>
+              <div class="mb-3">
+                  <p class="error-field" id="error-fullname"></p>
+                  <label for="fullname" class="form-label">Fullname</label>
+                  <input type="text" class="form-control" id="fullname" value="<%= customer.fullname %>" name="fullname">
+              </div>
+              <div class="mb-3">
+                  <p class="error-field" id="error-dateOfBirth"></p>
+                  <label for="dateOfBirth" class="form-label">Date of Birth</label>
+                  <input type="date" class="form-control bg-white" id="dateOfBirth" value="<%= customer.dateOfBirth ? customer.dateOfBirth.toISOString().split('T')[0] : '' %>" name="dateOfBirth">
+              </div>
+
+              <div class="mb-3">
+                  <p class="error-field" id="error-password"></p>
+                  <label for="password" class="form-label">Password</label>
+                  <input type="password" class="form-control" id="password" value="" name="password" minlength="6" maxlength="12">
+              </div>
+              <div class="mb-3">
+                  <label for="reEnterPassword" class="form-label">Re-enter password</label>
+                  <input type="password" class="form-control" id="reEnterPassword" value="" name="reEnterPassword">
+              </div>            
+              <button type="submit" class="btn text-white primary-background-color w-100">update</button>
+          </form>
+            <a href="/adminux/customers" class="btn btn-warning w-100 mt-3">Back</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/showExistingImage.js"></script>
+  <script src="/js/textInputLowerCase.js"></script>            
+  <%- include('.././footer.ejs') %>

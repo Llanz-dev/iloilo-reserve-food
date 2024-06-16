@@ -32,6 +32,7 @@ const GETtransaction = async (req, res) => {
       .sort({ createdAt: -1 });
 
     await deleteUsedVouchers();
+    
     // Call processAndCancelExpiredReservations and pass the transactions as argument
     // This will turn the transaction status turns into isToday equals to true if this day is the day that customer reserve.
     // It will also cancel the reservation if it is passed from the time that given.
@@ -39,7 +40,6 @@ const GETtransaction = async (req, res) => {
     // If the current time will exceed from that 1:00pm reservation time then it will automatically cancelled.
     processAndCancelExpiredReservations(transactions);
 
-    // Get the current date and time in the 'Asia/Manila' timezone
     res.render('transaction/transaction', { pageTitle: 'Transactions', transactions, restaurant: undefined });
   } catch (err) {
     console.error(err);

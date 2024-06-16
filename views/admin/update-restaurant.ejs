@@ -12,63 +12,83 @@
             <% } %>
             <form action="/adminux/update-restaurant/<%= restaurant._id %>" method="post" enctype="multipart/form-data">
               <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" class="form-control" id="username" name="username" value="<%= restaurant.username %>" required
-                  minlength="5" maxlength="40">
+                  <label for="username">Username</label>
+                  <input type="text" class="form-control" id="username" name="username" value="<%= restaurant.username %>" required minlength="5" maxlength="40">
               </div>
           
               <div class="form-group">
-                <label for="name">Name</label>
-                <input type="text" class="form-control hidden-text" id="text" name="name" value="<%= restaurant.name %>" required
+                  <label for="name">Name</label>
+                  <input type="text" class="form-control hidden-text" id="text" name="name" value="<%= restaurant.name %>" required
                   minlength="5" maxlength="40">
                 <input type="hidden" class="form-control" id="lowerText" name="lowername" value="">
               </div>
           
               <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" class="form-control" id="email" name="email" value="<%= restaurant.email %>" required>
+                  <label for="email">Email</label>
+                  <input type="email" class="form-control" id="email" name="email" value="<%= restaurant.email %>" required>
               </div>
           
               <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" class="form-control" id="password" name="password">
+                  <label for="password">Password</label>
+                  <input type="password" class="form-control" id="password" name="password">
               </div>
           
               <div class="form-group">
-                <label for="reEnterPassword">Re-enter Password</label>
-                <input type="password" class="form-control" id="reEnterPassword" name="reEnterPassword">
+                  <label for="reEnterPassword">Re-enter Password</label>
+                  <input type="password" class="form-control" id="reEnterPassword" name="reEnterPassword">
               </div>
           
               <div class="form-group">
-                <label for="phone">Phone</label>
-                <input type="text" class="form-control" id="phone" name="phone" value="<%= restaurant.phone %>">
+                  <label for="phone">Phone</label>
+                  <input type="text" class="form-control" id="phone" name="phone" value="<%= restaurant.phone %>">
               </div>
           
               <div class="form-group">
-                <label for="address">Address</label>
-                <input type="text" class="form-control" id="address" name="address" value="<%= restaurant.address %>" required>
+                  <label for="address">Address</label>
+                  <input type="text" class="form-control" id="address" name="address" value="<%= restaurant.address %>" required>
               </div>
           
               <!-- Display existing image -->
               <div class="form-group" id="existingImageContainer">
-                <label>Existing Image</label>
-                <img src="/images/restaurant/<%= restaurant.lowername %>/banner/<%= restaurant.image %>" alt="Existing Image" id="existingImage" class="w-25">
+                  <label>Existing Image:</label>
+                  <br>
+                  <img src="/images/restaurant/<%= restaurant.lowername %>/banner/<%= restaurant.image %>" id="existingImage" class="w-75">
               </div>
           
               <!-- Option to upload a new image -->
               <div class="form-group">
-                <label for="image" class="form-label">Upload new banner image</label>
-                <input type="file" class="form-control" id="image" name="image">
+                  <label class="form-label">Upload new banner image:</label>
+                  <input type="file" class="form-control" id="image" name="image">
               </div>
               <input type="hidden" name="old_restaurant_banner_image" id="old_restaurant_banner_image" value="<%= restaurant.image %>">
+          
+              <label class="form-label mt-4 title">Set opening and closing hours:</label>  
+              <% restaurant.openingHours.forEach(item => { %>
+                  <div class="mb-2">
+                      <label class="form-label"><%= item.day %></label>
+                      <div class="row">
+                          <div class="col">
+                              <input type="time" class="form-control" name="openingHours[<%= item.day %>][open]" id="open-<%= item.day %>" value="<%= item.open %>" <%= !item.isOpen ? 'disabled' : '' %>>
+                          </div>
+                          <div class="col">
+                              <input type="time" class="form-control" name="openingHours[<%= item.day %>][close]" id="close-<%= item.day %>" value="<%= item.close %>" <%= !item.isOpen ? 'disabled' : '' %>>
+                          </div>
+                          <div class="col">
+                            <button type="button" id="toggle-<%= item.day %>" class="btn <%= item.isOpen ? 'btn-secondary' : 'btn-danger' %>" onclick="toggleDay('<%= item.day %>')"><%= item.isOpen ? 'Open' : 'Closed' %></button>
+                            <input type="hidden" name="openingHours[<%= item.day %>][isOpen]" id="isOpen-<%= item.day %>" value="<%= item.isOpen %>">
+                          </div>
+                      </div>
+                  </div>
+              <% }); %>
               <button type="submit" class="btn btn-primary w-100">Submit</button>
-            </form>
+            </form>  
             <a href="/adminux" class="btn btn-warning w-100 mt-3">Back</a>
           </div>
         </div>
       </div>
     </div>
   </div>
+
   <script src="/js/showExistingImage.js"></script>
   <script src="/js/textInputLowerCase.js"></script>            
   <%- include('.././footer.ejs') %>

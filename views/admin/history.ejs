@@ -1,0 +1,109 @@
+<%- include('./layout/header.ejs') %>
+  <div class="container">
+    <div class="row justify-content-center mt-5">
+      <div class="col-md-8">
+        <div class="card bg-black text-white">
+          <div class="card-body">
+            <h1 class="card-title text-center mb-4">History</h1>
+            <% if (typeof error !== 'undefined') { %>
+              <div class="alert alert-danger">
+                <%= error %>
+              </div>
+            <% } %>
+            <% if (!transactions.length) { %>
+                <h2 class="text-center mb-5">No history yet</h2>
+            <% } %>
+            <div class="row">    
+              <% transactions.forEach(transaction => { %>    
+                <% if (transaction.isCancelled === true && transaction.isRefunded === true) { %>
+                    <div class="border border-black col-lg-4 col-12 col-sm-6 transaction" style="background-color: #E29578;">
+                    <h5 class="text-black">Transaction Status: Refunded Cancelled</h5>
+                <% } else if (transaction.isCancelled === true && transaction.isRefunded === false) { %>
+                    <div class="border border-black col-lg-4 col-12 col-sm-6 transaction" style="background-color: #E29578;">
+                    <h5 class="text-black">Transaction Status: Unrefunded Cancelled</h5>
+                <% } else if (transaction.isToday === true && transaction.isTransactionComplete === false) { %>
+                    <div class="border border-black col-lg-4 col-12 col-sm-6 transaction" style="background-color: #c6d350;">
+                    <h5 class="text-black">Transaction Status: Today</h5>
+                <% } else if (transaction.isTransactionComplete === true) { %>
+                    <div class="border border-black col-lg-4 col-12 col-sm-6 transaction" style="background-color: #83c589;">
+                    <h5 class="text-black">Transaction Status: Completed</h5>
+                <% } else { %>
+                    <div class="border border-black col-lg-4 col-12 col-sm-6 transaction" style="background-color: #83C5BE; color: black;">
+                    <h5 class="text-black">Transaction Status: Pending</h5>
+                <% } %>
+                    <h6 class="text-black">Restaurant: <%= transaction.restaurant.name %></h6>
+                    <h6 class="card-title text-black">Transaction ID: <%= transaction._id %></h6>
+                    <div class="accordion accordion-flush my-2" id="accordionFlushExample">
+                      <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne<%= transaction._id  %>" aria-expanded="false" aria-controls="flush-collapseOne<%= transaction._id  %>">
+                              Receipt
+                            </button>
+                          </h2>
+                          <div id="flush-collapseOne<%= transaction._id  %>" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                            <div class="accordion-body">
+                                <ul class="list-group">
+                                    <% transaction.cart.items.forEach(item => { %>
+                                        <li class="list-group-item"><span><%= item.product.name %> <%= item.quantity %>x</span> <span>₱<%= item.total %></span></li>
+                                    <% }); %>                        
+                                    <% if (transaction.cart.voucherAmount) { %>
+                                        <li class="list-group-item"><span>Reservation fee</span> <span>₱<span class="total-amount"><%= transaction.cart.reservationAmount %></span></span></li>    
+                                        <li class="list-group-item"><span>Subtotal amount</span> <span>₱<span class="total-amount"><%= transaction.cart.subTotal %></span></span></li>
+                                        <li class="list-group-item list-group-item-success"><span class="total-amount">Voucher amount</span> <span>-₱<span class="total-amount"><%= transaction.cart.voucherAmount %></span></span></span></li>               
+                                    <% } else { %>
+                                        <li class="list-group-item"><span>Subtotal amount</span> <span>₱<span class="total-amount"><%= transaction.cart.subTotal %></span></span></li>
+                                        <li class="list-group-item"><span>Reservation fee</span> <span>₱<span class="total-amount"><%= transaction.cart.reservationAmount %></span></span></li>    
+                                    <% } %>
+                                    <li class="list-group-item"><span>Total amount</span> <span>₱<span class="total-amount"><%= transaction.cart.totalAmount %></span></span></li>            
+                                    <li class="list-group-item fw-bold"><span>Half amount</span> <span>₱<span class="total-amount"><%= transaction.cart.halfAmount %></span></span></li>
+                                  </ul>
+                            </div>
+                          </div>
+                    </div>
+                      <div class="accordion-item">
+                        <h2 class="accordion-header">
+                          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree<%= transaction._id %>" aria-expanded="false" aria-controls="flush-collapseThree">
+                            Reservation
+                          </button>
+                        </h2>
+                        <div id="flush-collapseThree<%= transaction._id %>" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                          <div class="accordion-body">
+                              <ul>
+                                  <%
+                                      const monthz = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                                      const reservation = new Date(transaction.reservation.reservation_date);
+                                      const formattedReservationDate = `${monthz[reservation.getMonth()]} ${reservation.getDate()} ${reservation.getFullYear()}`;
+                                  %>
+                                  <li>Reservation date: <%= formattedReservationDate %></li>
+                                  <li>Reservation time: <span class="reservation-time"><%= transaction.reservation.reservation_time %></span></li>
+                                  <li>Number of Pax: <%= transaction.reservation.num_pax %></span></li>
+                                  <li>Amount: ₱<%= transaction.reservation.amount %></span></li>
+                                  <li>Created at: <%= transaction.reservation.created_at.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: '2-digit', year: 'numeric' }) %></li>
+                                  <li>Notes: <%= transaction.reservation.notes %></span></li>
+                              </ul>
+                          </div>                          
+                        </div>                        
+                      </div>
+                    </div>     
+                    <!-- <a href="/restaurant/delete-transaction/<%= transaction._id %>" class="btn btn-danger btn-sm delete-button">Delete</a> -->
+                    <!-- <a href="/restaurant/remove-transaction/<%= transaction._id %>" class="btn btn-danger btn-sm delete-button">Remove</a> -->
+                    <% if (transaction.isCancelled === false && transaction.isTransactionComplete === false) { %>
+                        <form action="/restaurant/transaction-complete/<%= transaction._id %>" method="post">
+                            <button type="submit" class="btn btn-primary btn-sm completed-bg-color border-black">Transaction completed</button>
+                        </form>
+                    <% } %>       
+                <button class="btn btn-sm btn-danger" onclick="deleteObject('<%= transaction._id %>')">Delete</button>
+                </div>       
+              <% }); %>
+          </div>
+            </div>
+            <a href="/adminux/customers" class="btn btn-warning w-100 mt-3">Back</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="d-none" id="route-path">/adminux/customer-delete-history</p>
+  <script src="/js/deleteObject.js"></script>
+  <%- include('.././footer.ejs') %>

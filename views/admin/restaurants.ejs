@@ -1,7 +1,8 @@
 <%- include('./layout/header.ejs') %>
 <h1>Administrator</h1>
-<a href="/adminux/restaurant-registration" type="button" class="d-none btn btn-primary text-decoration-none">Restaurant registration</a>
+<a href="/adminux/restaurant-registration" type="button" class="d-none btn btn-primary text-decoration-none">Update Restaurant</a>
 
+<a href="/adminux/customers" class="btn btn-secondary">Customer</a>
 <% if (restaurants.length) { %>
   <h2>Restaurant List: <%= restaurants.length %></h2> 
 <% } else { %>
@@ -13,7 +14,7 @@
     <tr>
       <th>Name</th>
       <th>Address</th>
-      <th>status</th>
+      <th>Status</th>
       <th>Actions</th>
       <!-- Add other properties of the Restaurant model as needed -->
     </tr>
@@ -34,7 +35,6 @@
           <% } %>
           <button class="btn btn-sm btn-danger" onclick="deleteObject('<%= restaurant._id %>')">Delete</button>
         </td>
-        <!-- Display other properties of the Restaurant model as needed -->
       </tr>
     <% }) %>
   </tbody>

@@ -815,23 +815,6 @@ const POSTtransactionComplete = async (req, res) => {
     }
 }
 
-const DELETETransaction = async (req, res) => {
-    try {
-        console.log('DELETETransaction');
-        const transactionId = req.params.id;
-        const transaction = await Transaction.findById(transactionId);
-        await Cart.findByIdAndDelete(transaction.cart);
-        await Reservation.findByIdAndDelete(transaction.reservation);
-        
-        // Once cart and reservation are deleted, delete the transaction
-        await Transaction.findByIdAndDelete(transactionId);
-
-        res.redirect('/restaurant/history');
-    } catch (err) {
-        res.status(500).json({ msg: err });
-    }
-}
-
 const GETRemoveTransaction = async (req, res) => {
     try {
         console.log('GETRemoveTransaction');
@@ -848,4 +831,4 @@ const GETRemoveTransaction = async (req, res) => {
     }
 }
 
-export { GETrestaurantLogin, POSTRestaurantLogin, GETRestaurantDashboard, GETProfileDashboard, GETAddProduct, POSTAddProduct, POSTUpdateProduct, GETProducts, GETUpdateProduct, GETAddCategory, POSTAddCategory, DELETECategory, DELETEProduct, GETUpdateCategory, POSTUpdateCategory, GETRestaurantLogout, DELETETransaction, GETHistory, GETRemoveTransaction, GETDeactivateCategory, GETActivateCategory, GETrestaurantRegister, POSTrestaurantRegister, POSTUpdateRestaurant, POSTtransactionComplete, GETRestaurantDashboardToday, GETRestaurantDashboardPending, GETHistoryCompleted, GETHistoryCancelled };
+export { GETrestaurantLogin, POSTRestaurantLogin, GETRestaurantDashboard, GETProfileDashboard, GETAddProduct, POSTAddProduct, POSTUpdateProduct, GETProducts, GETUpdateProduct, GETAddCategory, POSTAddCategory, DELETECategory, DELETEProduct, GETUpdateCategory, POSTUpdateCategory, GETRestaurantLogout, GETHistory, GETRemoveTransaction, GETDeactivateCategory, GETActivateCategory, GETrestaurantRegister, POSTrestaurantRegister, POSTUpdateRestaurant, POSTtransactionComplete, GETRestaurantDashboardToday, GETRestaurantDashboardPending, GETHistoryCompleted, GETHistoryCancelled };
