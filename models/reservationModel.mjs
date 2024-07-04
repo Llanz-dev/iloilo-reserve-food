@@ -28,11 +28,18 @@ const reservationSchema = new Schema({
     },
     num_pax: {
       type: Number,
-      required: true
+      default: 0,
+      required: false
     },
     amount: {
       type: Number,
+      default: 0,
       required: true
+    },
+    dineIn: {
+      type: Boolean,
+      default: false,
+      required: true,
     },
     notes: String,
     created_at: {

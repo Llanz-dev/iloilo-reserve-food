@@ -367,6 +367,12 @@ const DELETERestaurant = async (req, res) => {
     // Delete associated categories
     await Category.deleteMany({ restaurant: restaurantID });
 
+    // Delete associated transactions
+    await Transaction.deleteMany({ restaurant: restaurantID });
+
+    // Delete associated reservations
+    await Reservation.deleteMany({ restaurant: restaurantID });
+    
     // Delete the restaurant
     await Restaurant.findByIdAndDelete(restaurantID);
 

@@ -1,0 +1,16 @@
+<%- include('./layout/header.ejs') %>
+<%- include('./../navbar.ejs') %>
+
+<main>
+    <article>
+        <h3 class="title mb-3">Do you want to dine in? Or take out?</h3>
+
+        <form action="/reservation/dineIn-takeOut/<%= restaurant.lowername %>/<%= cart._id %>" method="POST">
+            <input type="hidden" id="customer" name="customer" class="form-control" value="<%= cart.customer._id %>">
+            <button type="submit" name="action" value="dine-in" class="btn text-white primary-background-color">Dine In</button>
+            <button type="submit" name="action" value="take-out" class="btn btn-warning">Take Out</button>    
+        </form>
+    </article>
+</main>
+       
+<%- include('.././footer.ejs') %>

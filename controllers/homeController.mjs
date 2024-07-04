@@ -12,7 +12,6 @@ const GETHomePage = async (req, res) => {
         const customerQuota = await CustomerQuota.find({ customer: customer }).populate('restaurant');      
         const filteredCustomerQuota = customerQuota.filter(quota => quota.restaurant); // Filter out null restaurants
         const pageTitle = 'Home';
-
         const currentDate = new Date();
         // Use Moment Timezone to get the current time in the Asia/Manila timezone
         const currentTime = moment().tz('Asia/Manila').format('HH:mm'); // 24-hour format

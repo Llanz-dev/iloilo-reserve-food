@@ -378,8 +378,8 @@ const POSTAddProduct = async (req, res) => {
             image,
             category: categoryID,
             restaurant: restaurantID         
-        });        
-        
+        });      
+                
         // Add the product to the products array of the corresponding restaurant    
         await Restaurant.findByIdAndUpdate(restaurantID, { $push: { products: product._id } });
 
@@ -667,6 +667,7 @@ const DELETEProduct = async (req, res) => {
         const productImagePath = `./public/images/restaurant/${restaurantName}/products/${categoryName}/${productImage}`;
         deleteFile(productImagePath);
         await Product.findByIdAndDelete(productID);
+        
         res.json('successfully deleted');
     } catch (err) {
         res.status(500).json({ msg: err });

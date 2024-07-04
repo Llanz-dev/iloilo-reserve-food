@@ -26,7 +26,11 @@
               <h5>Transaction Status: Pending</h5>
           <% } %>
               <h6>Restaurant: <%= transaction.restaurant.name %></h6>
-              <h6 class="card-title">Transaction ID: <%= transaction._id %></h6>
+              <% if (transaction.reservation.dineIn) { %>
+                <p class="card-text"><span class="primary-background-color text-white px-3 py-1">Dine In</span></p>                     
+              <% } else { %>
+                <p class="card-text"><span class="bg-warning px-3 py-1 text-black">Take Out</span></p>                     
+              <% } %>
               <div class="accordion accordion-flush my-2" id="accordionFlushExample">
                 <div class="accordion-item">
                   <h2 class="accordion-header">

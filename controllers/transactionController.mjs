@@ -37,7 +37,7 @@ const GETtransaction = async (req, res) => {
     // This will turn the transaction status turns into isToday equals to true if this day is the day that customer reserve.
     // It will also cancel the reservation if it is passed from the time that given.
     // Example: customer reservation date is today date and the reservation time is 1:00pm and the current time is 12:50pm
-    // If the current time will exceed from that 1:00pm reservation time then it will automatically cancelled.
+    // This has a 30 mins time extension
     processAndCancelExpiredReservations(transactions);
 
     res.render('transaction/transaction', { pageTitle: 'Transactions', transactions, restaurant: undefined });

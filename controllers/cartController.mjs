@@ -133,7 +133,7 @@ const POSTAddToCart = async (req, res) => {
   } catch (err) {
     // Handle errors
     console.error('Error adding product to cart:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    res.redirect('/');
   }
 };
 
@@ -199,7 +199,7 @@ const POSTRemoveFromCart = async (req, res) => {
   } catch (err) {
     // Handle errors
     console.error('Error removing product from cart:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    res.redirect('/');
   }
 };
 
@@ -209,9 +209,9 @@ const POSTUpdateCart = async (req, res) => {
 
     // Find the cart for the customer and the specific restaurant
     const cart = await Cart.findOne({ customer: customerId, restaurant: restaurantId, isHalfPaymentSuccessful: false }).populate('restaurant');
-    console.log('------------------ POSTUpdateCart:', cart);
+    
     if (!cart) {
-      return res.status(404).json({ error: 'Cart not found' });
+      return res.redirect(`/cart/${cart.restaurant.lowername}`);
     }
 
     // Find the index of the product in the cart items array
@@ -261,7 +261,7 @@ const POSTUpdateCart = async (req, res) => {
   } catch (err) {
     // Handle errors
     console.error('Error updating cart:', err);
-    res.status(500).json({ error: err });
+    res.redirect('/');
   }
 };
 

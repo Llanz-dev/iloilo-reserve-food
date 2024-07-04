@@ -13,6 +13,7 @@ import transactionRoutes from './routes/transactionRoutes.mjs';
 import cartRoutes from './routes/cartRoutes.mjs';
 
 import { requireAuthentication, checkCustomer, checkRestaurant } from './middleware/authenticationMiddleware.mjs';
+import checkRestaurantMiddleware from './middleware/checkRestaurantMiddleware.mjs';
 import cookieParser from 'cookie-parser';
 import 'dotenv/config';
 

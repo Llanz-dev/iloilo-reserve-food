@@ -6,20 +6,59 @@
         <h1 class="title">Checkout</h1>
         <p><i>You can only pay a half amount of your total and pay the other half to restaurant.</i></p>
         <ul class="list-group my-4">
+            <li class="list-group-item d-flex font-weight-bold bg-secondary">
+                <div class="col-6 text-white">Product</div>
+                <div class="col-3 text-white">Quantity</div>
+                <div class="col-3 text-white">Total</div>
+            </li>
             <% cart.items.forEach(item => { %>
-                <li class="list-group-item"><span><%= item.product.name %> <%= item.quantity %>x</span> <span>₱<%= item.total %></span></li>
+                <li class="list-group-item d-flex">
+                    <div class="col-6"><%= item.product.name %></div>
+                    <div class="col-3"><%= item.quantity %></div>
+                    <div class="col-3">₱<%= item.total %></div>
+                </li>
             <% }); %>                        
             <% if (cart.voucherAmount) { %>
-                <li class="list-group-item"><span>Reservation fee</span> <span>₱<%= cart.reservationAmount %></span></li>    
-                <li class="list-group-item"><span>Subtotal amount</span> <span>₱<%= cart.subTotal %></span></li>
-                <li class="list-group-item list-group-item-success"><span>Voucher amount</span> <span>-₱ <%= cart.voucherAmount %></span></li>               
+                <li class="list-group-item d-flex">
+                    <div class="col-6">Reservation fee</div>
+                    <div class="col-3"></div>
+                    <div class="col-3">₱<%= cart.reservationAmount %></div>
+                </li>    
+                <li class="list-group-item d-flex">
+                    <div class="col-6">Subtotal amount</div>
+                    <div class="col-3"></div>
+                    <div class="col-3">₱<%= cart.subTotal %></div>
+                </li>
+                <li class="list-group-item list-group-item-success d-flex">
+                    <div class="col-6">Voucher amount</div>
+                    <div class="col-3"></div>
+                    <div class="col-3">-₱<%= cart.voucherAmount %></div>
+                </li>               
             <% } else { %>
-                <li class="list-group-item"><span>Subtotal amount</span> <span>₱<%= cart.subTotal %></span></li>
-                <li class="list-group-item"><span>Reservation fee</span> <span>₱<%= cart.reservationAmount %></span></li>    
+                <li class="list-group-item d-flex">
+                    <div class="col-6">Subtotal amount</div>
+                    <div class="col-3"></div>
+                    <div class="col-3">₱<%= cart.subTotal %></div>
+                </li>
+                <li class="list-group-item d-flex">
+                    <div class="col-6">Reservation fee</div>
+
+                    <div class="col-3"></div>
+                        <div class="col-3">₱<%= cart.reservationAmount %></div>
+                </li>    
             <% } %>
-            <li class="list-group-item"><span>Total amount</span> <span id="cart-total-amount">₱<%= Number(cart.totalAmount) %></span></li>            
-            <li class="list-group-item fw-bold"><span>Half amount</span> <span id="cart-half-amount">₱<%= Number(cart.totalAmount) / 2 %></span></li>
-          </ul>
+            <li class="list-group-item d-flex">
+                <div class="col-6">Total amount</div>
+                <div class="col-3"></div>
+                <div class="col-3" id="cart-total-amount">₱<%= Number(cart.totalAmount) %></div>
+            </li>            
+            <li class="list-group-item fw-bold d-flex">
+                <div class="col-6">Half amount</div>
+                <div class="col-3"></div>
+                <div class="col-3" id="cart-half-amount">₱<%= Number(cart.totalAmount) / 2 %></div>
+            </li>
+        </ul>
+        
         <!-- Add a hidden input field to store the cart JSON -->
         <input type="hidden" id="cart-data" value='<%= JSON.stringify(cart) %>' />
         <input type="hidden" id="reservation-data" value='<%= JSON.stringify(reservation) %>' />

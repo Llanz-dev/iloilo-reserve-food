@@ -186,6 +186,7 @@ const createOrderHandler = async (req, res) => {
     if (!cart) {
       throw new Error("Cart not found");
     }
+
     const { jsonResponse, httpStatusCode } = await createOrder(cart, reservation);
     res.status(httpStatusCode).json(jsonResponse);
   } catch (error) {
@@ -203,7 +204,7 @@ const captureOrderHandler = async (req, res) => {
         const cart = await Cart.findById(getCartID).populate('customer restaurant');
 
         // Create reservation model.
-        const reservationObject = await Reservation.create({ customer: reservationQuery.customer, restaurant: reservationQuery.restaurantID, cart: reservationQuery.cartID, reservation_date: reservationQuery.reservation_date, reservation_time: reservationQuery.reservation_time, num_pax: reservationQuery.num_pax, amount: reservationQuery.amount, notes: reservationQuery.notes });  
+        const reservationObject = await Reservation.create({ customer: reservationQuery.customer, restaurant: reservationQuery.restaurantID, cart: reservationQuery.cartID, reservation_date: reservationQuery.reservation_date, reservation_time: reservationQuery.reservation_time, num_pax: reservationQuery.num_pax, amount: reservationQuery.amount, dineIn: reservationQuery.dineIn, notes: reservationQuery.notes });  
 
         // Save the cart and its calculation.
         cart.totalAmount += Number(reservationObject.amount);
@@ -216,7 +217,7 @@ const captureOrderHandler = async (req, res) => {
         const transaction = await Transaction.create({ customer: cart.customer, restaurant: cart.restaurant, cart: cart, reservation: reservationObject });    
         const transactionObject = await Transaction.findById(transaction._id).populate('cart reservation');
         const customerQuota = await CustomerQuota.findOne({ customer: cart.customer, restaurant: cart.restaurant });
-        console.log('customerQuota:', customerQuota);        
+        
         if (!customerQuota) {
           const customerQuotaCreated = await CustomerQuota.create({ customer: cart.customer, restaurant: cart.restaurant });
           console.log('Customer Quota Created:', customerQuotaCreated);
@@ -243,6 +244,15 @@ const serveCheckoutPage = async (req, res) => {
       const reservation = req.query;
       reservationQuery = reservation;
 
+      console.log('reservationQuery:', reservationQuery);
+
+      // Convert the reservationQuery.dineIn true string value to boolean
+      reservationQuery.dineIn = reservation.dineIn === 'true';
+
+      if (reservationQuery.dineIn === false) {
+        reservationQuery.num_pax = 0;
+      }
+
       // Get the restaurant
       const restaurant = await Restaurant.findById(restaurantID);
 
@@ -252,15 +262,17 @@ const serveCheckoutPage = async (req, res) => {
 
       // Get the cart to display the items and fetch the amount information
       const cart = await Cart.findById(cartID).populate('items.product');
-      cart.reservationAmount = Number(reservation.amount);
+      if (reservationQuery.dineIn) {
+        cart.reservationAmount = Number(reservation.amount);
+      } else {
+        cart.reservationAmount = 0;
+      }
 
       await cart.save();
-
-      if (cart.voucherAmount !== 0) {
-        cart.subTotal += Number(reservation.amount);  
-        cart.totalAmount = cart.subTotal - cart.voucherAmount;
-      } else {
+  
+      if (cart.voucherAmount !== 0 || reservationQuery.dineIn) {
         cart.totalAmount += Number(reservation.amount);
+        console.log('After cart.totalAmount:', cart.totalAmount);
       }
 
       const numberOfItems = cart ? cart.items.length : 0;

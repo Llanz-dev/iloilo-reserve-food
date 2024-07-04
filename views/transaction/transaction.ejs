@@ -17,8 +17,12 @@
                 <div class="card mb-4 shadow-sm">
                   <img src="/images/restaurant/<%= transaction.restaurant.lowername %>/banner/<%= transaction.restaurant.image %>" class="card-img-top" alt="<%= transaction.restaurant.name %>">
                   <div class="card-body">
-                    <h5 class="card-title">Transaction ID: <%= transaction._id %></h5>
-                    <p class="card-text"><%= transaction.restaurant.name %></p>
+                    <h5 class="card-title mb-3"><%= transaction.restaurant.name %></h5>
+                    <% if (transaction.reservation.dineIn) { %>
+                      <p class="card-text"><span class="primary-background-color text-white px-3 py-1">Dine In</span></p>                     
+                    <% } else { %>
+                      <p class="card-text"><span class="bg-warning px-3 py-1 text-black">Take Out</span></p>                     
+                    <% } %>
                     <p class="card-text">Reservation Date: <%= transaction.reservation.reservation_date.toDateString() %></p>
                     <p class="card-text">Reservation Time: <span class="reservation-time"><%= transaction.reservation.reservation_time %></span></p>
                     <% if (transaction.reservation.notes) { %>

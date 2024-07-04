@@ -19,15 +19,20 @@ const formattedCurrentTime = `${currentHour.toString().padStart(2, '0')}:${curre
 
 // Initialize a variable to keep track of form completion
 let formCompleted = false;
-
+const dineInValue = document.getElementById('dineInValue').textContent;
+console.log('dineInValue:', dineInValue);
 // Function to check if all fields are filled
 const checkFormCompletion = () => {
   const reservationDate = document.getElementById('reservation_date').value;
   const reservationTime = document.getElementById('reservation_time').value;
-  const numPax = document.getElementById('num_pax').value;
-  
+  if (dineInValue === 'true') {
+    const numPax = document.getElementById('num_pax').value;
+    formCompleted = reservationDate.trim() !== '' && reservationTime.trim() !== '' && numPax.trim() !== '';
+  } else {
+    formCompleted = reservationDate.trim() !== '' && reservationTime.trim() !== '';
+  }
+
   // Check if all fields have non-empty values
-  formCompleted = reservationDate.trim() !== '' && reservationTime.trim() !== '' && numPax.trim() !== '';
   
   // Enable or disable the button based on form completion
   createReservationButton.disabled = !formCompleted;
@@ -46,7 +51,9 @@ const disableInputsIfDateNotSelected = () => {
   reservationTimeInput.disabled = !isDateSelected;
 
   // Disable or enable the numPax input based on date selection
-  numPaxInput.disabled = !isTimeSelected;
+  if (dineInValue === 'true') {
+    numPaxInput.disabled = !isTimeSelected;
+  }
 };
 
 // Call the function initially to set the initial state
@@ -78,31 +85,36 @@ console.log('totalAmountCart.textContent:', totalAmountCart);
 
 const outOfRange = document.getElementById('out-of-range');
 const outOfRangeValue = document.getElementById('out-of-range-value');
-outOfRange.style.display = 'none';
+if (dineInValue === 'true') {
+  outOfRange.style.display = 'none';
+}
 
 // Disable the button initially
 createReservationButton.disabled = true;
 
-numPaxInput.addEventListener('input', () => {
-    checkFormCompletion();
-    const numPax = parseFloat(numPaxInput.value);
+if (dineInValue === 'true') {
+  numPaxInput.addEventListener('input', () => {
+      checkFormCompletion();
+      const numPax = parseFloat(numPaxInput.value);
 
-    if (numPax <= 0) {
-      outOfRange.style.display = 'block';
-      outOfRangeValue.textContent = numPax;
-      createReservationButton.disabled = true;
-    } else {
-      outOfRange.style.display = 'none';
-      outOfRangeValue.textContent = '';
-      createReservationButton.disabled = false;
-    }
+      if (numPax <= 0) {
+        outOfRange.style.display = 'block';
+        outOfRangeValue.textContent = numPax;
+        createReservationButton.disabled = true;
+      } else {
+        outOfRange.style.display = 'none';
+        outOfRangeValue.textContent = '';
+        createReservationButton.disabled = false;
+      }
 
-    if (isNaN(numPax)) return totalAmountCart;
-    
-    const cartAmount = calculateCartAmount(numPax);
+      if (isNaN(numPax)) return totalAmountCart;
+      
+      const cartAmount = calculateCartAmount(numPax);
 
-    cartAmountSpan.textContent = putCommas(cartAmount);
-});
+      cartAmountSpan.textContent = putCommas(cartAmount);
+  });
+}
+
 
 const calculateCartAmount = (numPax) => {
     const currentCartAmount = parseFloat(totalAmountCart);

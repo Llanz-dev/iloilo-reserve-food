@@ -117,6 +117,7 @@ const GETHistoryPage = async (req, res) => {
         model: 'Customer'
     })
     .sort({ createdAt: -1 });
+
     res.render('customer/history', { pageTitle: 'History', restaurant: undefined, transactions });
   } catch (err) {
       res.status(500).json({ msg: err.message });
