@@ -1,7 +1,14 @@
 import express from 'express';
 const router = express.Router();
 import { uploadRestaurantBanner, updateRestaurantBanner } from '../config/multerConfig.mjs';
-import {    POSTUpdateRestaurant,
+import {    
+            GETnumberPax,
+            POSTnumberPax,
+            GETdeactivateOrActivate,
+            GETupdateNumberPax,
+            POSTupdateNumberPax,
+            DELETEnumberPax,
+            POSTUpdateRestaurant,
             GETrestaurantRegister, 
             POSTrestaurantRegister,
             GETrestaurantLogin,
@@ -21,7 +28,7 @@ import {    POSTUpdateRestaurant,
             POSTUpdateCategory, DELETECategory, GETHistory,
             GETRemoveTransaction, GETDeactivateCategory, GETActivateCategory, POSTtransactionComplete, GETRestaurantDashboardToday, GETRestaurantDashboardPending, GETHistoryCompleted, GETHistoryCancelled } from '../controllers/restaurantController.mjs';
 import { requireAuthenticationRestaurant } from '../middleware/authenticationMiddleware.mjs';
-import { uploadProductImage, updateProductImage } from '../config/multerConfig.mjs'
+import { uploadProductImage, updateProductImage, uploadFloorPlanImage } from '../config/multerConfig.mjs'
 import voucherRoutes from './voucherRoutes.mjs';
 
 // Register and Login
@@ -39,14 +46,18 @@ router.get('/dashboard/pending', GETRestaurantDashboardPending);
 router.get('/update-restaurant', GETProfileDashboard);
 router.post('/update-restaurant/:id', updateRestaurantBanner, POSTUpdateRestaurant);
 // Vouchers
-router.use('/vouchers', voucherRoutes)
+router.use('/vouchers', voucherRoutes);
+// Number of Pax
+router.get('/number-of-pax', GETnumberPax);
+router.post('/number-of-pax/:id', uploadFloorPlanImage, POSTnumberPax);
+router.get('/deactivate-or-activate', GETdeactivateOrActivate);
+router.get('/update-number-of-pax/:id', GETupdateNumberPax);
+router.post('/update-number-of-pax/:id', uploadFloorPlanImage, POSTupdateNumberPax);
+router.delete('/delete-number-of-pax/:id', DELETEnumberPax);
 // View history
 router.get('/history', GETHistory);
 router.get('/history/completed', GETHistoryCompleted);
 router.get('/history/cancelled', GETHistoryCancelled);
-// Add product
-router.get('/add-product', GETAddProduct);
-router.post('/add-product', uploadProductImage, POSTAddProduct);
 // Categories
 router.get('/add-category', GETAddCategory);
 router.post('/add-category', POSTAddCategory);
@@ -57,6 +68,9 @@ router.get('/activate-category/:id', GETActivateCategory);
 router.delete('/delete-category/:id', DELETECategory);
 // View products
 router.get('/products', GETProducts);
+// Add product
+router.get('/add-product', GETAddProduct);
+router.post('/add-product', uploadProductImage, POSTAddProduct);
 // Update products
 router.get('/update-product/:id', GETUpdateProduct);
 router.post('/update-product/:id', updateProductImage, POSTUpdateProduct);

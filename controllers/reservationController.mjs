@@ -1,6 +1,6 @@
 import Reservation from '../models/reservationModel.mjs';
 import Cart from '../models/cartModel.mjs';
-import { calculateTimeDifference } from '../utils/timeUtils.mjs';
+import { calculateDayDifference } from '../utils/timeUtils.mjs';
 import calculateTotalAmountByPax from '../utils/paxUtils.mjs';
 import Voucher from '../models/voucherModel.mjs';
 import moment from 'moment-timezone';

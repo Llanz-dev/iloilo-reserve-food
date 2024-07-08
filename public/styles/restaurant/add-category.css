@@ -1,15 +1,15 @@
-.name-category {
+.form-control {
     width: 25rem;
 }
 
 @media (max-width: 875px) {
-    .name-category {
+    .form-control {
         width: 20rem;
     }
 }
 
 @media (max-width: 575px) {
-    .name-category {
+    .form-control {
         width: 100%;
     }
 }

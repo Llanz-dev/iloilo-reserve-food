@@ -1,5 +1,5 @@
 // Import any necessary modules or dependencies
-import { calculateTimeDifference } from '../utils/timeUtils.mjs'; // Adjust the import path as needed
+import { calculateDayDifference } from '../utils/timeUtils.mjs'; // Adjust the import path as needed
 import CustomerQuota from '../models/customerQuotaModel.mjs';
 import moment from 'moment-timezone';
 import countCustomerCancelled from './countCustomerCancelled.mjs';
@@ -8,28 +8,29 @@ import countCustomerCancelled from './countCustomerCancelled.mjs';
 const processAndCancelExpiredReservations = async (transactions) => {
     // Loop through each transaction
     for (const transaction of transactions) {
-        console.log('calculateTimeDifference(transaction):', calculateTimeDifference(transaction));
-        // Check if the reservation date is the same with the current date
-        if (calculateTimeDifference(transaction) <= 0) {
-            // Get the current time in 'Asia/Manila' timezone
-            const currentTime = moment().tz('Asia/Manila').format('HH:mm'); // 24-hour format
+        const daysDifference = calculateDayDifference(transaction);
+        console.log('calculateDayDifference(transaction):', daysDifference);
 
-            // Get the reservation time (hours and minutes) in 'Asia/Manila' timezone
-            const reservationTime = moment.tz(transaction.reservation.reservation_time, 'HH:mm', 'Asia/Manila').format('HH:mm');
-            console.log('currentTime:', currentTime);
-            console.log('reservationTime:', reservationTime);
-            console.log('Compare:', currentTime > reservationTime);
+        // Check if the reservation date is the same as the current date
+        if (daysDifference <= 0) {
+            // Get the current date and time in 'Asia/Manila' timezone
+            const now = moment().tz('Asia/Manila');
+            const currentTime = now.format('HH:mm'); // 24-hour format
 
-            // Compare the current time with the reservation time 
-            if (currentTime > reservationTime) {
-                // Set a timer for 30 mins
-                    countCustomerCancelled(transaction.restaurant._id, transaction.customer._id);
-                    // Update the transaction status
-                    transaction.isCancelled = true;
-                    transaction.isPending = false;
-                    transaction.isToday = false;
-                    await transaction.save();      
-               
+            // Combine reservation date and time to create a Moment object
+            const reservationDateInput = transaction.reservation.reservation_date; // Strip the time component
+            const reservationTimeInput = transaction.reservation.reservation_time;
+            const reservationDateTime = moment.tz(`${reservationDateInput} ${reservationTimeInput}`, 'YYYY-MM-DD HH:mm', 'Asia/Manila');
+
+            // Compare the current time with the reservation date and time
+            if (now.isAfter(reservationDateTime)) {
+                countCustomerCancelled(transaction.restaurant._id, transaction.customer._id);
+                
+                // Update the transaction status
+                transaction.isCancelled = true;
+                transaction.isPending = false;
+                transaction.isToday = false;
+                await transaction.save();
             } else {
                 // Handle the case where the reservation time is in the future
                 console.log('future');

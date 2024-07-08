@@ -6,11 +6,12 @@ import Category from '../models/categoryModel.mjs';
 import Reservation from '../models/reservationModel.mjs';
 import CustomerQuota from '../models/customerQuotaModel.mjs';
 import Voucher from '../models/voucherModel.mjs';
-import { calculateTimeDifference } from '../utils/timeUtils.mjs';
+import { calculateDayDifference } from '../utils/timeUtils.mjs';
 import { hashPassword, comparePassword, createToken, fourtyEightHours, lowerCase, hasProduct, isQueryEmpty } from '../utils/helpers.mjs';
 import { createDirectory, deleteDirectory, deleteFile, renameFolder, moveImageToNewDirectory } from '../utils/fileUtils.mjs';
 import { wss } from '../index.mjs';
 import processAndCancelExpiredReservations from '../utils/transactionUtils.mjs';
+import NumberPax from '../models/numberPaxModel.mjs';
 
 const GETrestaurantRegister = async (req, res) => {
     const pageTitle = 'Restaurant Register';
@@ -271,11 +272,110 @@ const GETRestaurantDashboardPending = async (req, res) => {
     }
 };
 
-const GETProfileDashboard = async (req, res) => {
+const GETProfileDashboard = (req, res) => {
     const pageTitle = 'Update Restaurant';
     const restaurant = res.locals.restaurant;
     console.log(restaurant);
     res.render('restaurant/update-restaurant', { pageTitle });
+}
+
+const GETnumberPax = async (req, res) => {
+    const pageTitle = 'Number Pax Restaurant';        
+    const restaurantID = req.restaurantID; 
+    try {
+        const numberOfPaxes = await NumberPax.find({ restaurant: restaurantID });
+        res.render('restaurant/number-of-pax', { pageTitle, numberOfPaxes, restaurantID });   
+    } catch (err) {
+        res.render('restaurant/number-of-pax', { pageTitle, error: err.message, restaurantID: restaurantID  });   
+    }
+}
+
+const POSTnumberPax = async (req, res) => {
+    try {
+        console.log('req.bodyyyyy:', req.body);
+        const { name, numberOfPax, price, description } = req.body;
+        const image = req.file.filename;
+        const restaurantID = req.restaurantID; 
+        await NumberPax.create({ name, numberOfPax, image, price, description, restaurant: restaurantID });
+        res.redirect('/restaurant/number-of-pax'); 
+    } catch (err) {
+        console.log('POSTnumberPax error');
+        console.log(err);
+        res.json('server error');   
+    }
+}
+
+const GETupdateNumberPax = async (req, res) => {
+    const pageTitle = 'Number Pax Restaurant';        
+    const numberPaxID = req.params.id; 
+    const restaurant = res.locals.restaurant;
+    const numberOfPaxes = await NumberPax.find({ restaurant: restaurant._id });
+    try {
+        const restaurantID = restaurant._id;
+        const numberOfPax = await NumberPax.findById(numberPaxID).populate('restaurant');
+        res.render('restaurant/update-number-of-pax', { pageTitle, numberOfPax, numberOfPaxes, numberPaxID, restaurantID });   
+    } catch (err) {
+        res.render('restaurant/update-number-of-pax', { pageTitle, error: err.message, numberOfPaxes, numberPaxID: numberPaxID, restaurantID });   
+    }
+}
+
+const POSTupdateNumberPax = async (req, res) => {
+    console.log('------- POSTupdateNumberPax -------');
+    try {
+        const pageTitle = 'Number Pax Restaurant';        
+        const numberPaxID = req.params.id; 
+        const numberOfPax = await NumberPax.findById(numberPaxID).populate('restaurant');
+        console.log('numberOfPaxxxxxx:', numberOfPax);
+        const restaurantID = numberOfPax.restaurant._id;
+        const restaurantName = numberOfPax.lowername;
+        const updatedData = req.body;
+        updatedData.image = req.file ? req.file.filename : undefined;
+
+        // If only product image change
+        if (updatedData.image) {
+            // Delete old image
+            const imagePath = `./public/images/restaurant/${restaurantName}/${updatedData.image}`;
+            deleteFile(imagePath);
+        }
+
+        await NumberPax.findByIdAndUpdate(numberPaxID, updatedData);
+        res.redirect('/restaurant/number-of-pax'); 
+    } catch (err) {
+        console.log(err);
+        res.json('server error');   
+    }
+}
+
+const GETdeactivateOrActivate = async (req, res) => {
+    // Get the value of isActivate query
+    const isActivate = req.query.isActivate;
+    const numberPaxID = req.query.numberOfPaxID;
+    // Then change the existing value of isActivate 
+    await NumberPax.findByIdAndUpdate(numberPaxID, { isActivate: isActivate });
+    res.redirect('/restaurant/number-of-pax')
+}
+
+const DELETEnumberPax = async (req, res) => {
+    console.log('DELETEnumberPax ------');
+    try {
+        const numberPaxID = req.params.id;
+        const numberPax = await NumberPax.findById(numberPaxID).populate('restaurant');
+
+        const restaurantName = numberPax.restaurant.lowername;
+        const floorPlanImage = numberPax.image;
+
+        // Get the image path
+        const imagePath = `./public/images/restaurant/${restaurantName}/floor-plan/${floorPlanImage}`;
+        // Delete the file
+        deleteFile(imagePath);
+        // Delete the document
+        await NumberPax.findByIdAndDelete(numberPaxID);
+
+        res.json('/restaurant/number-of-pax');
+    } catch (err) {
+        console.log('DELETEnumberPax error:', err);
+        res.status(500).json('server error');
+    }
 }
 
 const POSTUpdateRestaurant = async (req, res) => {
@@ -351,7 +451,7 @@ const POSTUpdateRestaurant = async (req, res) => {
         // If there's an error, render the template with the error message
         res.status(500).render('restaurant/update-restaurant', { pageTitle: 'Update Restaurant', restaurant, error: err.message });
     }
-};
+}
 
 const GETAddProduct = async (req, res) => {
     const pageTitle = 'Add Product';
@@ -359,14 +459,14 @@ const GETAddProduct = async (req, res) => {
     const categories = await Category.find({restaurant: restaurantID});
     const hasProduct = categories.length;
     res.render('restaurant/add-product', { pageTitle, hasProduct, categories });
-};
+}
 
 const POSTAddProduct = async (req, res) => {
     try {
         console.log('---- POSTAddProduct ----');
         const { name, description, price, lowerCategory } = req.body;
         const image = req.file.filename; // Get the filename of the uploaded image
-        const restaurantID = req.restaurantID; // Assuming you have restaurant ID in req.restaurantID
+        const restaurantID = req.restaurantID; 
         const category = await Category.findOne({ lowername: lowerCategory });
         const categoryID = category._id;
 
@@ -426,10 +526,12 @@ const GETUpdateProduct = async (req, res) => {
 }
 
 const POSTUpdateProduct = async (req, res) => {
-    console.log('---- POSTUpdateProduct ----');
     try {
         const productID = req.params.id;
         const product = await Product.findById(productID).populate('category restaurant');
+
+        if (!product) res.status(404).json('Product was not found');
+
         const updatedData = req.body;
         const oldCategoryName = product.category.lowername;
         const newCategoryName = updatedData.lowerCategory;
@@ -459,8 +561,6 @@ const POSTUpdateProduct = async (req, res) => {
             const imagePath = `./public/images/restaurant/${restaurantName}/products/${oldCategoryName}/${oldProductImage}`;
             deleteFile(imagePath);
         }
-
-        if (!product) res.status(404).json('Product was not found');
 
         await Product.findByIdAndUpdate(productID, updatedData);
         res.redirect('/restaurant/products'); 
@@ -832,4 +932,4 @@ const GETRemoveTransaction = async (req, res) => {
     }
 }
 
-export { GETrestaurantLogin, POSTRestaurantLogin, GETRestaurantDashboard, GETProfileDashboard, GETAddProduct, POSTAddProduct, POSTUpdateProduct, GETProducts, GETUpdateProduct, GETAddCategory, POSTAddCategory, DELETECategory, DELETEProduct, GETUpdateCategory, POSTUpdateCategory, GETRestaurantLogout, GETHistory, GETRemoveTransaction, GETDeactivateCategory, GETActivateCategory, GETrestaurantRegister, POSTrestaurantRegister, POSTUpdateRestaurant, POSTtransactionComplete, GETRestaurantDashboardToday, GETRestaurantDashboardPending, GETHistoryCompleted, GETHistoryCancelled };
+export { GETrestaurantLogin, POSTRestaurantLogin, GETRestaurantDashboard, GETProfileDashboard, GETAddProduct, POSTAddProduct, POSTUpdateProduct, GETProducts, GETUpdateProduct, GETAddCategory, POSTAddCategory, DELETECategory, DELETEProduct, GETUpdateCategory, POSTUpdateCategory, GETRestaurantLogout, GETHistory, GETRemoveTransaction, GETDeactivateCategory, GETActivateCategory, GETrestaurantRegister, POSTrestaurantRegister, POSTUpdateRestaurant, POSTtransactionComplete, GETRestaurantDashboardToday, GETRestaurantDashboardPending, GETHistoryCompleted, GETHistoryCancelled, GETnumberPax, POSTnumberPax, GETdeactivateOrActivate, DELETEnumberPax, GETupdateNumberPax, POSTupdateNumberPax };

@@ -2,8 +2,7 @@ const routePath = document.getElementById('route-path');
 
 const deleteObject = async (objectId) => {
   const pathValue = routePath.textContent;
-  console.log(`${pathValue}/${objectId}`);
-  const confirmed = confirm('Are you sure you want to delete this restaurant?');
+  const confirmed = confirm('Are you sure you want to delete this?');
   if (confirmed) {
     try {
       const response = await fetch(`${pathValue}/${objectId}`, {

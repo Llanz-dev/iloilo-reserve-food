@@ -84,7 +84,6 @@ const uploadProductStorage = multer.diskStorage({
         try {
             // Get the restaurant ID from the request
             const restaurantID = req.restaurantID;
-            console.log('restaurantID:', restaurantID);
 
             // Retrieve the restaurant details from the database
             const restaurant = await getRestaurant(restaurantID);
@@ -154,6 +153,25 @@ const updateProductStorage = multer.diskStorage({
     }
 });
 
+const uploadFloorPlanStorage = multer.diskStorage({
+    destination: async function (req, file, cb) {
+        console.log('---- uploadFloorPlanStorage ----');      
+        try {
+            // Create a directory for restaurant
+            const restaurantName = req.body.lowername;
+            const destinationPath = `./public/images/restaurant/${restaurantName}/floor-plan`;  
+            createDirectory(destinationPath);
+            cb(null, destinationPath);
+        } catch (error) {
+            console.error(error);
+            cb(error);
+        }
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname);
+    }
+});
+
 // Check file type
 const fileFilter = (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
@@ -165,8 +183,9 @@ const fileFilter = (req, file, cb) => {
 
 // Initialize multer
 const uploadRestaurantBanner = multer({ storage: uploadBannerStorage, fileFilter: fileFilter }).single('image');
+const uploadFloorPlanImage = multer({ storage: uploadFloorPlanStorage, fileFilter: fileFilter }).single('image');
 const updateRestaurantBanner = multer({ storage: updateBannerStorage, fileFilter: fileFilter }).single('image');
 const uploadProductImage = multer({ storage: uploadProductStorage, fileFilter: fileFilter }).single('image');;
 const updateProductImage = multer({ storage: updateProductStorage, fileFilter: fileFilter }).single('image');;
 
-export { uploadRestaurantBanner, uploadProductImage, updateRestaurantBanner, updateProductImage } ;
+export { uploadRestaurantBanner, uploadProductImage, updateRestaurantBanner, updateProductImage, uploadFloorPlanImage } ;

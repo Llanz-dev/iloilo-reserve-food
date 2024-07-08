@@ -9,7 +9,7 @@ import Voucher from '../models/voucherModel.mjs';
 const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
 const base = "https://api-m.sandbox.paypal.com";
 import moment from 'moment-timezone';
-import { calculateTimeDifference } from "../utils/timeUtils.mjs";
+import { calculateDayDifference } from "../utils/timeUtils.mjs";
 
   
 /**
@@ -140,7 +140,7 @@ const captureOrder = async (orderID, transactionObject, isCancellation) => {
       const jsonResponse = await response.json();
       const httpStatusCode = response.status; // Assign the HTTP status code
 
-      calculateTimeDifference(transactionObject);
+      calculateDayDifference(transactionObject);
       if (httpStatusCode === 201) {
         const captureId = jsonResponse.purchase_units[0].payments.captures[0].id; // Extract captureId from the response
         transactionObject.captureId = captureId; // Store captureId in transactionObject

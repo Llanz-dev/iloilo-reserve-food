@@ -1,0 +1,66 @@
+<%- include('./layout/header.ejs') %>
+<%- include('./layout/navbar.ejs') %>
+
+<main>
+  <h1 class="title">Number of Pax</h1>
+  <% if (typeof error !== 'undefined') { %>
+    <div class="alert alert-danger w-25">
+      <%= error %>
+    </div>
+  <% } %>
+  <form action="/restaurant/number-of-pax/<%= restaurantID %>" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" pattern="[a-zA-Z0-9 ]+" class="form-control" name="name" required>
+      <input type="hidden" class="hidden-text" name="lowername" value="<%= restaurant.lowername %>">
+    </div>
+    <div class="form-group">
+      <label for="numberOfPax">Number of Pax</label>
+      <input type="number" class="form-control" name="numberOfPax" required>
+    </div>
+    <div class="form-group">
+      <label for="image" class="form-label">Upload the location image table</label>
+      <input type="file" class="form-control" id="image" name="image" required>
+    </div>
+    <!-- Display existing image -->
+    <div class="form-group" id="existingImageContainer">
+      <label>Existing Image</label>
+      <img src="" id="existingImage" class="w-25">
+    </div>  
+    <div class="form-group">
+      <label for="price" class="form-label">Price</label>
+      <input type="number" class="form-control" id="price" name="price" required>
+    </div>
+    <div class="form-group">
+      <label for="description" class="form-label">Description</label>
+      <textarea id="description" name="description" class="form-control" placeholder="optional"></textarea>
+    </div>
+    <!-- Set the restaurant -->
+    <button type="submit" class="btn primary-background-color text-white">Submit</button>   
+  </form>
+  <table class="table table-striped table-bordered table-hover mt-3">
+    <thead class="table-dark">
+      <tr>
+        <th>Name</th>
+        <th id="actions">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% numberOfPaxes.forEach(numberOfPax => { %>
+        <tr>
+          <td><%= numberOfPax.name %></td>        
+          <td>
+            <a href="/restaurant/update-number-of-pax/<%= numberOfPax._id %>" class="btn btn-sm primary-background-color text-white">Update</a>
+            <a href="/restaurant/deactivate-or-activate/?isActivate=<%= !numberOfPax.isActivate %>&numberOfPaxID=<%= numberOfPax._id %>" class="btn btn-sm bg-warning"><%= numberOfPax.isActivate ? 'Deactivate' : 'Activate' %></a>
+            <button class="btn btn-danger btn-sm delete-btn" onclick="deleteObject('<%= numberOfPax._id %>')">Delete</button>
+          <td>
+        </tr>
+      <% }) %>
+      </tbody>
+  </table>
+</main>
+
+<p class="d-none" id="route-path">/restaurant/delete-number-of-pax</p>
+<script src="/js/showExistingImage.js"></script>            
+<script src="/js/deleteObject.js"></script>                        
+<%- include('.././footer.ejs') %>
