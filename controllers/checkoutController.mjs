@@ -205,12 +205,12 @@ const captureOrderHandler = async (req, res) => {
         console.log('---------- captureOrderHandler Finish ----------');
         const cartID = req.params.cartID;
         const cart = await Cart.findById(getCartID).populate('customer restaurant');
-
         // Put the customer to NumberPax customer field to indicate that this table has already been taken.
-        await NumberPax.updateOne({ customer: reservationQuery.customer });
+        await NumberPax.findByIdAndUpdate(reservationQuery.numPaxID, { customer: reservationQuery.customer });
 
         // Create reservation model.
-        const reservationObject = await Reservation.create({ customer: reservationQuery.customer, restaurant: reservationQuery.restaurantID, cart: reservationQuery.cartID, numberPax: reservationQuery.numberPaxID, reservation_date: reservationQuery.reservation_date, reservation_time: reservationQuery.reservation_time, table_price: reservationQuery.table_price, amount: reservationQuery.amount, dineIn: reservationQuery.dineIn, notes: reservationQuery.notes });  
+        const reservationObject = await Reservation.create({ customer: reservationQuery.customer, restaurant: reservationQuery.restaurantID, cart: reservationQuery.cartID, numberPax: reservationQuery.numPaxID, reservation_date: reservationQuery.reservation_date, reservation_time: reservationQuery.reservation_time, table_price: reservationQuery.table_price, amount: reservationQuery.amount, dineIn: reservationQuery.dineIn, notes: reservationQuery.notes });  
+        console.log('Create reservationObject:', reservationObject);
 
         // Save the cart and its calculation.
         cart.totalAmount = Number(reservationObject.amount);

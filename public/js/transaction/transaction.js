@@ -24,3 +24,17 @@ updateDateTime();
 
 // Update the date and time every minute
 setInterval(updateDateTime, 60000); // Update every 60 seconds (1 minute)
+
+
+const infoContent = document.getElementById('info-content');
+const infoIcon = document.getElementById('info-icon');
+let isDisplay = false;
+infoIcon.onclick = () => {
+  if (isDisplay) {
+    infoContent.style.display = 'none';
+    isDisplay = false;
+  } else {
+    infoContent.style.display = 'block';
+    isDisplay = true;
+  }
+}

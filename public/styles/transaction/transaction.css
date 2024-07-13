@@ -10,3 +10,25 @@ ul {
     display: flex;
     justify-content: space-between;
 }
+
+.info-section {
+    margin-bottom: 2rem;
+}
+
+.info-section * {
+    margin-bottom: 0;
+}
+
+#info-content {
+    display: none;
+}
+
+.info-icon {
+    width: 40px;
+    margin-right: .7rem;
+    cursor: pointer;
+}
+
+.table-icon {
+    width: 40px;
+}

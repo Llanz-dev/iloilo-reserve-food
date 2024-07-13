@@ -34,7 +34,6 @@ const GETHomePage = async (req, res) => {
 const GETRestaurantProductsPage = async (req, res) => {
     try {
         const restaurantLowerName = req.params.lowername;
-        console.log('restaurantLowerName:', restaurantLowerName);
         const restaurant = await Restaurant.findOne({ lowername: restaurantLowerName });
 
         if (!restaurant) {

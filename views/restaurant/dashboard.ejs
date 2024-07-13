@@ -94,7 +94,7 @@
                           %>
                           <li>Reservation date: <%= formattedReservationDate %></li>
                           <li>Reservation Time: <span class="reservation-time"><%= transaction.reservation.reservation_time %></span></li>
-                          <li>Number of Pax: <%= transaction.reservation.num_pax %></li>
+                          <li>Number of Sit: <%= transaction.reservation.num_pax %></li>
                           <li>Amount: ₱<span class="total-amount"><%= transaction.reservation.amount %></span></li>
                           <li>Created at: <%= transaction.reservation.created_at.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: '2-digit', year: 'numeric' }) %></li>
                           <li>Notes: <%= transaction.reservation.notes %></li>
