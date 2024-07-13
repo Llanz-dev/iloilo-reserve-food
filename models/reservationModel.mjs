@@ -18,6 +18,11 @@ const reservationSchema = new Schema({
       ref: 'Cart',
       required: true
     },
+    numberPax: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'NumberPax',
+      required: false
+    },
     reservation_date: {
       type: Date,
       required: true
@@ -25,11 +30,6 @@ const reservationSchema = new Schema({
     reservation_time: {
       type: String,
       required: true
-    },
-    num_pax: {
-      type: Number,
-      default: 0,
-      required: false
     },
     amount: {
       type: Number,

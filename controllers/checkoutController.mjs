@@ -6,6 +6,7 @@ import Transaction from '../models/transactionModel.mjs';
 import Restaurant from '../models/restaurantModel.mjs';
 import CustomerQuota from '../models/customerQuotaModel.mjs';
 import Voucher from '../models/voucherModel.mjs';
+import NumberPax from '../models/numberPaxModel.mjs';
 const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
 const base = "https://api-m.sandbox.paypal.com";
 import moment from 'moment-timezone';
@@ -78,7 +79,7 @@ const createOrder = async (cart, reservation) => {
 
 /**
  * Capture payment for the created order to complete the transaction.
- */
+*/
 const captureOrder = async (orderID, transactionObject, isCancellation) => {
   if (isCancellation) {
       // Refund the order
@@ -90,6 +91,8 @@ const captureOrder = async (orderID, transactionObject, isCancellation) => {
           currency_code: 'PHP',
         },
       };
+
+      console.log('transactionObject.cart.halfAmount.toFixed(2):', transactionObject.cart.halfAmount.toFixed(2));
 
       const response = await fetch(url, {
         method: 'POST',
@@ -177,11 +180,11 @@ const createOrderHandler = async (req, res) => {
     const cart = await Cart.findById(cartID);
     const reservation = req.body.reservation;
     console.log('--------- Before ---------');
-    console.log(cart);
-    cart.totalAmount += Number(reservation.amount);
+    // console.log(cart);
+    cart.totalAmount += Number(reservation.table_price);
     cart.halfAmount = (cart.totalAmount - cart.voucherAmount) / 2;
     console.log('--------- After ---------');
-    console.log(cart);
+    // console.log(cart);
 
     if (!cart) {
       throw new Error("Cart not found");
@@ -203,11 +206,14 @@ const captureOrderHandler = async (req, res) => {
         const cartID = req.params.cartID;
         const cart = await Cart.findById(getCartID).populate('customer restaurant');
 
+        // Put the customer to NumberPax customer field to indicate that this table has already been taken.
+        await NumberPax.updateOne({ customer: reservationQuery.customer });
+
         // Create reservation model.
-        const reservationObject = await Reservation.create({ customer: reservationQuery.customer, restaurant: reservationQuery.restaurantID, cart: reservationQuery.cartID, reservation_date: reservationQuery.reservation_date, reservation_time: reservationQuery.reservation_time, num_pax: reservationQuery.num_pax, amount: reservationQuery.amount, dineIn: reservationQuery.dineIn, notes: reservationQuery.notes });  
+        const reservationObject = await Reservation.create({ customer: reservationQuery.customer, restaurant: reservationQuery.restaurantID, cart: reservationQuery.cartID, numberPax: reservationQuery.numberPaxID, reservation_date: reservationQuery.reservation_date, reservation_time: reservationQuery.reservation_time, table_price: reservationQuery.table_price, amount: reservationQuery.amount, dineIn: reservationQuery.dineIn, notes: reservationQuery.notes });  
 
         // Save the cart and its calculation.
-        cart.totalAmount += Number(reservationObject.amount);
+        cart.totalAmount = Number(reservationObject.amount);
         cart.halfAmount = (cart.totalAmount - cart.voucherAmount) / 2;
         cart.totalAmount -= cart.voucherAmount;
         cart.isHalfPaymentSuccessful = true;
@@ -244,13 +250,13 @@ const serveCheckoutPage = async (req, res) => {
       const reservation = req.query;
       reservationQuery = reservation;
 
-      console.log('reservationQuery:', reservationQuery);
+      console.log('reservationQueryyy:', reservationQuery);
 
       // Convert the reservationQuery.dineIn true string value to boolean
       reservationQuery.dineIn = reservation.dineIn === 'true';
 
       if (reservationQuery.dineIn === false) {
-        reservationQuery.num_pax = 0;
+        reservationQuery.table_price = 0;
       }
 
       // Get the restaurant
@@ -263,7 +269,7 @@ const serveCheckoutPage = async (req, res) => {
       // Get the cart to display the items and fetch the amount information
       const cart = await Cart.findById(cartID).populate('items.product');
       if (reservationQuery.dineIn) {
-        cart.reservationAmount = Number(reservation.amount);
+        cart.reservationAmount = Number(reservation.table_price);
       } else {
         cart.reservationAmount = 0;
       }
@@ -271,8 +277,8 @@ const serveCheckoutPage = async (req, res) => {
       await cart.save();
   
       if (cart.voucherAmount !== 0 || reservationQuery.dineIn) {
-        cart.totalAmount += Number(reservation.amount);
-        console.log('After cart.totalAmount:', cart.totalAmount);
+        cart.totalAmount += Number(reservation.table_price);
+        reservationQuery.amount = cart.totalAmount;
       }
 
       const numberOfItems = cart ? cart.items.length : 0;

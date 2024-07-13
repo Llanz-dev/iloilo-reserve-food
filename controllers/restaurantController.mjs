@@ -313,9 +313,13 @@ const GETupdateNumberPax = async (req, res) => {
     try {
         const restaurantID = restaurant._id;
         const numberOfPax = await NumberPax.findById(numberPaxID).populate('restaurant');
+
+        if (!numberOfPax) return res.redirect('/restaurant/number-of-pax');
+
         res.render('restaurant/update-number-of-pax', { pageTitle, numberOfPax, numberOfPaxes, numberPaxID, restaurantID });   
     } catch (err) {
-        res.render('restaurant/update-number-of-pax', { pageTitle, error: err.message, numberOfPaxes, numberPaxID: numberPaxID, restaurantID });   
+        console.log('errzzzzzzzzzzzzz:', err);
+        res.redirect('/restaurant/number-of-pax');   
     }
 }
 
@@ -327,14 +331,14 @@ const POSTupdateNumberPax = async (req, res) => {
         const numberOfPax = await NumberPax.findById(numberPaxID).populate('restaurant');
         console.log('numberOfPaxxxxxx:', numberOfPax);
         const restaurantID = numberOfPax.restaurant._id;
-        const restaurantName = numberOfPax.lowername;
+        const restaurantName = numberOfPax.restaurant.lowername;
         const updatedData = req.body;
         updatedData.image = req.file ? req.file.filename : undefined;
 
         // If only product image change
         if (updatedData.image) {
             // Delete old image
-            const imagePath = `./public/images/restaurant/${restaurantName}/${updatedData.image}`;
+            const imagePath = `./public/images/restaurant/${restaurantName}/floor-plan/${updatedData.image}`;
             deleteFile(imagePath);
         }
 
@@ -356,7 +360,6 @@ const GETdeactivateOrActivate = async (req, res) => {
 }
 
 const DELETEnumberPax = async (req, res) => {
-    console.log('DELETEnumberPax ------');
     try {
         const numberPaxID = req.params.id;
         const numberPax = await NumberPax.findById(numberPaxID).populate('restaurant');

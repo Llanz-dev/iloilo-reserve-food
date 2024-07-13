@@ -30,7 +30,12 @@ const numberPaxSchema = new Schema({
     restaurant: {
         type: Schema.Types.ObjectId,
         ref: 'Restaurant',
-    }
+    },
+    customer: {
+        type: Schema.Types.ObjectId,
+        ref: 'Customer',
+        required: false
+    },
 });
 
 export default mongoose.model('NumberPax', numberPaxSchema);

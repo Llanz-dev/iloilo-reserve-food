@@ -27,9 +27,9 @@
           <% } %>
               <h6>Restaurant: <%= transaction.restaurant.name %></h6>
               <% if (transaction.reservation.dineIn) { %>
-                <p class="card-text"><span class="primary-background-color text-white px-3 py-1">Dine In</span></p>                     
+                <span class="badge rounded-pill primary-background-color">Dine In</span>
               <% } else { %>
-                <p class="card-text"><span class="bg-warning px-3 py-1 text-black">Take Out</span></p>                     
+                <span class="badge rounded-pill bg-warning text-black">Take Out</span>
               <% } %>
               <div class="accordion accordion-flush my-2" id="accordionFlushExample">
                 <div class="accordion-item">

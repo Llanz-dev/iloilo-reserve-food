@@ -6,6 +6,7 @@ import { deleteUsedVouchers } from '../utils/restaurantUtils.mjs';
 import voucherGenerator from '../utils/voucherUtils.mjs';
 import countCustomerCancelled from '../utils/countCustomerCancelled.mjs';
 import processAndCancelExpiredReservations from '../utils/transactionUtils.mjs';
+import NumberPax from '../models/numberPaxModel.mjs';
 
 const GETtransaction = async (req, res) => {
   try {
@@ -47,8 +48,8 @@ const GETtransaction = async (req, res) => {
   }
 };
 
-
 const cancelReservationRefundable = async (req, res) => {
+  console.log('cancelReservationRefundable ---------');
     try {
       const { id } = req.params;
       const transactionObject = await Transaction.findById(id).populate('cart');
@@ -61,7 +62,7 @@ const cancelReservationRefundable = async (req, res) => {
         return res.status(400).json({ error: 'Transaction is already completed' });
       }
 
-      console.log('transactionObject.captureId:', transactionObject.captureId);
+      // console.log('transactionObject.captureId:', transactionObject.captureId);
 
       // Cancel the order on the payment gateway (e.g., PayPal)
       const { jsonResponse, httpStatusCode } = await captureOrder(transactionObject.captureId, transactionObject, true);
@@ -78,10 +79,14 @@ const cancelReservationRefundable = async (req, res) => {
   
       // Update the transaction status
       transactionObject.isCancelled = true;
-      transactionObject.isRefunded = true;
+
+      transactionObject.isRefunded = true; 
       transactionObject.isToday = false;
       transactionObject.isPending = false;
       await transactionObject.save();
+
+      // Remove the customer to NumPax table to be available to other customer
+      await NumberPax.updateOne({ $unset: { customer: '' } });
   
       res.redirect('/transaction');
     } catch (error) {
@@ -111,6 +116,9 @@ const cancelReservationUnrefundable = async (req, res) => {
       transactionObject.isPending = false;
       transactionObject.isToday = false;
       await transactionObject.save();
+
+      // Remove the customer to NumPax table to be available to other customer
+      await NumberPax.updateOne({ $unset: { customer: '' } });
   
       res.redirect('/transaction');
     } catch (error) {

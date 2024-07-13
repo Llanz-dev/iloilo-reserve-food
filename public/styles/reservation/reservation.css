@@ -1,12 +1,25 @@
 main {
-    width: 50% !important;
+    display: flex;
+    justify-content: space-between;
+}
+
+section {
+    width: 100%;
 }
 
 article {
     background-color: white;
     padding: 20px;
+    width: 600px;
 }
 
+.floor-plan-section {
+    width: 600px;
+}
+
+.floor-plan-img {
+    width: 500px;
+}
 
 .reserve-icon {
     width: 40px;

@@ -3,53 +3,64 @@
 
 <main>
   <article>
-  <h1 class="title mb-3">Create Reservation<img src="/images/static/reserve-icon.png" alt="reserve icon" class="reserve-icon"></h1>
-  <h2 class="title d-none">Total Amount: ₱<span class="total-amount"><%= cart.totalAmount %></span></h2>
+    <h1 class="title mb-3">Create Reservation<img src="/images/static/reserve-icon.png" alt="reserve icon" class="reserve-icon"></h1>
+    <h2 class="title d-none">Total Amount: ₱<span class="total-amount"><%= cart.totalAmount %></span></h2>
 
-  <% if (typeof error !== 'undefined') { %>
-    <div class="alert alert-danger">
-      <%= error %>
-    </div>
-  <% } %>
-
-  <form action="/reservation/<%= restaurant.lowername %>/<%= cart._id %>" method="POST">
-    <input type="hidden" id="customer" name="customer" class="form-control" value="<%= cart.customer._id %>">
-    <input type="hidden" id="restaurant" name="restaurant" class="form-control" value="<%= cart.restaurant._id %>">
-    <input type="hidden" id="dineIn" name="dineIn" class="form-control" value="<%= dineInValue %>">
-    <% if (dineInValue === 'true') { %>
-      <input type="hidden" id="amount" name="amount" class="form-control" value="">
-    <% } else { %>
-      <input type="hidden" id="amount" name="amount" class="form-control" value="<%= cart.totalAmount %>">
-    <% } %>
-    <div class="form-group">
-      <label for="reservation_date">Reservation Date:</label>
-      <input type="date" id="reservation_date" name="reservation_date" class="form-control" required>
-    </div>
-    <div class="form-group">
-      <label for="reservation_time">Reservation Time:</label>
-      <input type="time" id="reservation_time" name="reservation_time" class="form-control" required>
-    </div>
-    <% if (dineInValue === 'true') { %>
-      <div class="form-group">      
-        <label for="num_pax">Number of Pax:</label>
-        <br>
-        <small><i>15 pesos per every 2 persons</i></small>
-        <br>
-        <small class="text-danger" id="out-of-range"><i>"<span id="out-of-range-value"></span>"exceeds the restaurant reservation limit of <span id="restaurant-limit-value"></span>!</i></small>
-        <input type="number" id="num_pax" name="num_pax" class="form-control" required>
+    <% if (typeof error !== 'undefined') { %>
+      <div class="alert alert-danger">
+        <%= error %>
       </div>
     <% } %>
-    <div class="form-group notes-div">
-      <label for="notes">Notes:</label>
-      <textarea id="notes" name="notes" class="form-control" placeholder="optional"></textarea>
-    </div>
-    <button type="submit" class="btn text-white primary-background-color" id="create-reservation-button">Submit</button>
-    <a href="/reservation/dineIn-takeOut/<%= restaurant.lowername %>/<%= cart._id %>" class="btn back-button">Back</a>
-  </form>
+    <section>
+      <form action="/reservation/<%= restaurant.lowername %>/<%= cart._id %>" method="POST">
+        <input type="hidden" id="customer" name="customer" class="form-control" value="<%= cart.customer._id %>">
+        <input type="hidden" id="restaurant" name="restaurant" class="form-control" value="<%= cart.restaurant._id %>">
+        <input type="hidden" id="dineIn" name="dineIn" class="form-control" value="<%= dineInValue %>">
+        <% if (dineInValue === 'true') { %>
+          <input type="hidden" id="amount" name="amount" class="form-control" value="">
+        <% } else { %>
+          <input type="hidden" id="amount" name="amount" class="form-control" value="<%= cart.totalAmount %>">
+        <% } %>
+        <div class="form-group">
+          <label for="reservation_date">Reservation Date:</label>
+          <input type="date" id="reservation_date" name="reservation_date" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="reservation_time">Reservation Time:</label>
+          <input type="time" id="reservation_time" name="reservation_time" class="form-control" required>
+        </div>
+        <% if (dineInValue === 'true') { %>
+          <div class="form-group">      
+            <label for="num_pax">Number of Sits:</label>
+            <br>
+            <!-- <small class="text-danger" id="out-of-range"><i>"<span id="out-of-range-value"></span>"exceeds the restaurant reservation limit of <span id="restaurant-limit-value"></span>!</i></small> -->
+            <select class="form-select" aria-label="Default select example" name="table_price" id="select-table">
+              <% numberOfPaxes.forEach(table => { %>
+                <option value="<%= table.price %>" data-image="/images/restaurant/<%= restaurant.lowername %>/floor-plan/<%= table.image %>" data-description="<%= table.description %>" data-tableID="<%= table._id %>">
+                  <%= table.name %> - ₱<%= table.price %> 
+                </option>    
+              <% }); %>
+            </select>            
+          </div>
+        <% } %>
+        <div class="form-group notes-div">
+          <label for="notes">Notes:</label>
+          <textarea id="notes" name="notes" class="form-control" placeholder="optional"></textarea>
+        </div>
+        <button type="submit" class="btn text-white primary-background-color" id="create-reservation-button">Submit</button>
+        <a href="/reservation/dineIn-takeOut/<%= restaurant.lowername %>/<%= cart._id %>" class="btn back-button">Back</a>
+        <input type="hidden" name="numPaxID" id="num-pax-id" value="">
+      </form>
+    </section>
 </article>
+<section class="floor-plan-section">
+  <img src="" alt="Floor plan image" class="floor-plan-img" id="floor-plan-img">
+  <p><em id="floor-plan-description"></em></p>
+</section>
 </main>
 
+<input type="hidden" value="" id="put-table-image">
 <p class="d-none" id="dineInValue"><%= dineInValue %></p>
-<script src="/js/reservation/reservation.js"></script> 
 <script src="/js/amountFormatter.js"></script>             
+<script src="/js/reservation/reservation.js"></script>             
 <%- include('.././footer.ejs') %>

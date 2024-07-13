@@ -5,6 +5,7 @@ import calculateTotalAmountByPax from '../utils/paxUtils.mjs';
 import Voucher from '../models/voucherModel.mjs';
 import moment from 'moment-timezone';
 import Restaurant from '../models/restaurantModel.mjs';
+import NumberPax from '../models/numberPaxModel.mjs';
 import { checkReservationDateAndTime } from '../utils/reservationUtils.mjs';
 
 const GETDineInTakeOutReservation = async (req, res) => {
@@ -68,6 +69,7 @@ const GETCreateTakeOutReservation = async (req, res) => {
 };
 
 const GETCreateDineInReservation = async (req, res) => {
+  console.log('---- GETCreateDineInReservation ----');
   try {
     const dineInValue = req.query.dineIn;
     const cartID = req.params.id;
@@ -77,10 +79,11 @@ const GETCreateDineInReservation = async (req, res) => {
       
     const restaurantID = cart.restaurant;
     const restaurant = await Restaurant.findById(restaurantID);
+    const numberOfPaxes = await NumberPax.find({ restaurant: restaurantID });
 
     const numberOfItems = cart ? cart.items.length : 0;
     
-    res.render('reservation/reservation', { pageTitle: 'Reservation', restaurantID, cart, restaurant, numberOfItems, dineInValue });
+    res.render('reservation/reservation', { pageTitle: 'Reservation', restaurantID, cart, restaurant, numberOfItems, dineInValue, numberOfPaxes });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -90,12 +93,12 @@ const POSTCreateDineInReservation = async (req, res) => {
   const cartID = req.params.id;
   const cart = await Cart.findById(cartID);
   const restaurantID = cart.restaurant._id;
+  const numberOfPaxes = await NumberPax.find({ restaurant: restaurantID });
   const restaurant = await Restaurant.findById(restaurantID);
   const { dineIn } = req.body;
   try {
-      const { customer, restaurant, reservation_date, reservation_time, num_pax, amount, notes } = req.body;
-
-      calculateTotalAmountByPax(num_pax, cart);
+      const { customer, restaurant, reservation_date, reservation_time, table_price, numPaxID, amount, notes } = req.body;
+      console.log('numPaxID:', numPaxID);
       
       cart.halfAmount = cart.totalAmount / 2;
       
@@ -106,14 +109,14 @@ const POSTCreateDineInReservation = async (req, res) => {
       await checkReservationDateAndTime(restaurantObject, reservation_date, reservation_time);
 
       // Construct URL with reservation data parameters
-      const checkoutURL = `/checkout/${restaurantObject.lowername}/${restaurantID}/${cartID}/?restaurantID=${restaurantID}&cartID=${cartID}&customer=${customer}&reservation_date=${reservation_date}&reservation_time=${reservation_time}&dineIn=${dineIn}&num_pax=${num_pax}&amount=${amount}&notes=${notes}`;
+      const checkoutURL = `/checkout/${restaurantObject.lowername}/${restaurantID}/${cartID}/?restaurantID=${restaurantID}&cartID=${cartID}&numPaxID=${numPaxID}&customer=${customer}&reservation_date=${reservation_date}&reservation_time=${reservation_time}&dineIn=${dineIn}&table_price=${table_price}&amount=${amount}&notes=${notes}`;
       // Redirect to checkout page with reservation data parameters
       res.redirect(checkoutURL);
   } catch (err) {
       console.log('POSTCreateDineInReservation:', err);
       const numberOfItems = cart ? cart.items.length : 0;
       // If there's an error, render the template with the error message
-      res.status(500).render('reservation/reservation', { pageTitle: 'Reservation', error: err.message, restaurantID, restaurant, cart, numberOfItems, dineInValue: dineIn });
+      res.status(500).render('reservation/reservation', { pageTitle: 'Reservation', numberOfPaxes, error: err.message, restaurantID, restaurant, cart, numberOfItems, dineInValue: dineIn });
   }
 }
 

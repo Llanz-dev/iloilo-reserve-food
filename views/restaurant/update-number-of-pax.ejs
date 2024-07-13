@@ -2,7 +2,7 @@
 <%- include('./layout/navbar.ejs') %>
 
 <main>
-  <h1 class="title">Update Number of Pax</h1>
+  <h1 class="title">Update Number of Sits</h1>
   <% if (typeof error !== 'undefined') { %>
     <div class="alert alert-danger w-25">
       <%= error %>
@@ -15,7 +15,7 @@
       <input type="hidden" class="hidden-text" name="lowername" value="<%= numberOfPax.restaurant.lowername %>">
     </div>
     <div class="form-group">
-      <label for="numberOfPax">Number of Pax</label>
+      <label for="numberOfPax">Number of Sits</label>
       <input type="number" class="form-control" name="numberOfPax" value="<%= numberOfPax.numberOfPax %>" required>
     </div>
     <div class="form-group">
