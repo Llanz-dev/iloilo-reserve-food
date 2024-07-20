@@ -26,10 +26,12 @@
               <h5>Transaction Status: Pending</h5>
           <% } %>
               <h6>Restaurant: <%= transaction.restaurant.name %></h6>
-              <% if (transaction.reservation.dineIn) { %>
-                <span class="badge rounded-pill primary-background-color">Dine In</span>
+              <% if (transaction.reservation.dineIn && !transaction.reservation.other) { %>
+                <span class="badge rounded-pill primary-background-color mb-2">Dine In</span>
+              <% } else if (transaction.acceptOrNot) { %>
+                <span class="badge rounded-pill primary-background-color mb-2"><%= transaction.acceptOrNot === 'Pending' ? 'Pending...' : transaction.acceptOrNot %></span>
               <% } else { %>
-                <span class="badge rounded-pill bg-warning text-black">Take Out</span>
+                <span class="badge rounded-pill bg-warning text-black mb-2">Take Out</span>
               <% } %>
               <div class="accordion accordion-flush my-2" id="accordionFlushExample">
                 <div class="accordion-item">
@@ -45,12 +47,17 @@
                                   <li class="list-group-item"><span><%= item.product.name %> <%= item.quantity %>x</span> <span>₱<%= item.total %></span></li>
                               <% }); %>                        
                               <% if (transaction.cart.voucherAmount) { %>
-                                  <li class="list-group-item"><span>Reservation fee</span> <span>₱<span class="total-amount"><%= transaction.cart.reservationAmount %></span></span></li>    
+                                  <% if (transaction.cart.reservationAmount !== 0) { %>
+                                    <li class="list-group-item"><span>Reservation fee</span> <span>₱<span class="total-amount"><%= transaction.cart.reservationAmount %></span></span></li>                                       
+                                  <% } %>
                                   <li class="list-group-item"><span>Subtotal amount</span> <span>₱<span class="total-amount"><%= transaction.cart.subTotal %></span></span></li>
                                   <li class="list-group-item list-group-item-success"><span class="total-amount">Voucher amount</span> <span>-₱<span class="total-amount"><%= transaction.cart.voucherAmount %></span></span></span></li>               
                               <% } else { %>
                                   <li class="list-group-item"><span>Subtotal amount</span> <span>₱<span class="total-amount"><%= transaction.cart.subTotal %></span></span></li>
-                                  <li class="list-group-item"><span>Reservation fee</span> <span>₱<span class="total-amount"><%= transaction.cart.reservationAmount %></span></span></li>    
+                                  <% if (transaction.cart.reservationAmount !== 0) { %>                                   
+                                    <li class="list-group-item"><span>Reservation fee</span> <span>₱<span class="total-amount"><%= transaction.cart.reservationAmount %></span></span></li>    
+                                  <% } %>
+
                               <% } %>
                               <li class="list-group-item"><span>Total amount</span> <span>₱<span class="total-amount"><%= transaction.cart.totalAmount %></span></span></li>            
                               <li class="list-group-item fw-bold"><span>Half amount</span> <span>₱<span class="total-amount"><%= transaction.cart.halfAmount %></span></span></li>
@@ -74,8 +81,12 @@
                             %>
                             <li>Reservation date: <%= formattedReservationDate %></li>
                             <li>Reservation time: <span class="reservation-time"><%= transaction.reservation.reservation_time %></span></li>
-                            <li>Number of Pax: <%= transaction.reservation.num_pax %></span></li>
-                            <li>Amount: ₱<%= transaction.reservation.amount %></span></li>
+                            <% if (transaction.reservation.dineIn) { %>
+                              <li>Number of Sits: <%= transaction.reservation.numberPax ? transaction.reservation.numberPax.numberOfPax : transaction.reservation.other %></li>                             
+                            <% } %>
+                            <% if (transaction.cart.reservationAmount !== 0) { %>
+                              <li>Amount: ₱<%= transaction.cart.reservationAmount %></span></li>                             
+                            <% } %>
                             <li>Created at: <%= transaction.reservation.created_at.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: '2-digit', year: 'numeric' }) %></li>
                             <li>Notes: <%= transaction.reservation.notes %></span></li>
                         </ul>
@@ -83,8 +94,6 @@
                   </div>                        
                 </div>
               </div>     
-              <!-- <a href="/restaurant/delete-transaction/<%= transaction._id %>" class="btn btn-danger btn-sm delete-button">Delete</a> -->
-              <!-- <a href="/restaurant/remove-transaction/<%= transaction._id %>" class="btn btn-danger btn-sm delete-button">Remove</a> -->
               <% if (transaction.isCancelled === false && transaction.isTransactionComplete === false) { %>
                   <form action="/restaurant/transaction-complete/<%= transaction._id %>" method="post">
                       <button type="submit" class="btn btn-primary btn-sm completed-bg-color border-black">Transaction completed</button>

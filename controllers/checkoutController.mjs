@@ -175,16 +175,12 @@ let reservationQuery = undefined;
 let getCartID = undefined;
 const createOrderHandler = async (req, res) => {
   try {
-    console.log('createOrderHandler req.body:', req.body);
     const cartID = req.body.cart._id;
     const cart = await Cart.findById(cartID);
     const reservation = req.body.reservation;
-    console.log('--------- Before ---------');
-    // console.log(cart);
+  
     cart.totalAmount += Number(reservation.table_price);
     cart.halfAmount = (cart.totalAmount - cart.voucherAmount) / 2;
-    console.log('--------- After ---------');
-    // console.log(cart);
 
     if (!cart) {
       throw new Error("Cart not found");
@@ -200,42 +196,56 @@ const createOrderHandler = async (req, res) => {
 
 // This function is where I do save all the data and finalized things.
 const captureOrderHandler = async (req, res) => {
-    try {
-        console.log('getCartID:', getCartID);
-        console.log('---------- captureOrderHandler Finish ----------');
-        const cartID = req.params.cartID;
-        const cart = await Cart.findById(getCartID).populate('customer restaurant');
-        // Put the customer to NumberPax customer field to indicate that this table has already been taken.
-        await NumberPax.findByIdAndUpdate(reservationQuery.numPaxID, { customer: reservationQuery.customer });
-
-        // Create reservation model.
-        const reservationObject = await Reservation.create({ customer: reservationQuery.customer, restaurant: reservationQuery.restaurantID, cart: reservationQuery.cartID, numberPax: reservationQuery.numPaxID, reservation_date: reservationQuery.reservation_date, reservation_time: reservationQuery.reservation_time, table_price: reservationQuery.table_price, amount: reservationQuery.amount, dineIn: reservationQuery.dineIn, notes: reservationQuery.notes });  
-        console.log('Create reservationObject:', reservationObject);
-
-        // Save the cart and its calculation.
-        cart.totalAmount = Number(reservationObject.amount);
-        cart.halfAmount = (cart.totalAmount - cart.voucherAmount) / 2;
-        cart.totalAmount -= cart.voucherAmount;
-        cart.isHalfPaymentSuccessful = true;
-        await cart.save();
-
-        // Create transaction model.
-        const transaction = await Transaction.create({ customer: cart.customer, restaurant: cart.restaurant, cart: cart, reservation: reservationObject });    
-        const transactionObject = await Transaction.findById(transaction._id).populate('cart reservation');
-        const customerQuota = await CustomerQuota.findOne({ customer: cart.customer, restaurant: cart.restaurant });
-        
-        if (!customerQuota) {
-          const customerQuotaCreated = await CustomerQuota.create({ customer: cart.customer, restaurant: cart.restaurant });
-          console.log('Customer Quota Created:', customerQuotaCreated);
-        }
-
-        const { orderID } = req.params;
-        const { jsonResponse, httpStatusCode } = await captureOrder(orderID, transactionObject, false);
-        res.status(httpStatusCode).json(jsonResponse);
-    } catch (error) {
-        console.error("Failed to capture order:", error);
-        res.status(500).json({ error: "Failed to capture order." });
+  try {
+    console.log('getCartID:', getCartID);
+    console.log('---------- captureOrderHandler Finish ----------');
+    const cartID = req.params.cartID;
+    const cart = await Cart.findById(getCartID).populate('customer restaurant');
+    console.log('reservationQuery:', reservationQuery);
+    let reservationObject = undefined;
+    if (reservationQuery.dineIn && !reservationQuery.otherOption) {
+      console.log('hello');
+      // Put the customer to NumberPax customer field to indicate that this table has already been taken.
+      const numPax = await NumberPax.findByIdAndUpdate(reservationQuery.numPaxID, { isOccupied: true });
+      console.log('numPax:', numPax);
+      reservationObject = await Reservation.create({ customer: reservationQuery.customer, restaurant: reservationQuery.restaurantID, cart: reservationQuery.cartID, numberPax: reservationQuery.numPaxID, reservation_date: reservationQuery.reservation_date, reservation_time: reservationQuery.reservation_time, amount: Number(reservationQuery.table_price), dineIn: reservationQuery.dineIn, notes: reservationQuery.notes });  
+    } else if (reservationQuery.dineIn && reservationQuery.otherOption) {
+      console.log('word');
+      reservationObject = await Reservation.create({ customer: reservationQuery.customer, restaurant: reservationQuery.restaurantID, cart: reservationQuery.cartID, reservation_date: reservationQuery.reservation_date, reservation_time: reservationQuery.reservation_time, other: reservationQuery.otherOption, amount: 0, dineIn: reservationQuery.dineIn, notes: reservationQuery.notes });    
+    } else {
+      console.log('zzzzzzz');
+      reservationObject = await Reservation.create({ customer: reservationQuery.customer, restaurant: reservationQuery.restaurantID, cart: reservationQuery.cartID, reservation_date: reservationQuery.reservation_date, reservation_time: reservationQuery.reservation_time, amount: 0, dineIn: reservationQuery.dineIn, notes: reservationQuery.notes });  
     }
+
+    cart.totalAmount = (cart.subTotal + cart.reservationAmount) - cart.voucherAmount;
+    cart.halfAmount = cart.totalAmount / 2;
+    cart.isHalfPaymentSuccessful = true;
+    console.log('carrrrrrrrrt:', cart);    
+    await cart.save();
+
+    // Create transaction model.
+    let transaction = undefined;
+    if ((reservationQuery.dineIn && !reservationQuery.otherOption) || !reservationQuery.dineIn) {
+      transaction = await Transaction.create({ customer: cart.customer, restaurant: cart.restaurant, cart: cart, reservation: reservationObject });    
+    } else {
+      transaction = await Transaction.create({ customer: cart.customer, restaurant: cart.restaurant, cart: cart, reservation: reservationObject, acceptOrNot: 'Pending' });    
+    }
+    
+    const transactionObject = await Transaction.findById(transaction._id).populate('cart reservation');
+    const customerQuota = await CustomerQuota.findOne({ customer: cart.customer, restaurant: cart.restaurant });
+    
+    if (!customerQuota) {
+      const customerQuotaCreated = await CustomerQuota.create({ customer: cart.customer, restaurant: cart.restaurant });
+      console.log('Customer Quota Created:', customerQuotaCreated);
+    }
+
+    const { orderID } = req.params;
+    const { jsonResponse, httpStatusCode } = await captureOrder(orderID, transactionObject, false);
+    res.status(httpStatusCode).json(jsonResponse);
+  } catch (error) {
+      console.error("Failed to capture order:", error);
+      res.status(500).json({ error: "Failed to capture order." });
+  }
 };
 
 const serveCheckoutPage = async (req, res) => {
@@ -249,8 +259,11 @@ const serveCheckoutPage = async (req, res) => {
       // Get the reservation data from the previous customer reservation input page
       const reservation = req.query;
       reservationQuery = reservation;
+      
+      reservationQuery.otherOption = Number(reservationQuery.otherOption);
 
       console.log('reservationQueryyy:', reservationQuery);
+
 
       // Convert the reservationQuery.dineIn true string value to boolean
       reservationQuery.dineIn = reservation.dineIn === 'true';
@@ -268,6 +281,7 @@ const serveCheckoutPage = async (req, res) => {
 
       // Get the cart to display the items and fetch the amount information
       const cart = await Cart.findById(cartID).populate('items.product');
+      
       if (reservationQuery.dineIn) {
         cart.reservationAmount = Number(reservation.table_price);
       } else {
@@ -278,8 +292,14 @@ const serveCheckoutPage = async (req, res) => {
   
       if (cart.voucherAmount !== 0 || reservationQuery.dineIn) {
         cart.totalAmount += Number(reservation.table_price);
+        cart.halfAmount = cart.totalAmount / 2;
         reservationQuery.amount = cart.totalAmount;
       }
+
+      cart.halfAmount = (cart.totalAmount - cart.voucherAmount) / 2;
+      cart.totalAmount -= cart.voucherAmount;
+
+      console.log('carrrrrrt:', cart);
 
       const numberOfItems = cart ? cart.items.length : 0;
       res.render('checkout/checkout', { pageTitle: 'Checkout', cart, reservation, restaurant, numberOfItems });

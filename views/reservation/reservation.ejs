@@ -33,16 +33,22 @@
           <div class="form-group">      
             <label for="num_pax">Number of Sits:</label>
             <br>
-            <!-- <small class="text-danger" id="out-of-range"><i>"<span id="out-of-range-value"></span>"exceeds the restaurant reservation limit of <span id="restaurant-limit-value"></span>!</i></small> -->
             <select class="form-select" aria-label="Default select example" name="table_price" id="select-table">
               <% numberOfPaxes.forEach(table => { %>
-                <option value="<%= table.price %>" data-image="/images/restaurant/<%= restaurant.lowername %>/floor-plan/<%= table.image %>" data-description="<%= table.description %>" data-tableID="<%= table._id %>">
-                  <%= table.name %> - ₱<%= table.price %> 
-                </option>    
+                <% if (table.isActivate && !table.isOccupied) { %>                 
+                  <option value="<%= table.price %>" data-image="/images/restaurant/<%= restaurant.lowername %>/floor-plan/<%= table.image %>" data-description="<%= table.description %>" data-tableID="<%= table._id %>" data-numberOfSits="<%= table.numberOfPax %>">
+                    <%= table.name %> - ₱<%= table.price %>
+                  </option>    
+                <% } %>
               <% }); %>
+              <option value="">Other</option>
             </select>            
           </div>
         <% } %>
+        <div class="form-group" id="other-option-container">
+          <label for="otherOption">Other:</label>
+          <input type="number" id="other-option-field" name="otherOption" class="form-control"> 
+        </div>
         <div class="form-group notes-div">
           <label for="notes">Notes:</label>
           <textarea id="notes" name="notes" class="form-control" placeholder="optional"></textarea>
@@ -53,14 +59,20 @@
       </form>
     </section>
 </article>
-<section class="floor-plan-section">
-  <img src="" alt="Floor plan image" class="floor-plan-img" id="floor-plan-img">
-  <p><em id="floor-plan-description"></em></p>
-</section>
+<% if (dineInValue === 'true') { %>  
+  <section class="floor-plan-section">
+    <img src="" alt="Floor plan image" class="floor-plan-img" id="floor-plan-img">
+    <p class="fw-bold" id="sits-tag">Number of sits: <span id="number-of-sits"></span></p>
+    <p><em id="floor-plan-description"></em></p>
+  </section>
+<% } %>
 </main>
 
 <input type="hidden" value="" id="put-table-image">
 <p class="d-none" id="dineInValue"><%= dineInValue %></p>
+
 <script src="/js/amountFormatter.js"></script>             
-<script src="/js/reservation/reservation.js"></script>             
+<% if (dineInValue === 'true') { %>
+  <script src="/js/reservation/reservation.js"></script>             
+<% } %>
 <%- include('.././footer.ejs') %>

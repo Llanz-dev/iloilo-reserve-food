@@ -49,6 +49,10 @@ const transactionSchema = new mongoose.Schema({
       type: Boolean,
       default: false
     },
+    acceptOrNot: {
+      type: String,      
+      required: false
+    },    
     createdAt: {
       type: Date,
       default: Date.now

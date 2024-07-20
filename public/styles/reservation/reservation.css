@@ -37,7 +37,15 @@ article {
 .back-button:hover {
     background-color: #e24b46;
     color: white;
-} 
+}
+
+.numberOfSits {
+    font-weight: 500;
+}
+
+#other-option-container {
+    display: none;
+}
 
 @media (max-width: 575px) {
     main {

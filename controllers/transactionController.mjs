@@ -7,6 +7,8 @@ import voucherGenerator from '../utils/voucherUtils.mjs';
 import countCustomerCancelled from '../utils/countCustomerCancelled.mjs';
 import processAndCancelExpiredReservations from '../utils/transactionUtils.mjs';
 import NumberPax from '../models/numberPaxModel.mjs';
+import Reservation from '../models/reservationModel.mjs';
+import { freeUpTable } from '../utils/reservationUtils.mjs';
 
 const GETtransaction = async (req, res) => {
   try {
@@ -36,6 +38,10 @@ const GETtransaction = async (req, res) => {
       })   
       .sort({ createdAt: -1 });
 
+    transactions.forEach(element => {
+      console.log('element:', element.reservation.other);
+    });
+
     await deleteUsedVouchers();
     
     // Call processAndCancelExpiredReservations and pass the transactions as argument
@@ -56,8 +62,15 @@ const cancelReservationRefundable = async (req, res) => {
   console.log('cancelReservationRefundable ---------');
     try {
       const { id } = req.params;
-      const transactionObject = await Transaction.findById(id).populate('cart');
-  
+      const transactionObject = await Transaction.findById(id)
+      .populate({
+        path: 'reservation',
+        populate: {
+          path: 'numberPax'
+        }
+      })
+      .populate('customer cart restaurant');
+
       if (!transactionObject) {
         return res.status(404).json({ error: 'Transaction not found' });
       }
@@ -66,11 +79,8 @@ const cancelReservationRefundable = async (req, res) => {
         return res.status(400).json({ error: 'Transaction is already completed' });
       }
 
-      // console.log('transactionObject.captureId:', transactionObject.captureId);
-
       // Cancel the order on the payment gateway (e.g., PayPal)
       const { jsonResponse, httpStatusCode } = await captureOrder(transactionObject.captureId, transactionObject, true);
-      console.log('httpStatusCode:', httpStatusCode);
 
       if (httpStatusCode !== 201) {
         return res.status(httpStatusCode).json({ error: jsonResponse });
@@ -83,15 +93,17 @@ const cancelReservationRefundable = async (req, res) => {
   
       // Update the transaction status
       transactionObject.isCancelled = true;
-
       transactionObject.isRefunded = true; 
       transactionObject.isToday = false;
       transactionObject.isPending = false;
       await transactionObject.save();
 
-      // Remove the customer to NumPax table to be available to other customer
-      await NumberPax.updateOne({ $unset: { customer: '' } });
-  
+
+      if (transactionObject.reservation.dineIn && transactionObject.reservation.numberPax) {
+        console.log('trrr:', transactionObject);
+        freeUpTable(transactionObject);
+      }
+
       res.redirect('/transaction');
     } catch (error) {
       console.error('Error cancelling reservation:', error);
@@ -102,7 +114,7 @@ const cancelReservationRefundable = async (req, res) => {
 const cancelReservationUnrefundable = async (req, res) => {
     try {
       const { id } = req.params;
-      const transactionObject = await Transaction.findById(id).populate('cart restaurant');
+      const transactionObject = await Transaction.findById(id).populate('cart restaurant reservation');
   
       if (!transactionObject) {
         return res.status(404).json({ error: 'Transaction not found' });
@@ -121,8 +133,9 @@ const cancelReservationUnrefundable = async (req, res) => {
       transactionObject.isToday = false;
       await transactionObject.save();
 
-      // Remove the customer to NumPax table to be available to other customer
-      await NumberPax.updateOne({ $unset: { customer: '' } });
+      if (transactionObject.reservation.dineIn && transactionObject.reservation.numberPax) {
+        freeUpTable(transactionObject);
+      }
   
       res.redirect('/transaction');
     } catch (error) {

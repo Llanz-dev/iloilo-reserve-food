@@ -4,7 +4,6 @@ const countCustomerCancelled = async (transactionRestaurant, transactionCustomer
     try {
         // Find the CustomerQuota document
         let customerQuota = await CustomerQuota.findOne({ restaurant: transactionRestaurant, customer: transactionCustomer });
-        console.log('------------------------------- customerQuota:', customerQuota);
         
         // If no document is found, create a new one
         if (!customerQuota) {

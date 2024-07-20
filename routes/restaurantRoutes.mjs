@@ -2,6 +2,7 @@ import express from 'express';
 const router = express.Router();
 import { uploadRestaurantBanner, updateRestaurantBanner } from '../config/multerConfig.mjs';
 import {    
+            POSTacceptTransactionOrNot,
             GETnumberPax,
             POSTnumberPax,
             GETdeactivateOrActivate,
@@ -45,6 +46,8 @@ router.get('/dashboard/today', GETRestaurantDashboardToday);
 router.get('/dashboard/pending', GETRestaurantDashboardPending);
 router.get('/update-restaurant', GETProfileDashboard);
 router.post('/update-restaurant/:id', updateRestaurantBanner, POSTUpdateRestaurant);
+// Accept or Not the Transaction
+router.post('/accept-transaction-or-not/:id', POSTacceptTransactionOrNot);
 // Vouchers
 router.use('/vouchers', voucherRoutes);
 // Number of Pax

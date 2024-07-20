@@ -31,6 +31,11 @@ const reservationSchema = new Schema({
       type: String,
       required: true
     },
+    other: {
+      type: Number,
+      default: 0,
+      required: false
+    },
     amount: {
       type: Number,
       default: 0,

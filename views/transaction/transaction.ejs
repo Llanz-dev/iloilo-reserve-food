@@ -25,34 +25,40 @@
                 <img src="/images/restaurant/<%= transaction.restaurant.lowername %>/banner/<%= transaction.restaurant.image %>" class="card-img-top" alt="<%= transaction.restaurant.name %>">
                 <div class="card-body">
                   <h5 class="card-title"><%= transaction.restaurant.name %></h5>
-                  <% if (transaction.reservation.dineIn) { %>
+                  <% if (transaction.reservation.dineIn && !transaction.reservation.other) { %>
                     <span class="badge rounded-pill primary-background-color mb-2">Dine In</span>
+                  <% } else if (transaction.acceptOrNot) { %>
+                    <span class="badge rounded-pill primary-background-color mb-2"><%= transaction.acceptOrNot === 'Pending' ? 'Pending...' : transaction.acceptOrNot %></span>
                   <% } else { %>
                     <span class="badge rounded-pill bg-warning text-black mb-2">Take Out</span>
                   <% } %>
                   <br>
-                  <!-- Button trigger modal -->
-                  <button type="button" class="btn btn-primary btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                    Show Table Location
-                  </button>          
+                  <% if (transaction.reservation.dineIn && !transaction.reservation.other) { %>                   
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-primary btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                      Show Table Location
+                    </button>          
+                  <% } %>
                   <!-- Modal -->
-                  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-fullscreen">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h1 class="modal-title fs-5" id="exampleModalLabel"><%= transaction.reservation.numberPax.name %></h1>
-                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                          <img src="/images/restaurant/<%= transaction.restaurant.lowername %>/floor-plan/<%= transaction.reservation.numberPax.image %>" alt="Floor plan image" class="" style="width: 500px; height: 500px;">
-                          <p><i><%= transaction.reservation.numberPax.description %></i></p>
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <% if (transaction.reservation.dineIn && !transaction.reservation.other) { %>                   
+                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal-dialog modal-fullscreen">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel"><%= transaction.reservation.numberPax.name %></h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <img src="/images/restaurant/<%= transaction.restaurant.lowername %>/floor-plan/<%= transaction.reservation.numberPax.image %>" alt="Floor plan image" class="floor-plan-image">
+                            <p><i><%= transaction.reservation.numberPax.description %></i></p>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>                        
+                    </div>   
+                  <% } %>
                   <div class="accordion accordion-flush" id="accordionFlushExample">
                     <div class="accordion-item">
                       <h2 class="accordion-header">
@@ -65,9 +71,11 @@
                           <ul class="list-group">                                        
                             <li class="list-group-item"><span>Reservation Date:</span> <span><%= transaction.reservation.reservation_date.toDateString() %></span></li>    
                             <li class="list-group-item"><span>Reservation Time:</span> <span class="reservation-time"><%= transaction.reservation.reservation_time %></span></li>    
-                            <li class="list-group-item"><span>Number of Sits:</span> <span><%= transaction.reservation.numberPax.numberOfPax %></span></li>    
+                            <% if (transaction.reservation.dineIn) { %>                             
+                              <li class="list-group-item"><span>Number of Sits:</span> <span><%= transaction.reservation.numberPax ? transaction.reservation.numberPax.numberOfPax : transaction.reservation.other %></span></li>    
+                            <% } %>
                             <% if (transaction.reservation.notes) { %>
-                              <li class="list-group-item">>Note: <%= transaction.reservation.notes %></li>    
+                              <li class="list-group-item">Note: <%= transaction.reservation.notes %></li>    
                             <% } %>
                           </ul>
                         </div>
@@ -88,12 +96,16 @@
                               <li class="list-group-item"><span><%= item.product.name %> <%= item.quantity %>x</span> <span>₱<%= item.total %></span></li>
                             <% }); %>                        
                             <% if (transaction.cart.voucherAmount) { %>
-                              <li class="list-group-item"><span>Reservation fee</span> <span class="total-amount">₱<%= transaction.cart.reservationAmount %></span></li>    
+                              <% if (transaction.cart.reservationAmount !== 0) { %>
+                                <li class="list-group-item"><span>Reservation fee zzz</span> <span class="total-amount">₱<%= transaction.cart.reservationAmount %></span></li>    
+                              <% } %>
                               <li class="list-group-item"><span>Subtotal amount</span> <span class="total-amount">₱<%= transaction.cart.subTotal %></span></li>
                               <li class="list-group-item list-group-item-success"><span class="total-amount">Voucher amount</span> <span>-₱<span class="total-amount"><%= transaction.cart.voucherAmount %></span></span></li>               
                             <% } else { %>
                               <li class="list-group-item"><span>Subtotal amount</span> <span class="total-amount">₱<%= transaction.cart.subTotal %></span></li>
-                              <li class="list-group-item"><span>Reservation fee</span> <span class="total-amount">₱<%= transaction.cart.reservationAmount %></span></li>    
+                              <% if (transaction.cart.reservationAmount !== 0) { %>
+                                <li class="list-group-item"><span>Reservation fee</span> <span class="total-amount">₱<%= transaction.cart.reservationAmount %></span></li>    
+                              <% } %>  
                             <% } %>
                             <li class="list-group-item"><span>Total amount</span> <span class="total-amount">₱<%= transaction.cart.totalAmount %></span></li>            
                             <li class="list-group-item fw-bold"><span>Half amount</span> <span class="total-amount">₱<%= transaction.cart.halfAmount %></span></li>

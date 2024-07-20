@@ -27,15 +27,15 @@ const numberPaxSchema = new Schema({
         required: true,
         default: true
     },
+    isOccupied: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
     restaurant: {
         type: Schema.Types.ObjectId,
         ref: 'Restaurant',
-    },
-    customer: {
-        type: Schema.Types.ObjectId,
-        ref: 'Customer',
-        required: false
-    },
+    }    
 });
 
 export default mongoose.model('NumberPax', numberPaxSchema);

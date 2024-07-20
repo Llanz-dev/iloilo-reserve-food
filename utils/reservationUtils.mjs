@@ -1,3 +1,5 @@
+import Reservation from '../models/reservationModel.mjs';
+import NumberPax from '../models/numberPaxModel.mjs';
 import moment from "moment-timezone";
 
 const checkReservationDateAndTime = async (restaurantObject, reservation_date, reservation_time) => {    
@@ -23,4 +25,12 @@ const checkReservationDateAndTime = async (restaurantObject, reservation_date, r
     }
 };
 
-export { checkReservationDateAndTime };
+const freeUpTable = async (transactionObject) => {
+  console.log('freeUpTable:', transactionObject);
+  const cartID = transactionObject.cart._id;
+  const reservationObject = await Reservation.findOne({ cart: cartID }).populate('numberPax');
+  const numberPaxID = await reservationObject.numberPax._id;
+  await NumberPax.updateOne({ _id: numberPaxID }, { isOccupied: false });
+}
+
+export { checkReservationDateAndTime, freeUpTable };

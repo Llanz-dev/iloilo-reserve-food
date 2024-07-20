@@ -32,10 +32,12 @@
                     <h5 class="text-black">Transaction Status: Pending</h5>
                 <% } %>
                     <h6 class="text-black">Restaurant: <%= transaction.restaurant.name %></h6>
-                    <% if (transaction.reservation.dineIn) { %>
-                      <p class="card-text"><span class="primary-background-color text-white px-3 py-1">Dine In</span></p>                     
+                    <% if (transaction.reservation.dineIn && !transaction.reservation.other) { %>
+                      <span class="badge rounded-pill primary-background-color mb-2">Dine In</span>
+                    <% } else if (transaction.acceptOrNot) { %>
+                      <span class="badge rounded-pill primary-background-color mb-2"><%= transaction.acceptOrNot === 'Pending' ? 'Pending...' : transaction.acceptOrNot %></span>
                     <% } else { %>
-                      <p class="card-text"><span class="bg-warning px-3 py-1 text-black">Take Out</span></p>                     
+                      <span class="badge rounded-pill bg-warning text-black mb-2">Take Out</span>
                     <% } %>
                     <div class="accordion accordion-flush my-2" id="accordionFlushExample">
                       <div class="accordion-item">

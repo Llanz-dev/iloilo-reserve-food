@@ -12,6 +12,8 @@ import { createDirectory, deleteDirectory, deleteFile, renameFolder, moveImageTo
 import { wss } from '../index.mjs';
 import processAndCancelExpiredReservations from '../utils/transactionUtils.mjs';
 import NumberPax from '../models/numberPaxModel.mjs';
+import { freeUpTable } from '../utils/reservationUtils.mjs';
+
 
 const GETrestaurantRegister = async (req, res) => {
     const pageTitle = 'Restaurant Register';
@@ -161,7 +163,11 @@ const GETRestaurantDashboard = async (req, res) => {
         })
         .populate({
             path: 'reservation',
-            model: 'Reservation'
+            model: 'Reservation',
+            populate: {
+                path: 'numberPax',
+                model: 'NumberPax'
+            }
         })
         .populate({
             path: 'customer',
@@ -277,6 +283,31 @@ const GETProfileDashboard = (req, res) => {
     const restaurant = res.locals.restaurant;
     console.log(restaurant);
     res.render('restaurant/update-restaurant', { pageTitle });
+}
+
+const POSTacceptTransactionOrNot = async (req, res) => {
+    try {
+        console.log('POSTacceptTransactionOrNot');
+        const { action } = req.body;
+        const transactionID = req.params.id;
+        const transactionObject = await Transaction.findById(transactionID);
+        transactionObject.acceptOrNot = action;
+
+        if (action === 'Declined') {
+            transactionObject.isCancelled = true;
+            transactionObject.isRefunded = true; 
+            transactionObject.isToday = false;
+            transactionObject.isPending = false;
+        }
+        
+        await transactionObject.save();
+
+        console.log('transactionObject successfully update:', transactionObject);
+        res.redirect('/restaurant/dashboard');
+    } catch (err) {
+        console.log('POSTacceptTransactionOrNot():', err);
+        res.status(500).json('Server error');
+    }
 }
 
 const GETnumberPax = async (req, res) => {
@@ -803,7 +834,11 @@ const GETHistory = async (req, res) => {
             })
             .populate({
                 path: 'reservation',
-                model: 'Reservation'
+                model: 'Reservation',
+                populate: {
+                    path: 'numberPax',
+                    model: 'NumberPax'
+                }
             })
             .populate({
                 path: 'customer',
@@ -886,7 +921,15 @@ const GETHistoryCancelled = async (req, res) => {
 const POSTtransactionComplete = async (req, res) => {
     try {
         const transactionId = req.params.id;
-        const transaction = await Transaction.findById(transactionId).populate('customer cart restaurant');
+        const transaction = await Transaction.findById(transactionId)
+        .populate({
+          path: 'reservation',
+          populate: {
+            path: 'numberPax'
+          }
+        })
+        .populate('customer cart restaurant');
+      
         const cartTotalAmount = transaction.cart.totalAmount;
         console.log('cartTotalAmount:', cartTotalAmount);
   
@@ -905,6 +948,10 @@ const POSTtransactionComplete = async (req, res) => {
           customerQuota.valueAmount -= reachQuotaAmount;
           console.log('Voucher created:', voucher);
           await customerQuota.save();
+        }
+
+        if (transaction.reservation.dineIn && transaction.reservation.numberPax) {
+            freeUpTable(transaction);
         }
 
         transaction.isPending = false;
@@ -935,4 +982,4 @@ const GETRemoveTransaction = async (req, res) => {
     }
 }
 
-export { GETrestaurantLogin, POSTRestaurantLogin, GETRestaurantDashboard, GETProfileDashboard, GETAddProduct, POSTAddProduct, POSTUpdateProduct, GETProducts, GETUpdateProduct, GETAddCategory, POSTAddCategory, DELETECategory, DELETEProduct, GETUpdateCategory, POSTUpdateCategory, GETRestaurantLogout, GETHistory, GETRemoveTransaction, GETDeactivateCategory, GETActivateCategory, GETrestaurantRegister, POSTrestaurantRegister, POSTUpdateRestaurant, POSTtransactionComplete, GETRestaurantDashboardToday, GETRestaurantDashboardPending, GETHistoryCompleted, GETHistoryCancelled, GETnumberPax, POSTnumberPax, GETdeactivateOrActivate, DELETEnumberPax, GETupdateNumberPax, POSTupdateNumberPax };
+export { GETrestaurantLogin, POSTRestaurantLogin, GETRestaurantDashboard, GETProfileDashboard, GETAddProduct, POSTAddProduct, POSTUpdateProduct, GETProducts, GETUpdateProduct, GETAddCategory, POSTAddCategory, DELETECategory, DELETEProduct, GETUpdateCategory, POSTUpdateCategory, GETRestaurantLogout, GETHistory, GETRemoveTransaction, GETDeactivateCategory, GETActivateCategory, GETrestaurantRegister, POSTrestaurantRegister, POSTUpdateRestaurant, POSTtransactionComplete, GETRestaurantDashboardToday, GETRestaurantDashboardPending, GETHistoryCompleted, GETHistoryCancelled, GETnumberPax, POSTnumberPax, GETdeactivateOrActivate, DELETEnumberPax, GETupdateNumberPax, POSTupdateNumberPax, POSTacceptTransactionOrNot };

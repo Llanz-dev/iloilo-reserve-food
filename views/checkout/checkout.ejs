@@ -19,15 +19,17 @@
                 </li>
             <% }); %>                        
             <% if (cart.voucherAmount) { %>
-                <li class="list-group-item d-flex">
-                    <div class="col-6">Reservation fee</div>
-                    <div class="col-3"></div>
-                    <div class="col-3">₱<%= cart.reservationAmount %></div>
-                </li>    
+                <% if (cart.reservationAmount !== 0) { %>                 
+                    <li class="list-group-item d-flex">
+                        <div class="col-6">Reservation fee</div>
+                        <div class="col-3"></div>
+                        <div class="col-3">₱<%= cart.reservationAmount %></div>
+                    </li>    
+                <% } %>
                 <li class="list-group-item d-flex">
                     <div class="col-6">Subtotal amount</div>
                     <div class="col-3"></div>
-                    <div class="col-3">₱<%= cart.subTotal %></div>
+                    <div class="col-3">₱<%= cart.subTotal + cart.reservationAmount %></div>
                 </li>
                 <li class="list-group-item list-group-item-success d-flex">
                     <div class="col-6">Voucher amount</div>
@@ -40,12 +42,14 @@
                     <div class="col-3"></div>
                     <div class="col-3">₱<%= cart.subTotal %></div>
                 </li>
-                <li class="list-group-item d-flex">
-                    <div class="col-6">Reservation fee</div>
-
-                    <div class="col-3"></div>
-                        <div class="col-3">₱<%= cart.reservationAmount %></div>
-                </li>    
+                <% if (cart.reservationAmount !== 0) { %>
+                    <li class="list-group-item d-flex">
+                        <div class="col-6">Reservation fee</div>
+    
+                        <div class="col-3"></div>
+                            <div class="col-3">₱<%= cart.reservationAmount %></div>
+                    </li>    
+                <% } %>
             <% } %>
             <li class="list-group-item d-flex">
                 <div class="col-6">Total amount</div>
@@ -55,7 +59,7 @@
             <li class="list-group-item fw-bold d-flex">
                 <div class="col-6">Half amount</div>
                 <div class="col-3"></div>
-                <div class="col-3" id="cart-half-amount">₱<%= Number(cart.totalAmount) / 2 %></div>
+                <div class="col-3" id="cart-half-amount">₱<%= Number(cart.halfAmount) %></div>
             </li>
         </ul>
         

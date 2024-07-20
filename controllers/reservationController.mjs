@@ -26,7 +26,7 @@ const GETDineInTakeOutReservation = async (req, res) => {
 
 const POSTDineInTakeOutReservation = async (req, res) => {
   try {
-    const { action, customer } = req.body;
+    const { action } = req.body;
     console.log('action:', action);
     const cartID = req.params.id;    
     const cart = await Cart.findById(cartID).populate('restaurant');
@@ -36,8 +36,6 @@ const POSTDineInTakeOutReservation = async (req, res) => {
       const reservationURL = `/reservation/${cart.restaurant.lowername}/${cart.id}/?dineIn=${true}`;
       res.redirect(reservationURL);
     } else if (action === 'take-out') {
-      const restaurantID = cart.restaurant._id;
-      const amount = cart.totalAmount;
       const reservationURL = `/reservation/${cart.restaurant.lowername}/${cart.id}/?dineIn=${false}`;
       res.redirect(reservationURL);
     } else {
@@ -97,8 +95,7 @@ const POSTCreateDineInReservation = async (req, res) => {
   const restaurant = await Restaurant.findById(restaurantID);
   const { dineIn } = req.body;
   try {
-      const { customer, restaurant, reservation_date, reservation_time, table_price, numPaxID, amount, notes } = req.body;
-      console.log('numPaxID:', numPaxID);
+      const { customer, restaurant, reservation_date, otherOption, reservation_time, table_price, numPaxID, amount, notes } = req.body;
       
       cart.halfAmount = cart.totalAmount / 2;
       
@@ -109,7 +106,7 @@ const POSTCreateDineInReservation = async (req, res) => {
       await checkReservationDateAndTime(restaurantObject, reservation_date, reservation_time);
 
       // Construct URL with reservation data parameters
-      const checkoutURL = `/checkout/${restaurantObject.lowername}/${restaurantID}/${cartID}/?restaurantID=${restaurantID}&cartID=${cartID}&numPaxID=${numPaxID}&customer=${customer}&reservation_date=${reservation_date}&reservation_time=${reservation_time}&dineIn=${dineIn}&table_price=${table_price}&amount=${amount}&notes=${notes}`;
+      const checkoutURL = `/checkout/${restaurantObject.lowername}/${restaurantID}/${cartID}/?restaurantID=${restaurantID}&cartID=${cartID}&numPaxID=${numPaxID}&customer=${customer}&reservation_date=${reservation_date}&reservation_time=${reservation_time}&dineIn=${dineIn}&table_price=${table_price}&amount=${amount}&notes=${notes}&otherOption=${otherOption}`;
       // Redirect to checkout page with reservation data parameters
       res.redirect(checkoutURL);
   } catch (err) {

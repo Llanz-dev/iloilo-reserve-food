@@ -110,7 +110,11 @@ const GETHistoryPage = async (req, res) => {
     })
     .populate({
         path: 'reservation',
-        model: 'Reservation'
+        model: 'Reservation',
+        populate: {
+          path: 'numberPax',
+          model: 'NumberPax'
+      }
     })
     .populate({
         path: 'customer',
