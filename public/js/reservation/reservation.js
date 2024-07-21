@@ -43,4 +43,13 @@ if (initialOption) {
     floorPlanDescription.textContent = initialOption.getAttribute('data-description');
     inputNumPaxID.value = initialOption.getAttribute('data-tableID');
     numberOfSitsElement.textContent = initialOption.getAttribute('data-numberOfSits');
+
+    const createReservationButton = document.getElementById('create-reservation-button');
+    const hasFloorPlanImage = floorPlanImage.getAttribute('src') === 'null';
+    if (hasFloorPlanImage) {
+        otherOption();
+        createReservationButton.disabled = true;
+    } else {
+        createReservationButton.disabled = false;
+    }
 }

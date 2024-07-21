@@ -31,6 +31,7 @@ const GETHomePage = async (req, res) => {
         res.json({ 'GET home page': err.message });
     }
 }
+
 const GETRestaurantProductsPage = async (req, res) => {
     try {
         const restaurantLowerName = req.params.lowername;
@@ -41,7 +42,17 @@ const GETRestaurantProductsPage = async (req, res) => {
         }
 
         const restaurantID = restaurant._id;
-        const products = await Product.find({ restaurant: restaurantID }).populate('category restaurant');
+        let searchCriteria = { restaurant: restaurantID };
+
+        // Search
+        const filter = req.query;        
+        if (filter.name) {
+            // Use regular expression for partial matching
+            searchCriteria.name = { $regex: filter.name, $options: 'i' }; // case-insensitive
+        }
+
+        // Fetch the products based on the search criteria
+        const products = await Product.find(searchCriteria).populate('category restaurant');
         const customerID = res.locals.customer ? res.locals.customer._id : null;
 
         // Find the cart for the customer and restaurant combination
@@ -52,11 +63,52 @@ const GETRestaurantProductsPage = async (req, res) => {
 
         const numberOfItems = cart ? cart.items.length : 0;
         const pageTitle = restaurant.name;
-        res.render('home/restaurant-products', { pageTitle, restaurant, products, cart, numberOfItems, restaurantID });
+
+        res.render('home/restaurant-products', { pageTitle, restaurant, products, cart, numberOfItems, restaurantID, filter });
     } catch (err) {
         res.json({ 'GET restaurant products page': err.message });
     }
 }
 
+const GETsearchProduct = async (req, res) => {
+    try {
+        const filter = req.query;
+        console.log('filter:', filter);
 
-export { GETHomePage, GETRestaurantProductsPage };
+        // Create a search criteria object
+        let searchCriteria = {};
+
+        // Example: Adding filter conditions for product name and category
+        if (filter.name) {
+            // Use regular expression for partial matching
+            searchCriteria.name = { $regex: filter.name, $options: 'i' }; // case-insensitive
+        }
+        if (filter.category) {
+            searchCriteria.category = filter.category;
+        }
+        if (filter.restaurant) {
+            searchCriteria.restaurant = filter.restaurant;
+        }
+
+        // Add more filters as needed
+        if (filter.priceMin || filter.priceMax) {
+            searchCriteria.price = {};
+            if (filter.priceMin) {
+                searchCriteria.price.$gte = parseFloat(filter.priceMin);
+            }
+            if (filter.priceMax) {
+                searchCriteria.price.$lte = parseFloat(filter.priceMax);
+            }
+        }
+
+        // Fetch the products based on the search criteria
+        const products = await Product.find(searchCriteria).populate('category restaurant');
+
+        res.json({ products, filter });
+    } catch (err) {
+        res.status(500).json({ 'GET search product': err.message });
+    }
+}
+
+
+export { GETHomePage, GETRestaurantProductsPage, GETsearchProduct };

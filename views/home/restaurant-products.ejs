@@ -3,6 +3,10 @@
 <%- include('.././navbar.ejs') %>
 
 <main>
+    <form action="/restaurant-products/<%= restaurant.lowername %>" method="GET" class="d-flex">
+      <input class="form-control" type="text" name="name" placeholder="Search by product name" value="<%= filter.name || '' %>" style="width: 250px;">
+      <button type="submit" class="btn primary-background-color text-white">Search</button>
+    </form>
     <% if (products.length > 0) { %>
       <% const groupedProducts = {}; %>
       <% products.forEach(product => { %>

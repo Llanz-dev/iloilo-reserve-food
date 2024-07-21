@@ -100,7 +100,6 @@ const cancelReservationRefundable = async (req, res) => {
 
 
       if (transactionObject.reservation.dineIn && transactionObject.reservation.numberPax) {
-        console.log('trrr:', transactionObject);
         freeUpTable(transactionObject);
       }
 

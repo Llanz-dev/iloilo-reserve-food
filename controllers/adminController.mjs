@@ -5,11 +5,14 @@ import Product from '../models/productModel.mjs';
 import Category from '../models/categoryModel.mjs';
 import Transaction from '../models/transactionModel.mjs';
 import Cart from '../models/cartModel.mjs'
+import NumberPax from '../models/numberPaxModel.mjs';
 import Reservation from '../models/reservationModel.mjs'
 import { renameFolder, deleteDirectory } from '../utils/fileUtils.mjs';
 import { deleteUsedVouchers } from '../utils/restaurantUtils.mjs';
 import processAndCancelExpiredReservations from '../utils/transactionUtils.mjs';
 import CustomerQuota from '../models/customerQuotaModel.mjs';
+import { freeUpTable } from '../utils/reservationUtils.mjs';
+
 
 // Restaurant List
 const GETAdminRestaurantList = async (req, res) => {
@@ -169,6 +172,9 @@ const DELETETransaction = async (req, res) => {
       console.log('transaction:', transaction);
       const resultCart = await Cart.findByIdAndDelete(transaction.cart);
       const resultReservation = await Reservation.findByIdAndDelete(transaction.reservation);
+      if (resultReservation.dineIn && resultReservation.numberPax) {
+        freeUpTable(transaction);
+      }
       console.log('resultCart:', resultCart);
       console.log('resultReservation:', resultReservation);
       // Once cart and reservation are deleted, delete the transaction
@@ -372,6 +378,9 @@ const DELETERestaurant = async (req, res) => {
 
     // Delete associated reservations
     await Reservation.deleteMany({ restaurant: restaurantID });
+
+    // Delete associated number pax
+    await NumberPax.deleteMany({ restaurant: restaurantID });
     
     // Delete the restaurant
     await Restaurant.findByIdAndDelete(restaurantID);
